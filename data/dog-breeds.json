@@ -1,0 +1,3776 @@
+{
+  "breeds": [
+    {
+      "breed": "Labrador Retriever",
+      "coatColors": [
+        "Yellow",
+        "Black",
+        "Chocolate"
+      ],
+      "size": "Large",
+      "weightRange": "55-80 lbs",
+      "heightRange": "21.5-24.5 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Intelligent",
+        "Outgoing"
+      ],
+      "trainability": 5,
+      "funFact": "Labradors are often used as service dogs due to their intelligence and temperament.",
+      "historicalPurpose": "Retrieving for hunting",
+      "originCountry": "Canada/UK",
+      "popularityRank": 1,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "labrador_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "French Bulldog",
+      "coatColors": [
+        "Brindle",
+        "Fawn",
+        "Pied",
+        "Cream"
+      ],
+      "size": "Small",
+      "weightRange": "16-28 lbs",
+      "heightRange": "11-12 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Playful",
+        "Affectionate",
+        "Sociable"
+      ],
+      "trainability": 3,
+      "funFact": "French Bulldogs are known for their distinctive bat-like ears.",
+      "historicalPurpose": "Companion dog",
+      "originCountry": "France",
+      "popularityRank": 2,
+      "categoryTags": [
+        "Non-Sporting"
+      ],
+      "thumbnail": "french_bulldog_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Golden Retriever",
+      "coatColors": [
+        "Light Golden",
+        "Golden",
+        "Dark Golden"
+      ],
+      "size": "Large",
+      "weightRange": "55-75 lbs",
+      "heightRange": "21.5-24 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Intelligent",
+        "Playful",
+        "Loyal"
+      ],
+      "trainability": 5,
+      "funFact": "Golden Retrievers have a water-repellent double coat.",
+      "historicalPurpose": "Retriever for hunting",
+      "originCountry": "Scotland",
+      "popularityRank": 3,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "golden_retriever_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "German Shepherd",
+      "coatColors": [
+        "Black & Tan",
+        "Sable",
+        "Solid Black"
+      ],
+      "size": "Large",
+      "weightRange": "65-90 lbs",
+      "heightRange": "22-26 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Intelligent",
+        "Confident",
+        "Loyal",
+        "Courageous"
+      ],
+      "trainability": 5,
+      "funFact": "German Shepherds are often used in police and military work.",
+      "historicalPurpose": "Herding and protection",
+      "originCountry": "Germany",
+      "popularityRank": 4,
+      "categoryTags": [
+        "Herding"
+      ],
+      "thumbnail": "german_shepherd_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Poodle",
+      "coatColors": [
+        "White",
+        "Black",
+        "Apricot",
+        "Gray",
+        "Silver",
+        "Brown"
+      ],
+      "size": "Medium/Large",
+      "weightRange": "45-70 lbs",
+      "heightRange": "15-22 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Intelligent",
+        "Alert",
+        "Active",
+        "Sociable"
+      ],
+      "trainability": 5,
+      "funFact": "Poodles are excellent swimmers and were originally water retrievers.",
+      "historicalPurpose": "Water retrieving",
+      "originCountry": "Germany/France",
+      "popularityRank": 5,
+      "categoryTags": [
+        "Non-Sporting"
+      ],
+      "thumbnail": "poodle_thumb.jpg",
+      "coatCount": 6
+    },
+    {
+      "breed": "Bulldog",
+      "coatColors": [
+        "Brindle",
+        "Fawn",
+        "White",
+        "Red",
+        "Pied"
+      ],
+      "size": "Medium",
+      "weightRange": "40-50 lbs",
+      "heightRange": "12-16 inches",
+      "energyLevel": "Low",
+      "temperament": [
+        "Docile",
+        "Friendly",
+        "Courageous"
+      ],
+      "trainability": 3,
+      "funFact": "Bulldogs have a distinctive pushed-in nose and muscular build.",
+      "historicalPurpose": "Bull-baiting and companion",
+      "originCountry": "England",
+      "popularityRank": 6,
+      "categoryTags": [
+        "Non-Sporting"
+      ],
+      "thumbnail": "bulldog_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Beagle",
+      "coatColors": [
+        "Tricolor",
+        "Lemon & White",
+        "Red & White",
+        "Chocolate & White"
+      ],
+      "size": "Small/Medium",
+      "weightRange": "20-30 lbs",
+      "heightRange": "13-16 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Curious",
+        "Merry"
+      ],
+      "trainability": 4,
+      "funFact": "Beagles have one of the best noses of any dog breed.",
+      "historicalPurpose": "Hunting small game (rabbits, hare)",
+      "originCountry": "England",
+      "popularityRank": 7,
+      "categoryTags": [
+        "Hound"
+      ],
+      "thumbnail": "beagle_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Rottweiler",
+      "coatColors": [
+        "Black & Tan",
+        "Black & Mahogany"
+      ],
+      "size": "Large",
+      "weightRange": "80-135 lbs",
+      "heightRange": "22-27 inches",
+      "energyLevel": "Medium/High",
+      "temperament": [
+        "Confident",
+        "Courageous",
+        "Good-natured",
+        "Alert"
+      ],
+      "trainability": 5,
+      "funFact": "Rottweilers were originally used to drive cattle and guard property.",
+      "historicalPurpose": "Herding and guarding",
+      "originCountry": "Germany",
+      "popularityRank": 8,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "rottweiler_thumb.jpg",
+      "coatCount": 2
+    },
+    {
+      "breed": "Yorkshire Terrier",
+      "coatColors": [
+        "Blue & Tan",
+        "Silver & Tan",
+        "Black & Tan"
+      ],
+      "size": "Small",
+      "weightRange": "4-7 lbs",
+      "heightRange": "7-8 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Confident",
+        "Intelligent",
+        "Bold",
+        "Unfriendly"
+      ],
+      "trainability": 4,
+      "funFact": "Yorkies were originally bred to catch rats in clothing mills.",
+      "historicalPurpose": "Rat-catching and companion",
+      "originCountry": "England",
+      "popularityRank": 9,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "yorkshire_terrier_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Boxer",
+      "coatColors": [
+        "Fawn",
+        "Brindle",
+        "White",
+        "Mantle"
+      ],
+      "size": "Large",
+      "weightRange": "50-80 lbs",
+      "heightRange": "21-25 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Fun-loving",
+        "Loyal",
+        "Intelligent",
+        "Energetic"
+      ],
+      "trainability": 4,
+      "funFact": "Boxers are playful and strong, often considered gentle giants with kids.",
+      "historicalPurpose": "Guarding, hunting, and working dog",
+      "originCountry": "Germany",
+      "popularityRank": 10,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "boxer_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Dachshund",
+      "coatColors": [
+        "Red",
+        "Black & Tan",
+        "Chocolate & Tan",
+        "Dapple",
+        "Cream"
+      ],
+      "size": "Small",
+      "weightRange": "16-32 lbs",
+      "heightRange": "8-9 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Clever",
+        "Curious",
+        "Spunky"
+      ],
+      "trainability": 3,
+      "funFact": "Dachshunds were bred to hunt badgers, their long body helps them dig into tunnels.",
+      "historicalPurpose": "Hunting small game (badgers)",
+      "originCountry": "Germany",
+      "popularityRank": 11,
+      "categoryTags": [
+        "Hound"
+      ],
+      "thumbnail": "dachshund_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Pembroke Welsh Corgi",
+      "coatColors": [
+        "Red",
+        "Sable",
+        "Fawn",
+        "Black & Tan",
+        "Tricolor"
+      ],
+      "size": "Small/Medium",
+      "weightRange": "25-30 lbs",
+      "heightRange": "10-12 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Affectionate",
+        "Intelligent",
+        "Alert",
+        "Playful"
+      ],
+      "trainability": 5,
+      "funFact": "Pembroke Welsh Corgis are known as the favorite breed of Queen Elizabeth II.",
+      "historicalPurpose": "Herding cattle",
+      "originCountry": "Wales",
+      "popularityRank": 12,
+      "categoryTags": [
+        "Herding"
+      ],
+      "thumbnail": "pembroke_welsh_corgi_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Siberian Husky",
+      "coatColors": [
+        "Black & White",
+        "Gray & White",
+        "Red & White",
+        "Agouti",
+        "White"
+      ],
+      "size": "Medium/Large",
+      "weightRange": "35-60 lbs",
+      "heightRange": "20-23.5 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Alert",
+        "Gentle",
+        "Outgoing"
+      ],
+      "trainability": 4,
+      "funFact": "Huskies are famous for their endurance and ability to pull sleds long distances.",
+      "historicalPurpose": "Sled pulling",
+      "originCountry": "Siberia, Russia",
+      "popularityRank": 13,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "siberian_husky_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Australian Shepherd",
+      "coatColors": [
+        "Blue Merle",
+        "Red Merle",
+        "Black",
+        "Red",
+        "White Markings"
+      ],
+      "size": "Medium",
+      "weightRange": "40-65 lbs",
+      "heightRange": "18-23 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Intelligent",
+        "Active",
+        "Loyal",
+        "Friendly"
+      ],
+      "trainability": 5,
+      "funFact": "Australian Shepherds are known for their herding instincts and high energy.",
+      "historicalPurpose": "Herding livestock",
+      "originCountry": "United States",
+      "popularityRank": 14,
+      "categoryTags": [
+        "Herding"
+      ],
+      "thumbnail": "australian_shepherd_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Cavalier King Charles Spaniel",
+      "coatColors": [
+        "Blenheim (Chestnut & White)",
+        "Tricolor",
+        "Ruby",
+        "Black & Tan"
+      ],
+      "size": "Small",
+      "weightRange": "13-18 lbs",
+      "heightRange": "12-13 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Affectionate",
+        "Gentle",
+        "Friendly",
+        "Playful"
+      ],
+      "trainability": 4,
+      "funFact": "Cavaliers are known for their expressive eyes and loving temperament.",
+      "historicalPurpose": "Companion dog",
+      "originCountry": "United Kingdom",
+      "popularityRank": 15,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "cavalier_king_charles_spaniel_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Shih Tzu",
+      "coatColors": [
+        "White",
+        "Black",
+        "Brindle",
+        "Gold",
+        "Chocolate",
+        "Parti-color"
+      ],
+      "size": "Small",
+      "weightRange": "9-16 lbs",
+      "heightRange": "9-10.5 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Friendly",
+        "Affectionate",
+        "Outgoing"
+      ],
+      "trainability": 3,
+      "funFact": "Shih Tzus were bred as companion dogs for Chinese royalty.",
+      "historicalPurpose": "Companion dog",
+      "originCountry": "China",
+      "popularityRank": 16,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "shih_tzu_thumb.jpg",
+      "coatCount": 6
+    },
+    {
+      "breed": "Boston Terrier",
+      "coatColors": [
+        "Brindle & White",
+        "Seal & White",
+        "Black & White",
+        "Fawn & White"
+      ],
+      "size": "Small/Medium",
+      "weightRange": "12-25 lbs",
+      "heightRange": "15-17 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Friendly",
+        "Intelligent",
+        "Lively"
+      ],
+      "trainability": 4,
+      "funFact": "Boston Terriers are known as the 'American Gentleman' because of their tuxedo-like coat.",
+      "historicalPurpose": "Companion and watchdog",
+      "originCountry": "United States",
+      "popularityRank": 17,
+      "categoryTags": [
+        "Non-Sporting"
+      ],
+      "thumbnail": "boston_terrier_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Havanese",
+      "coatColors": [
+        "White",
+        "Cream",
+        "Black",
+        "Silver",
+        "Chocolate",
+        "Fawn",
+        "Chestnut",
+        "Blonde"
+      ],
+      "size": "Small",
+      "weightRange": "7-13 lbs",
+      "heightRange": "8.5-11.5 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Friendly",
+        "Outgoing",
+        "Intelligent"
+      ],
+      "trainability": 5,
+      "funFact": "Havanese are the national dog of Cuba and were bred as companion dogs.",
+      "historicalPurpose": "Companion dog",
+      "originCountry": "Cuba",
+      "popularityRank": 18,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "havanese_thumb.jpg",
+      "coatCount": 8
+    },
+    {
+      "breed": "Shetland Sheepdog",
+      "coatColors": [
+        "Sable",
+        "Tricolor",
+        "Blue Merle",
+        "Black & White"
+      ],
+      "size": "Small/Medium",
+      "weightRange": "14-27 lbs",
+      "heightRange": "13-16 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Intelligent",
+        "Loyal",
+        "Alert",
+        "Playful"
+      ],
+      "trainability": 5,
+      "funFact": "Shetland Sheepdogs are excellent herding dogs despite their small size.",
+      "historicalPurpose": "Herding sheep",
+      "originCountry": "Scotland",
+      "popularityRank": 19,
+      "categoryTags": [
+        "Herding"
+      ],
+      "thumbnail": "shetland_sheepdog_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Brittany",
+      "coatColors": [
+        "Orange & White",
+        "Liver & White",
+        "Roan",
+        "Liver Roan",
+        "Orange Roan"
+      ],
+      "size": "Medium",
+      "weightRange": "30-40 lbs",
+      "heightRange": "17.5-20.5 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Energetic",
+        "Intelligent"
+      ],
+      "trainability": 5,
+      "funFact": "Brittanys are excellent hunting dogs, particularly for bird flushing and retrieving.",
+      "historicalPurpose": "Hunting",
+      "originCountry": "France",
+      "popularityRank": 20,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "brittany_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "English Springer Spaniel",
+      "coatColors": [
+        "Liver & White",
+        "Black & White",
+        "Liver Roan",
+        "Black Roan",
+        "Tricolor"
+      ],
+      "size": "Medium",
+      "weightRange": "40-50 lbs",
+      "heightRange": "19-20 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Intelligent",
+        "Energetic",
+        "Affectionate"
+      ],
+      "trainability": 5,
+      "funFact": "Springer Spaniels are known for their excellent scenting abilities in hunting.",
+      "historicalPurpose": "Flushing and retrieving game",
+      "originCountry": "United Kingdom",
+      "popularityRank": 21,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "english_springer_spaniel_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Miniature Schnauzer",
+      "coatColors": [
+        "Salt & Pepper",
+        "Black",
+        "Black & Silver",
+        "White"
+      ],
+      "size": "Small",
+      "weightRange": "11-20 lbs",
+      "heightRange": "12-14 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Intelligent",
+        "Alert"
+      ],
+      "trainability": 5,
+      "funFact": "Miniature Schnauzers are known for their bearded snout and lively personality.",
+      "historicalPurpose": "Rat-catching and guard dog",
+      "originCountry": "Germany",
+      "popularityRank": 22,
+      "categoryTags": [
+        "Terrier"
+      ],
+      "thumbnail": "miniature_schnauzer_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Maltese",
+      "coatColors": [
+        "White",
+        "Cream"
+      ],
+      "size": "Small",
+      "weightRange": "4-7 lbs",
+      "heightRange": "7-9 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Gentle",
+        "Playful",
+        "Affectionate"
+      ],
+      "trainability": 4,
+      "funFact": "Maltese are one of the oldest toy breeds, dating back over 2,000 years.",
+      "historicalPurpose": "Companion dog",
+      "originCountry": "Malta",
+      "popularityRank": 23,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "maltese_thumb.jpg",
+      "coatCount": 2
+    },
+    {
+      "breed": "Weimaraner",
+      "coatColors": [
+        "Silver Gray",
+        "Mouse Gray"
+      ],
+      "size": "Large",
+      "weightRange": "55-90 lbs",
+      "heightRange": "23-27 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Energetic",
+        "Alert",
+        "Intelligent"
+      ],
+      "trainability": 5,
+      "funFact": "Weimaraners are called the 'Gray Ghost' for their silver coat and stealth in hunting.",
+      "historicalPurpose": "Hunting large game",
+      "originCountry": "Germany",
+      "popularityRank": 24,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "weimaraner_thumb.jpg",
+      "coatCount": 2
+    },
+    {
+      "breed": "Belgian Malinois",
+      "coatColors": [
+        "Fawn",
+        "Red Fawn",
+        "Mahogany",
+        "Black Mask"
+      ],
+      "size": "Medium/Large",
+      "weightRange": "40-80 lbs",
+      "heightRange": "22-26 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Intelligent",
+        "Loyal",
+        "Confident",
+        "Energetic"
+      ],
+      "trainability": 5,
+      "funFact": "Belgian Malinois are often used in police and military work due to their high trainability.",
+      "historicalPurpose": "Herding and protection",
+      "originCountry": "Belgium",
+      "popularityRank": 25,
+      "categoryTags": [
+        "Herding"
+      ],
+      "thumbnail": "belgian_malinois_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Pomeranian",
+      "coatColors": [
+        "Orange",
+        "Black",
+        "White",
+        "Cream",
+        "Blue",
+        "Chocolate",
+        "Sable"
+      ],
+      "size": "Small",
+      "weightRange": "3-7 lbs",
+      "heightRange": "6-7 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Intelligent",
+        "Playful"
+      ],
+      "trainability": 4,
+      "funFact": "Pomeranians are descendants of large sled-pulling dogs from the Arctic.",
+      "historicalPurpose": "Companion dog",
+      "originCountry": "Germany/Poland",
+      "popularityRank": 26,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "pomeranian_thumb.jpg",
+      "coatCount": 7
+    },
+    {
+      "breed": "English Cocker Spaniel",
+      "coatColors": [
+        "Black",
+        "Liver",
+        "Golden",
+        "Red",
+        "Roan",
+        "Tricolor"
+      ],
+      "size": "Medium",
+      "weightRange": "26-34 lbs",
+      "heightRange": "15-17 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Gentle",
+        "Intelligent",
+        "Outgoing"
+      ],
+      "trainability": 5,
+      "funFact": "English Cocker Spaniels are known for their long, silky ears and excellent hunting skills.",
+      "historicalPurpose": "Hunting and retrieving game",
+      "originCountry": "United Kingdom",
+      "popularityRank": 27,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "english_cocker_spaniel_thumb.jpg",
+      "coatCount": 6
+    },
+    {
+      "breed": "Vizsla",
+      "coatColors": [
+        "Golden Rust",
+        "Rust"
+      ],
+      "size": "Medium/Large",
+      "weightRange": "45-65 lbs",
+      "heightRange": "21-24 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Affectionate",
+        "Energetic",
+        "Intelligent",
+        "Loyal"
+      ],
+      "trainability": 5,
+      "funFact": "Vizslas are known as 'Velcro dogs' because they bond very closely to their owners.",
+      "historicalPurpose": "Pointer and retriever for hunting",
+      "originCountry": "Hungary",
+      "popularityRank": 28,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "vizsla_thumb.jpg",
+      "coatCount": 2
+    },
+    {
+      "breed": "Chihuahua",
+      "coatColors": [
+        "Fawn",
+        "Black",
+        "White",
+        "Chocolate",
+        "Cream",
+        "Tricolor"
+      ],
+      "size": "Small",
+      "weightRange": "3-6 lbs",
+      "heightRange": "5-8 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Alert",
+        "Devoted",
+        "Lively",
+        "Courageous",
+        "Unfriendly"
+      ],
+      "trainability": 3,
+      "funFact": "Chihuahuas are one of the smallest dog breeds in the world but have a big personality.",
+      "historicalPurpose": "Companion dog",
+      "originCountry": "Mexico",
+      "popularityRank": 29,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "chihuahua_thumb.jpg",
+      "coatCount": 6
+    },
+    {
+      "breed": "Border Collie",
+      "coatColors": [
+        "Black & White",
+        "Red & White",
+        "Blue Merle",
+        "Tricolor",
+        "Sable"
+      ],
+      "size": "Medium",
+      "weightRange": "30-45 lbs",
+      "heightRange": "18-22 inches",
+      "energyLevel": "Very High",
+      "temperament": [
+        "Intelligent",
+        "Energetic",
+        "Alert",
+        "Responsive"
+      ],
+      "trainability": 5,
+      "funFact": "Border Collies are widely regarded as the most intelligent dog breed.",
+      "historicalPurpose": "Herding livestock",
+      "originCountry": "United Kingdom",
+      "popularityRank": 30,
+      "categoryTags": [
+        "Herding"
+      ],
+      "thumbnail": "border_collie_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Miniature Pinscher",
+      "coatColors": [
+        "Black & Tan",
+        "Chocolate & Tan",
+        "Red",
+        "Fawn"
+      ],
+      "size": "Small",
+      "weightRange": "8-12 lbs",
+      "heightRange": "10-12.5 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Energetic",
+        "Alert",
+        "Confident",
+        "Unfriendly"
+      ],
+      "trainability": 4,
+      "funFact": "Miniature Pinschers are known as the 'King of Toys' for their fearless personality.",
+      "historicalPurpose": "Rat-catching and companion",
+      "originCountry": "Germany",
+      "popularityRank": 31,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "miniature_pinscher_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Italian Greyhound",
+      "coatColors": [
+        "Fawn",
+        "Blue",
+        "Black",
+        "Red",
+        "Cream",
+        "White"
+      ],
+      "size": "Small",
+      "weightRange": "7-14 lbs",
+      "heightRange": "13-15 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Gentle",
+        "Affectionate",
+        "Playful"
+      ],
+      "trainability": 3,
+      "funFact": "Italian Greyhounds are elegant, slender dogs originally kept by nobility as companions.",
+      "historicalPurpose": "Companion and small game hunter",
+      "originCountry": "Italy",
+      "popularityRank": 32,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "italian_greyhound_thumb.jpg",
+      "coatCount": 6
+    },
+    {
+      "breed": "Whippet",
+      "coatColors": [
+        "Fawn",
+        "Brindle",
+        "Black",
+        "Blue",
+        "White",
+        "Tri-color"
+      ],
+      "size": "Medium",
+      "weightRange": "25-40 lbs",
+      "heightRange": "18-22 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Gentle",
+        "Intelligent"
+      ],
+      "trainability": 4,
+      "funFact": "Whippets are extremely fast and are often called the 'poor man's racehorse'.",
+      "historicalPurpose": "Hunting small game",
+      "originCountry": "United Kingdom",
+      "popularityRank": 33,
+      "categoryTags": [
+        "Hound"
+      ],
+      "thumbnail": "whippet_thumb.jpg",
+      "coatCount": 6
+    },
+    {
+      "breed": "Staffordshire Bull Terrier",
+      "coatColors": [
+        "Brindle",
+        "Fawn",
+        "Red",
+        "Black",
+        "Blue",
+        "White",
+        "Pied"
+      ],
+      "size": "Medium",
+      "weightRange": "24-38 lbs",
+      "heightRange": "14-16 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Courageous",
+        "Intelligent",
+        "Affectionate",
+        "Friendly"
+      ],
+      "trainability": 4,
+      "funFact": "Staffordshire Bull Terriers are known as 'nanny dogs' in the UK due to their love of children.",
+      "historicalPurpose": "Bull-baiting and companion",
+      "originCountry": "United Kingdom",
+      "popularityRank": 34,
+      "categoryTags": [
+        "Terrier"
+      ],
+      "thumbnail": "staffordshire_bull_terrier_thumb.jpg",
+      "coatCount": 7
+    },
+    {
+      "breed": "Border Terrier",
+      "coatColors": [
+        "Red",
+        "Grizzle & Tan",
+        "Blue & Tan",
+        "Wheaten"
+      ],
+      "size": "Small",
+      "weightRange": "11-15 lbs",
+      "heightRange": "10-11 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Alert",
+        "Affectionate"
+      ],
+      "trainability": 4,
+      "funFact": "Border Terriers were bred for hunting foxes along the English-Scottish border.",
+      "historicalPurpose": "Hunting foxes and vermin",
+      "originCountry": "United Kingdom",
+      "popularityRank": 35,
+      "categoryTags": [
+        "Terrier"
+      ],
+      "thumbnail": "border_terrier_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Bichon Frise",
+      "coatColors": [
+        "White",
+        "Apricot",
+        "Cream"
+      ],
+      "size": "Small",
+      "weightRange": "10-20 lbs",
+      "heightRange": "9.5-11.5 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Friendly",
+        "Playful",
+        "Gentle",
+        "Affectionate"
+      ],
+      "trainability": 4,
+      "funFact": "Bichon Frises are known for their curly, hypoallergenic coat.",
+      "historicalPurpose": "Companion dog",
+      "originCountry": "France/Belgium",
+      "popularityRank": 36,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "bichon_frise_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Akita",
+      "coatColors": [
+        "White",
+        "Brindle",
+        "Red",
+        "Sesame",
+        "Pinto"
+      ],
+      "size": "Large",
+      "weightRange": "70-130 lbs",
+      "heightRange": "24-28 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Loyal",
+        "Dignified",
+        "Courageous",
+        "Alert"
+      ],
+      "trainability": 4,
+      "funFact": "Akitas are known for their strong protective instincts and were originally used for hunting bears.",
+      "historicalPurpose": "Hunting large game and guarding",
+      "originCountry": "Japan",
+      "popularityRank": 37,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "akita_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Cane Corso",
+      "coatColors": [
+        "Black",
+        "Gray",
+        "Fawn",
+        "Red",
+        "Brindle"
+      ],
+      "size": "Large",
+      "weightRange": "88-110 lbs",
+      "heightRange": "23-28 inches",
+      "energyLevel": "Medium/High",
+      "temperament": [
+        "Confident",
+        "Loyal",
+        "Protective",
+        "Intelligent"
+      ],
+      "trainability": 5,
+      "funFact": "Cane Corsos are powerful Italian mastiffs used historically for protection and hunting.",
+      "historicalPurpose": "Guarding and hunting",
+      "originCountry": "Italy",
+      "popularityRank": 38,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "cane_corso_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "English Setter",
+      "coatColors": [
+        "Blue Belton",
+        "Orange Belton",
+        "Liver Belton",
+        "Tricolor"
+      ],
+      "size": "Medium/Large",
+      "weightRange": "45-80 lbs",
+      "heightRange": "23-27 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Gentle",
+        "Affectionate",
+        "Intelligent"
+      ],
+      "trainability": 4,
+      "funFact": "English Setters are elegant bird dogs with a distinctive speckled coat pattern.",
+      "historicalPurpose": "Bird hunting",
+      "originCountry": "United Kingdom",
+      "popularityRank": 39,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "english_setter_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Newfoundland",
+      "coatColors": [
+        "Black",
+        "Brown",
+        "Gray",
+        "Landseer (White & Black)"
+      ],
+      "size": "Large/Giant",
+      "weightRange": "100-150 lbs",
+      "heightRange": "26-28 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Gentle",
+        "Friendly",
+        "Patient",
+        "Intelligent"
+      ],
+      "trainability": 4,
+      "funFact": "Newfoundlands are excellent swimmers and were bred as water rescue dogs.",
+      "historicalPurpose": "Water rescue and working dog",
+      "originCountry": "Canada",
+      "popularityRank": 40,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "newfoundland_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Scottish Terrier",
+      "coatColors": [
+        "Black",
+        "Wheaten",
+        "Brindle"
+      ],
+      "size": "Small",
+      "weightRange": "18-22 lbs",
+      "heightRange": "10-11 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Independent",
+        "Confident",
+        "Alert",
+        "Loyal"
+      ],
+      "trainability": 3,
+      "funFact": "Scottish Terriers are known for their distinctive beard and eyebrows.",
+      "historicalPurpose": "Hunting vermin",
+      "originCountry": "Scotland",
+      "popularityRank": 41,
+      "categoryTags": [
+        "Terrier"
+      ],
+      "thumbnail": "scottish_terrier_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Irish Setter",
+      "coatColors": [
+        "Red",
+        "Mahogany"
+      ],
+      "size": "Large",
+      "weightRange": "60-70 lbs",
+      "heightRange": "25-27 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Energetic",
+        "Playful",
+        "Affectionate"
+      ],
+      "trainability": 4,
+      "funFact": "Irish Setters are famous for their striking red coat and playful personality.",
+      "historicalPurpose": "Gundog for hunting birds",
+      "originCountry": "Ireland",
+      "popularityRank": 42,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "irish_setter_thumb.jpg",
+      "coatCount": 2
+    },
+    {
+      "breed": "Airedale Terrier",
+      "coatColors": [
+        "Tan & Black",
+        "Tan & Grizzle"
+      ],
+      "size": "Medium/Large",
+      "weightRange": "40-65 lbs",
+      "heightRange": "21-23 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Intelligent",
+        "Alert",
+        "Confident"
+      ],
+      "trainability": 4,
+      "funFact": "Airedales are the largest of the terrier breeds and are called the 'King of Terriers'.",
+      "historicalPurpose": "Hunting and guarding",
+      "originCountry": "England",
+      "popularityRank": 43,
+      "categoryTags": [
+        "Terrier"
+      ],
+      "thumbnail": "airedale_terrier_thumb.jpg",
+      "coatCount": 2
+    },
+    {
+      "breed": "Soft Coated Wheaten Terrier",
+      "coatColors": [
+        "Wheaten",
+        "Light Beige"
+      ],
+      "size": "Medium",
+      "weightRange": "30-40 lbs",
+      "heightRange": "17-19 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Friendly",
+        "Alert",
+        "Playful",
+        "Affectionate"
+      ],
+      "trainability": 4,
+      "funFact": "Wheaten Terriers are known for their soft, silky coat and friendly nature.",
+      "historicalPurpose": "Farm dog for hunting vermin",
+      "originCountry": "Ireland",
+      "popularityRank": 44,
+      "categoryTags": [
+        "Terrier"
+      ],
+      "thumbnail": "soft_coated_wheaten_terrier_thumb.jpg",
+      "coatCount": 2
+    },
+    {
+      "breed": "Norfolk Terrier",
+      "coatColors": [
+        "Red",
+        "Wheaten",
+        "Grizzle",
+        "Black & Tan"
+      ],
+      "size": "Small",
+      "weightRange": "11-12 lbs",
+      "heightRange": "9-10 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Alert",
+        "Energetic"
+      ],
+      "trainability": 4,
+      "funFact": "Norfolk Terriers are fearless hunters despite their tiny size.",
+      "historicalPurpose": "Ratting and hunting vermin",
+      "originCountry": "United Kingdom",
+      "popularityRank": 45,
+      "categoryTags": [
+        "Terrier"
+      ],
+      "thumbnail": "norfolk_terrier_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Tibetan Spaniel",
+      "coatColors": [
+        "Gold",
+        "Cream",
+        "Red",
+        "Blonde",
+        "White",
+        "Black Mask"
+      ],
+      "size": "Small",
+      "weightRange": "9-15 lbs",
+      "heightRange": "10 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Intelligent",
+        "Affectionate",
+        "Alert"
+      ],
+      "trainability": 4,
+      "funFact": "Tibetan Spaniels were bred as companions and watchdogs in monasteries.",
+      "historicalPurpose": "Companion and watchdog",
+      "originCountry": "Tibet",
+      "popularityRank": 46,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "tibetan_spaniel_thumb.jpg",
+      "coatCount": 6
+    },
+    {
+      "breed": "Samoyed",
+      "coatColors": [
+        "White",
+        "Cream",
+        "Biscuit"
+      ],
+      "size": "Large",
+      "weightRange": "50-65 lbs",
+      "heightRange": "19-23.5 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Gentle",
+        "Intelligent",
+        "Alert"
+      ],
+      "trainability": 4,
+      "funFact": "Samoyeds are famous for their 'Sammy smile' and were used to herd reindeer.",
+      "historicalPurpose": "Herding and sled pulling",
+      "originCountry": "Russia (Siberia)",
+      "popularityRank": 47,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "samoyed_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Alaskan Malamute",
+      "coatColors": [
+        "Gray & White",
+        "Black & White",
+        "Sable & White",
+        "Red & White"
+      ],
+      "size": "Large/Giant",
+      "weightRange": "75-100 lbs",
+      "heightRange": "23-25 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Affectionate",
+        "Strong",
+        "Intelligent"
+      ],
+      "trainability": 4,
+      "funFact": "Alaskan Malamutes are strong sled dogs bred for heavy hauling.",
+      "historicalPurpose": "Sled pulling",
+      "originCountry": "United States (Alaska)",
+      "popularityRank": 48,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "alaskan_malamute_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Basset Hound",
+      "coatColors": [
+        "Tri-color",
+        "Lemon & White",
+        "Red & White",
+        "Chocolate & White"
+      ],
+      "size": "Medium",
+      "weightRange": "40-65 lbs",
+      "heightRange": "12-15 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Gentle",
+        "Friendly",
+        "Laid-back",
+        "Affectionate"
+      ],
+      "trainability": 3,
+      "funFact": "Basset Hounds have an incredible sense of smell, second only to Bloodhounds.",
+      "historicalPurpose": "Hunting small game",
+      "originCountry": "France",
+      "popularityRank": 49,
+      "categoryTags": [
+        "Hound"
+      ],
+      "thumbnail": "basset_hound_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Scottish Deerhound",
+      "coatColors": [
+        "Gray",
+        "Brindle",
+        "Fawn",
+        "Wheaten"
+      ],
+      "size": "Large",
+      "weightRange": "85-110 lbs",
+      "heightRange": "28-32 inches",
+      "energyLevel": "Medium/High",
+      "temperament": [
+        "Gentle",
+        "Loyal",
+        "Intelligent",
+        "Friendly"
+      ],
+      "trainability": 3,
+      "funFact": "Scottish Deerhounds were bred for hunting red deer in the Scottish Highlands.",
+      "historicalPurpose": "Hunting deer",
+      "originCountry": "Scotland",
+      "popularityRank": 50,
+      "categoryTags": [
+        "Hound"
+      ],
+      "thumbnail": "scottish_deerhound_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "German Shorthaired Pointer",
+      "coatColors": [
+        "Liver",
+        "Liver & White",
+        "Black & White",
+        "Roan",
+        "Liver Roan"
+      ],
+      "size": "Large",
+      "weightRange": "45-70 lbs",
+      "heightRange": "21-25 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Intelligent",
+        "Energetic",
+        "Friendly",
+        "Affectionate"
+      ],
+      "trainability": 5,
+      "funFact": "German Shorthaired Pointers are versatile hunting dogs, excelling in field and water.",
+      "historicalPurpose": "Hunting and pointing game",
+      "originCountry": "Germany",
+      "popularityRank": 51,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "gsp_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Rhodesian Ridgeback",
+      "coatColors": [
+        "Light Wheaten",
+        "Red Wheaten",
+        "Wheaten"
+      ],
+      "size": "Large",
+      "weightRange": "70-85 lbs",
+      "heightRange": "24-27 inches",
+      "energyLevel": "Medium/High",
+      "temperament": [
+        "Independent",
+        "Loyal",
+        "Intelligent",
+        "Dignified"
+      ],
+      "trainability": 4,
+      "funFact": "Rhodesian Ridgebacks have a distinctive ridge of hair along their back that grows in the opposite direction.",
+      "historicalPurpose": "Lion hunting and guard dog",
+      "originCountry": "Zimbabwe",
+      "popularityRank": 52,
+      "categoryTags": [
+        "Hound"
+      ],
+      "thumbnail": "rhodesian_ridgeback_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Saint Bernard",
+      "coatColors": [
+        "Red & White",
+        "Brown & White",
+        "Brindle",
+        "Mahogany"
+      ],
+      "size": "Giant",
+      "weightRange": "120-180 lbs",
+      "heightRange": "25-30 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Gentle",
+        "Friendly",
+        "Loyal",
+        "Patient"
+      ],
+      "trainability": 4,
+      "funFact": "Saint Bernards were originally bred for mountain rescue in the Swiss Alps.",
+      "historicalPurpose": "Rescue and companion",
+      "originCountry": "Switzerland",
+      "popularityRank": 53,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "saint_bernard_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Portuguese Water Dog",
+      "coatColors": [
+        "Black",
+        "White",
+        "Black & White",
+        "Brown",
+        "Gray"
+      ],
+      "size": "Medium/Large",
+      "weightRange": "35-60 lbs",
+      "heightRange": "17-23 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Intelligent",
+        "Energetic",
+        "Friendly",
+        "Loyal"
+      ],
+      "trainability": 5,
+      "funFact": "Portuguese Water Dogs were used by fishermen to herd fish into nets and carry messages between boats.",
+      "historicalPurpose": "Working dog for fishing",
+      "originCountry": "Portugal",
+      "popularityRank": 54,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "portuguese_water_dog_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Bull Terrier",
+      "coatColors": [
+        "White",
+        "Brindle",
+        "Fawn",
+        "Red",
+        "Tri-color"
+      ],
+      "size": "Medium",
+      "weightRange": "50-70 lbs",
+      "heightRange": "21-22 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Playful",
+        "Friendly",
+        "Energetic",
+        "Stubborn"
+      ],
+      "trainability": 3,
+      "funFact": "Bull Terriers are famous for their unique egg-shaped head.",
+      "historicalPurpose": "Bull-baiting and companion",
+      "originCountry": "United Kingdom",
+      "popularityRank": 55,
+      "categoryTags": [
+        "Terrier"
+      ],
+      "thumbnail": "bull_terrier_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Norwegian Elkhound",
+      "coatColors": [
+        "Gray",
+        "Black",
+        "Silver Gray"
+      ],
+      "size": "Medium",
+      "weightRange": "48-55 lbs",
+      "heightRange": "19.5-20.5 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Independent",
+        "Alert",
+        "Friendly",
+        "Loyal"
+      ],
+      "trainability": 4,
+      "funFact": "Norwegian Elkhounds were bred to hunt large game like moose in Norway.",
+      "historicalPurpose": "Hunting large game",
+      "originCountry": "Norway",
+      "popularityRank": 56,
+      "categoryTags": [
+        "Hound"
+      ],
+      "thumbnail": "norwegian_elkhound_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Finnish Spitz",
+      "coatColors": [
+        "Red-Gold",
+        "Golden Red",
+        "Yellow"
+      ],
+      "size": "Medium",
+      "weightRange": "20-33 lbs",
+      "heightRange": "15-20 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Alert",
+        "Energetic",
+        "Vocal"
+      ],
+      "trainability": 4,
+      "funFact": "Finnish Spitz is Finland’s national dog, known for its barking skills while hunting.",
+      "historicalPurpose": "Hunting small game",
+      "originCountry": "Finland",
+      "popularityRank": 57,
+      "categoryTags": [
+        "Hound"
+      ],
+      "thumbnail": "finnish_spitz_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Toy Poodle",
+      "coatColors": [
+        "White",
+        "Black",
+        "Apricot",
+        "Cream",
+        "Gray",
+        "Silver",
+        "Brown"
+      ],
+      "size": "Small",
+      "weightRange": "4-6 lbs",
+      "heightRange": "10 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Intelligent",
+        "Active",
+        "Alert",
+        "Friendly"
+      ],
+      "trainability": 5,
+      "funFact": "Toy Poodles are known for their intelligence and hypoallergenic curly coat.",
+      "historicalPurpose": "Companion dog",
+      "originCountry": "Germany/France",
+      "popularityRank": 58,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "toy_poodle_thumb.jpg",
+      "coatCount": 7
+    },
+    {
+      "breed": "German Wirehaired Pointer",
+      "coatColors": [
+        "Liver & White",
+        "Liver Roan",
+        "Grizzle",
+        "Black & White"
+      ],
+      "size": "Large",
+      "weightRange": "55-70 lbs",
+      "heightRange": "22-26 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Intelligent",
+        "Energetic",
+        "Loyal",
+        "Alert"
+      ],
+      "trainability": 5,
+      "funFact": "German Wirehaired Pointers are versatile hunting dogs with a distinctive wiry coat.",
+      "historicalPurpose": "Hunting and pointing game",
+      "originCountry": "Germany",
+      "popularityRank": 59,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "german_wirehaired_pointer_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Irish Wolfhound",
+      "coatColors": [
+        "Gray",
+        "Brindle",
+        "Red",
+        "Fawn",
+        "Black",
+        "White"
+      ],
+      "size": "Giant",
+      "weightRange": "105-180 lbs",
+      "heightRange": "30-35 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Gentle",
+        "Friendly",
+        "Patient",
+        "Loyal"
+      ],
+      "trainability": 3,
+      "funFact": "Irish Wolfhounds are the tallest dog breed in the world, originally bred to hunt wolves.",
+      "historicalPurpose": "Hunting large game",
+      "originCountry": "Ireland",
+      "popularityRank": 60,
+      "categoryTags": [
+        "Hound"
+      ],
+      "thumbnail": "irish_wolfhound_thumb.jpg",
+      "coatCount": 6
+    },
+    {
+      "breed": "Great Dane",
+      "coatColors": [
+        "Fawn",
+        "Brindle",
+        "Blue",
+        "Black",
+        "Harlequin",
+        "Mantle"
+      ],
+      "size": "Giant",
+      "weightRange": "110-175 lbs",
+      "heightRange": "28-34 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Gentle",
+        "Friendly",
+        "Confident",
+        "Affectionate"
+      ],
+      "trainability": 4,
+      "funFact": "Often called the 'gentle giant' of the dog world.",
+      "historicalPurpose": "Boar hunting and guarding",
+      "originCountry": "Germany",
+      "popularityRank": 61,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "great_dane_thumb.jpg",
+      "coatCount": 6
+    },
+    {
+      "breed": "Cairn Terrier",
+      "coatColors": [
+        "Cream",
+        "Wheaten",
+        "Red",
+        "Gray",
+        "Brindle"
+      ],
+      "size": "Small",
+      "weightRange": "13-18 lbs",
+      "heightRange": "9-10 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Alert",
+        "Cheerful",
+        "Busy",
+        "Independent"
+      ],
+      "trainability": 3,
+      "funFact": "Toto from The Wizard of Oz was a Cairn Terrier.",
+      "historicalPurpose": "Hunting vermin",
+      "originCountry": "Scotland",
+      "popularityRank": 62,
+      "categoryTags": [
+        "Terrier"
+      ],
+      "thumbnail": "cairn_terrier_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Chesapeake Bay Retriever",
+      "coatColors": [
+        "Brown",
+        "Sedge",
+        "Deadgrass"
+      ],
+      "size": "Large",
+      "weightRange": "55-80 lbs",
+      "heightRange": "21-26 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Loyal",
+        "Protective",
+        "Affectionate",
+        "Intelligent"
+      ],
+      "trainability": 4,
+      "funFact": "Bred to retrieve waterfowl in icy waters.",
+      "historicalPurpose": "Waterfowl retrieving",
+      "originCountry": "United States",
+      "popularityRank": 63,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "chesapeake_bay_retriever_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Shiba Inu",
+      "coatColors": [
+        "Red",
+        "Black & Tan",
+        "Sesame",
+        "Cream"
+      ],
+      "size": "Small/Medium",
+      "weightRange": "17-23 lbs",
+      "heightRange": "13-17 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Independent",
+        "Alert",
+        "Bold",
+        "Confident"
+      ],
+      "trainability": 3,
+      "funFact": "Known for the famous 'Shiba scream.'",
+      "historicalPurpose": "Hunting small game",
+      "originCountry": "Japan",
+      "popularityRank": 64,
+      "categoryTags": [
+        "Non-Sporting"
+      ],
+      "thumbnail": "shiba_inu_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "West Highland White Terrier",
+      "coatColors": [
+        "White"
+      ],
+      "size": "Small",
+      "weightRange": "15-20 lbs",
+      "heightRange": "10-11 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Alert",
+        "Confident",
+        "Independent"
+      ],
+      "trainability": 4,
+      "funFact": "Commonly called the 'Westie.'",
+      "historicalPurpose": "Hunting vermin",
+      "originCountry": "Scotland",
+      "popularityRank": 65,
+      "categoryTags": [
+        "Terrier"
+      ],
+      "thumbnail": "west_highland_white_terrier_thumb.jpg",
+      "coatCount": 1
+    },
+    {
+      "breed": "Chinese Shar-Pei",
+      "coatColors": [
+        "Black",
+        "Cream",
+        "Fawn",
+        "Red",
+        "Blue",
+        "Chocolate"
+      ],
+      "size": "Medium",
+      "weightRange": "45-60 lbs",
+      "heightRange": "18-20 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Independent",
+        "Loyal",
+        "Calm",
+        "Protective"
+      ],
+      "trainability": 3,
+      "funFact": "Recognized for its deep wrinkles and blue-black tongue.",
+      "historicalPurpose": "Guarding and hunting",
+      "originCountry": "China",
+      "popularityRank": 66,
+      "categoryTags": [
+        "Non-Sporting"
+      ],
+      "thumbnail": "chinese_shar_pei_thumb.jpg",
+      "coatCount": 6
+    },
+    {
+      "breed": "Basenji",
+      "coatColors": [
+        "Red & White",
+        "Black & White",
+        "Brindle & White",
+        "Tri-color"
+      ],
+      "size": "Small/Medium",
+      "weightRange": "22-24 lbs",
+      "heightRange": "16-17 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Independent",
+        "Curious",
+        "Alert",
+        "Affectionate"
+      ],
+      "trainability": 3,
+      "funFact": "Basenjis are known as the 'barkless dog' because they yodel instead of bark.",
+      "historicalPurpose": "Hunting",
+      "originCountry": "Central Africa",
+      "popularityRank": 67,
+      "categoryTags": [
+        "Hound"
+      ],
+      "thumbnail": "basenji_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Miniature American Shepherd",
+      "coatColors": [
+        "Black",
+        "Red",
+        "Blue Merle",
+        "Red Merle"
+      ],
+      "size": "Small/Medium",
+      "weightRange": "20-40 lbs",
+      "heightRange": "13-18 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Intelligent",
+        "Loyal",
+        "Energetic",
+        "Friendly"
+      ],
+      "trainability": 5,
+      "funFact": "Often mistaken for a small Australian Shepherd.",
+      "historicalPurpose": "Herding livestock",
+      "originCountry": "United States",
+      "popularityRank": 68,
+      "categoryTags": [
+        "Herding"
+      ],
+      "thumbnail": "mini_american_shepherd_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Keeshond",
+      "coatColors": [
+        "Gray & Black",
+        "Silver & Black",
+        "Cream"
+      ],
+      "size": "Medium",
+      "weightRange": "35-45 lbs",
+      "heightRange": "17-18 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Friendly",
+        "Alert",
+        "Affectionate",
+        "Lively"
+      ],
+      "trainability": 4,
+      "funFact": "The Keeshond was once a symbol of Dutch patriotism.",
+      "historicalPurpose": "Barge watchdog",
+      "originCountry": "Netherlands",
+      "popularityRank": 69,
+      "categoryTags": [
+        "Non-Sporting"
+      ],
+      "thumbnail": "keeshond_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Papillon",
+      "coatColors": [
+        "White & Black",
+        "White & Brown",
+        "White & Red",
+        "Tri-color"
+      ],
+      "size": "Small",
+      "weightRange": "5-10 lbs",
+      "heightRange": "8-11 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Intelligent",
+        "Friendly",
+        "Alert",
+        "Playful"
+      ],
+      "trainability": 5,
+      "funFact": "Papillon means 'butterfly' in French, referring to its ear shape.",
+      "historicalPurpose": "Companion dog",
+      "originCountry": "France/Belgium",
+      "popularityRank": 70,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "papillon_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Lhasa Apso",
+      "coatColors": [
+        "Gold",
+        "Cream",
+        "Honey",
+        "Black",
+        "White",
+        "Slate"
+      ],
+      "size": "Small",
+      "weightRange": "12-18 lbs",
+      "heightRange": "10-11 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Independent",
+        "Alert",
+        "Loyal",
+        "Confident"
+      ],
+      "trainability": 3,
+      "funFact": "Originally bred as indoor watchdogs in Tibetan monasteries.",
+      "historicalPurpose": "Watchdog and companion",
+      "originCountry": "Tibet",
+      "popularityRank": 71,
+      "categoryTags": [
+        "Non-Sporting"
+      ],
+      "thumbnail": "lhasa_apso_thumb.jpg",
+      "coatCount": 6
+    },
+    {
+      "breed": "Dalmatian",
+      "coatColors": [
+        "White & Black",
+        "White & Liver"
+      ],
+      "size": "Medium/Large",
+      "weightRange": "45-70 lbs",
+      "heightRange": "19-24 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Energetic",
+        "Outgoing",
+        "Intelligent",
+        "Friendly"
+      ],
+      "trainability": 4,
+      "funFact": "Dalmatians were historically used as carriage dogs and firehouse mascots.",
+      "historicalPurpose": "Carriage escort and guard",
+      "originCountry": "Croatia",
+      "popularityRank": 72,
+      "categoryTags": [
+        "Non-Sporting"
+      ],
+      "thumbnail": "dalmatian_thumb.jpg",
+      "coatCount": 2
+    },
+    {
+      "breed": "American Staffordshire Terrier",
+      "coatColors": [
+        "Black",
+        "Blue",
+        "Brindle",
+        "Fawn",
+        "Red",
+        "White",
+        "Bi-color"
+      ],
+      "size": "Medium",
+      "weightRange": "40-70 lbs",
+      "heightRange": "17-19 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Confident",
+        "Courageous",
+        "Friendly",
+        "Loyal"
+      ],
+      "trainability": 4,
+      "funFact": "AmStaffs are known for their strength and affectionate nature toward family.",
+      "historicalPurpose": "Farm work and companionship",
+      "originCountry": "United States",
+      "popularityRank": 73,
+      "categoryTags": [
+        "Terrier"
+      ],
+      "thumbnail": "american_staffordshire_terrier_thumb.jpg",
+      "coatCount": 7
+    },
+    {
+      "breed": "Cocker Spaniel",
+      "coatColors": [
+        "Black",
+        "Buff",
+        "Chocolate",
+        "Red",
+        "Parti-color",
+        "Tri-color"
+      ],
+      "size": "Medium",
+      "weightRange": "20-30 lbs",
+      "heightRange": "13-15 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Gentle",
+        "Playful",
+        "Affectionate",
+        "Friendly"
+      ],
+      "trainability": 4,
+      "funFact": "Originally bred to hunt woodcock birds.",
+      "historicalPurpose": "Bird hunting",
+      "originCountry": "United Kingdom",
+      "popularityRank": 74,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "cocker_spaniel_thumb.jpg",
+      "coatCount": 6
+    },
+    {
+      "breed": "Bernese Mountain Dog",
+      "coatColors": [
+        "Tri-color (Black, Rust & White)"
+      ],
+      "size": "Large",
+      "weightRange": "70-115 lbs",
+      "heightRange": "23-27.5 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Gentle",
+        "Affectionate",
+        "Loyal",
+        "Calm"
+      ],
+      "trainability": 4,
+      "funFact": "Originally used as draft dogs pulling carts in Switzerland.",
+      "historicalPurpose": "Draft and farm work",
+      "originCountry": "Switzerland",
+      "popularityRank": 75,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "bernese_mountain_dog_thumb.jpg",
+      "coatCount": 1
+    },
+    {
+      "breed": "Pekingese",
+      "coatColors": [
+        "Gold",
+        "Red",
+        "Black",
+        "White",
+        "Cream",
+        "Sable"
+      ],
+      "size": "Small",
+      "weightRange": "7-14 lbs",
+      "heightRange": "6-9 inches",
+      "energyLevel": "Low/Medium",
+      "temperament": [
+        "Independent",
+        "Affectionate",
+        "Alert",
+        "Regal"
+      ],
+      "trainability": 3,
+      "funFact": "Pekingese were sacred companions of Chinese emperors.",
+      "historicalPurpose": "Companion dog",
+      "originCountry": "China",
+      "popularityRank": 76,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "pekingese_thumb.jpg",
+      "coatCount": 6
+    },
+    {
+      "breed": "Bloodhound",
+      "coatColors": [
+        "Black & Tan",
+        "Liver & Tan",
+        "Red"
+      ],
+      "size": "Large",
+      "weightRange": "80-110 lbs",
+      "heightRange": "23-27 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Gentle",
+        "Determined",
+        "Affectionate",
+        "Independent"
+      ],
+      "trainability": 3,
+      "funFact": "Bloodhounds have one of the most powerful scent-tracking abilities of any breed.",
+      "historicalPurpose": "Tracking and hunting",
+      "originCountry": "Belgium/France",
+      "popularityRank": 77,
+      "categoryTags": [
+        "Hound"
+      ],
+      "thumbnail": "bloodhound_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Collie",
+      "coatColors": [
+        "Sable & White",
+        "Tricolor",
+        "Blue Merle",
+        "White"
+      ],
+      "size": "Large",
+      "weightRange": "50-75 lbs",
+      "heightRange": "22-26 inches",
+      "energyLevel": "Medium/High",
+      "temperament": [
+        "Gentle",
+        "Loyal",
+        "Intelligent",
+        "Friendly"
+      ],
+      "trainability": 5,
+      "funFact": "The famous TV dog Lassie was a Rough Collie.",
+      "historicalPurpose": "Herding sheep",
+      "originCountry": "Scotland",
+      "popularityRank": 78,
+      "categoryTags": [
+        "Herding"
+      ],
+      "thumbnail": "collie_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Chow Chow",
+      "coatColors": [
+        "Red",
+        "Black",
+        "Blue",
+        "Cinnamon",
+        "Cream"
+      ],
+      "size": "Medium/Large",
+      "weightRange": "45-70 lbs",
+      "heightRange": "17-20 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Independent",
+        "Reserved",
+        "Loyal",
+        "Dignified"
+      ],
+      "trainability": 3,
+      "funFact": "Chow Chows are known for their blue-black tongue.",
+      "historicalPurpose": "Guarding and hunting",
+      "originCountry": "China",
+      "popularityRank": 79,
+      "categoryTags": [
+        "Non-Sporting"
+      ],
+      "thumbnail": "chow_chow_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Doberman Pinscher",
+      "coatColors": [
+        "Black & Rust",
+        "Red & Rust",
+        "Blue & Rust",
+        "Fawn & Rust"
+      ],
+      "size": "Large",
+      "weightRange": "60-100 lbs",
+      "heightRange": "24-28 inches",
+      "energyLevel": "Very High",
+      "temperament": [
+        "Alert",
+        "Loyal",
+        "Intelligent",
+        "Protective"
+      ],
+      "trainability": 5,
+      "funFact": "Dobermans were originally bred as personal protection dogs.",
+      "historicalPurpose": "Guarding",
+      "originCountry": "Germany",
+      "popularityRank": 80,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "doberman_pinscher_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Pug",
+      "coatColors": [
+        "Fawn",
+        "Black",
+        "Silver",
+        "Apricot"
+      ],
+      "size": "Small",
+      "weightRange": "14-18 lbs",
+      "heightRange": "10-13 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Charming",
+        "Playful",
+        "Affectionate",
+        "Mischievous"
+      ],
+      "trainability": 3,
+      "funFact": "Pugs were companions of Chinese emperors over 2,000 years ago.",
+      "historicalPurpose": "Companion dog",
+      "originCountry": "China",
+      "popularityRank": 81,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "pug_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Great Pyrenees",
+      "coatColors": [
+        "White",
+        "White with Badger Markings",
+        "White with Gray",
+        "White with Tan"
+      ],
+      "size": "Giant",
+      "weightRange": "85-160 lbs",
+      "heightRange": "25-32 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Gentle",
+        "Calm",
+        "Protective",
+        "Loyal"
+      ],
+      "trainability": 3,
+      "funFact": "Bred to guard livestock in the Pyrenees Mountains.",
+      "historicalPurpose": "Livestock guardian",
+      "originCountry": "France/Spain",
+      "popularityRank": 82,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "great_pyrenees_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Mastiff",
+      "coatColors": [
+        "Fawn",
+        "Apricot",
+        "Brindle"
+      ],
+      "size": "Giant",
+      "weightRange": "120-230 lbs",
+      "heightRange": "27-30 inches",
+      "energyLevel": "Low/Medium",
+      "temperament": [
+        "Dignified",
+        "Courageous",
+        "Loyal",
+        "Gentle"
+      ],
+      "trainability": 3,
+      "funFact": "One of the heaviest dog breeds.",
+      "historicalPurpose": "Guarding estates",
+      "originCountry": "England",
+      "popularityRank": 83,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "mastiff_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "St. Bernard",
+      "coatColors": [
+        "Red & White",
+        "Brindle & White",
+        "Brown & White"
+      ],
+      "size": "Giant",
+      "weightRange": "120-180 lbs",
+      "heightRange": "26-30 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Gentle",
+        "Friendly",
+        "Watchful",
+        "Patient"
+      ],
+      "trainability": 3,
+      "funFact": "Famous for alpine rescue work.",
+      "historicalPurpose": "Mountain rescue",
+      "originCountry": "Switzerland",
+      "popularityRank": 84,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "st_bernard_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Bullmastiff",
+      "coatColors": [
+        "Fawn",
+        "Red",
+        "Brindle"
+      ],
+      "size": "Large",
+      "weightRange": "100-130 lbs",
+      "heightRange": "24-27 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Protective",
+        "Loyal",
+        "Calm",
+        "Courageous"
+      ],
+      "trainability": 4,
+      "funFact": "Originally bred to guard estates from poachers.",
+      "historicalPurpose": "Guarding",
+      "originCountry": "England",
+      "popularityRank": 85,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "bullmastiff_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Australian Cattle Dog",
+      "coatColors": [
+        "Blue",
+        "Blue Mottled",
+        "Blue Speckled",
+        "Red Speckled"
+      ],
+      "size": "Medium",
+      "weightRange": "35-50 lbs",
+      "heightRange": "17-20 inches",
+      "energyLevel": "Very High",
+      "temperament": [
+        "Alert",
+        "Loyal",
+        "Energetic",
+        "Intelligent"
+      ],
+      "trainability": 5,
+      "funFact": "Also known as the Blue Heeler.",
+      "historicalPurpose": "Herding cattle",
+      "originCountry": "Australia",
+      "popularityRank": 86,
+      "categoryTags": [
+        "Herding"
+      ],
+      "thumbnail": "australian_cattle_dog_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Cocker Spaniel (American)",
+      "coatColors": [
+        "Black",
+        "Buff",
+        "Chocolate",
+        "Parti-color",
+        "Roan"
+      ],
+      "size": "Small/Medium",
+      "weightRange": "20-30 lbs",
+      "heightRange": "13-15 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Gentle",
+        "Affectionate",
+        "Playful",
+        "Sensitive"
+      ],
+      "trainability": 4,
+      "funFact": "One of the most popular breeds in the U.S. during the 1950s.",
+      "historicalPurpose": "Bird hunting",
+      "originCountry": "United States",
+      "popularityRank": 87,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "american_cocker_spaniel_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Old English Sheepdog",
+      "coatColors": [
+        "Gray & White",
+        "Blue & White"
+      ],
+      "size": "Large",
+      "weightRange": "60-100 lbs",
+      "heightRange": "20-24 inches",
+      "energyLevel": "Medium/High",
+      "temperament": [
+        "Gentle",
+        "Adaptable",
+        "Intelligent",
+        "Playful"
+      ],
+      "trainability": 4,
+      "funFact": "Famous for its shaggy coat covering its eyes.",
+      "historicalPurpose": "Herding cattle and sheep",
+      "originCountry": "England",
+      "popularityRank": 88,
+      "categoryTags": [
+        "Herding"
+      ],
+      "thumbnail": "old_english_sheepdog_thumb.jpg",
+      "coatCount": 2
+    },
+    {
+      "breed": "Akita (American)",
+      "coatColors": [
+        "White",
+        "Pinto",
+        "Brindle",
+        "Black",
+        "Red"
+      ],
+      "size": "Large",
+      "weightRange": "70-130 lbs",
+      "heightRange": "24-28 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Loyal",
+        "Courageous",
+        "Independent",
+        "Protective"
+      ],
+      "trainability": 3,
+      "funFact": "American Akitas are larger and heavier than Japanese Akitas.",
+      "historicalPurpose": "Guarding and big game hunting",
+      "originCountry": "United States",
+      "popularityRank": 89,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "american_akita_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Belgian Tervuren",
+      "coatColors": [
+        "Mahogany with Black Overlay"
+      ],
+      "size": "Medium/Large",
+      "weightRange": "45-75 lbs",
+      "heightRange": "22-26 inches",
+      "energyLevel": "Very High",
+      "temperament": [
+        "Intelligent",
+        "Alert",
+        "Energetic",
+        "Loyal"
+      ],
+      "trainability": 5,
+      "funFact": "One of four Belgian Shepherd varieties.",
+      "historicalPurpose": "Herding and protection",
+      "originCountry": "Belgium",
+      "popularityRank": 90,
+      "categoryTags": [
+        "Herding"
+      ],
+      "thumbnail": "belgian_tervuren_thumb.jpg",
+      "coatCount": 1
+    },
+    {
+      "breed": "Bearded Collie",
+      "coatColors": [
+        "Black",
+        "Blue",
+        "Brown",
+        "Fawn"
+      ],
+      "size": "Medium",
+      "weightRange": "45-55 lbs",
+      "heightRange": "20-22 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Bouncy",
+        "Friendly",
+        "Intelligent",
+        "Playful"
+      ],
+      "trainability": 4,
+      "funFact": "Recognizable by its long shaggy coat and beard.",
+      "historicalPurpose": "Herding livestock",
+      "originCountry": "Scotland",
+      "popularityRank": 91,
+      "categoryTags": [
+        "Herding"
+      ],
+      "thumbnail": "bearded_collie_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Chinese Crested",
+      "coatColors": [
+        "Black",
+        "White",
+        "Pink & Black",
+        "Spotted",
+        "Various combinations"
+      ],
+      "size": "Toy",
+      "weightRange": "8-12 lbs",
+      "heightRange": "11-13 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Affectionate",
+        "Lively",
+        "Alert",
+        "Sensitive"
+      ],
+      "trainability": 3,
+      "funFact": "Comes in hairless and powderpuff varieties.",
+      "historicalPurpose": "Companion and ratting on ships",
+      "originCountry": "China",
+      "popularityRank": 92,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "chinese_crested_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Cardigan Welsh Corgi",
+      "coatColors": [
+        "Red",
+        "Sable",
+        "Brindle",
+        "Blue Merle",
+        "Black & White"
+      ],
+      "size": "Small/Medium",
+      "weightRange": "25-38 lbs",
+      "heightRange": "10-13 inches",
+      "energyLevel": "Medium/High",
+      "temperament": [
+        "Affectionate",
+        "Alert",
+        "Intelligent",
+        "Loyal"
+      ],
+      "trainability": 4,
+      "funFact": "Has a long tail, unlike the Pembroke Welsh Corgi.",
+      "historicalPurpose": "Herding cattle",
+      "originCountry": "Wales",
+      "popularityRank": 93,
+      "categoryTags": [
+        "Herding"
+      ],
+      "thumbnail": "cardigan_welsh_corgi_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Borzoi",
+      "coatColors": [
+        "White",
+        "Black",
+        "Gray",
+        "Brindle",
+        "Golden"
+      ],
+      "size": "Large",
+      "weightRange": "60-105 lbs",
+      "heightRange": "26-32 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Gentle",
+        "Independent",
+        "Quiet",
+        "Loyal"
+      ],
+      "trainability": 3,
+      "funFact": "Also called the Russian Wolfhound.",
+      "historicalPurpose": "Hunting wolves",
+      "originCountry": "Russia",
+      "popularityRank": 94,
+      "categoryTags": [
+        "Hound"
+      ],
+      "thumbnail": "borzoi_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Flat-Coated Retriever",
+      "coatColors": [
+        "Black",
+        "Liver"
+      ],
+      "size": "Large",
+      "weightRange": "60-70 lbs",
+      "heightRange": "22-24 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Playful",
+        "Outgoing",
+        "Intelligent"
+      ],
+      "trainability": 5,
+      "funFact": "Nicknamed the 'Peter Pan' of dogs due to its happy personality.",
+      "historicalPurpose": "Retrieving game",
+      "originCountry": "United Kingdom",
+      "popularityRank": 95,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "flat_coated_retriever_thumb.jpg",
+      "coatCount": 2
+    },
+    {
+      "breed": "American Eskimo Dog",
+      "coatColors": [
+        "White",
+        "White & Biscuit"
+      ],
+      "size": "Small/Medium",
+      "weightRange": "6-35 lbs",
+      "heightRange": "9-19 inches",
+      "energyLevel": "Medium/High",
+      "temperament": [
+        "Friendly",
+        "Intelligent",
+        "Alert",
+        "Playful"
+      ],
+      "trainability": 4,
+      "funFact": "Despite the name, descended from German Spitz breeds.",
+      "historicalPurpose": "Companion and watchdog",
+      "originCountry": "United States",
+      "popularityRank": 96,
+      "categoryTags": [
+        "Non-Sporting"
+      ],
+      "thumbnail": "american_eskimo_dog_thumb.jpg",
+      "coatCount": 2
+    },
+    {
+      "breed": "Saluki",
+      "coatColors": [
+        "White",
+        "Cream",
+        "Golden",
+        "Red",
+        "Grizzle & Tan",
+        "Tricolor",
+        "Black & Tan"
+      ],
+      "size": "Medium/Large",
+      "weightRange": "40-65 lbs",
+      "heightRange": "23-28 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Gentle",
+        "Affectionate",
+        "Independent",
+        "Loyal"
+      ],
+      "trainability": 3,
+      "funFact": "One of the oldest known dog breeds, revered in ancient Egypt.",
+      "historicalPurpose": "Hunting gazelle",
+      "originCountry": "Middle East",
+      "popularityRank": 97,
+      "categoryTags": [
+        "Hound"
+      ],
+      "thumbnail": "saluki_thumb.jpg",
+      "coatCount": 7
+    },
+    {
+      "breed": "Irish Terrier",
+      "coatColors": [
+        "Red"
+      ],
+      "size": "Medium",
+      "weightRange": "25-27 lbs",
+      "heightRange": "18-20 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Lively",
+        "Affectionate",
+        "Alert",
+        "Courageous"
+      ],
+      "trainability": 4,
+      "funFact": "One of the oldest terrier breeds from Ireland.",
+      "historicalPurpose": "Hunting and guarding",
+      "originCountry": "Ireland",
+      "popularityRank": 98,
+      "categoryTags": [
+        "Terrier"
+      ],
+      "thumbnail": "irish_terrier_thumb.jpg",
+      "coatCount": 1
+    },
+    {
+      "breed": "German Pinscher",
+      "coatColors": [
+        "Black & Tan",
+        "Red",
+        "Chocolate & Tan"
+      ],
+      "size": "Medium",
+      "weightRange": "25-45 lbs",
+      "heightRange": "17-20 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Alert",
+        "Intelligent",
+        "Energetic",
+        "Loyal"
+      ],
+      "trainability": 5,
+      "funFact": "An ancestor of the Miniature Pinscher.",
+      "historicalPurpose": "Guarding and ratting",
+      "originCountry": "Germany",
+      "popularityRank": 99,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "german_pinscher_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Pointer (German Shorthaired)",
+      "coatColors": [
+        "Liver",
+        "Liver & White",
+        "Black & White",
+        "Liver Roan",
+        "Tri-color"
+      ],
+      "size": "Large",
+      "weightRange": "45-70 lbs",
+      "heightRange": "21-25 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Energetic",
+        "Intelligent",
+        "Loyal"
+      ],
+      "trainability": 5,
+      "funFact": "Excellent hunting dogs, pointing game birds for hunters.",
+      "historicalPurpose": "Bird hunting",
+      "originCountry": "Germany",
+      "popularityRank": 100,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "german_shorthaired_pointer_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Norwich Terrier",
+      "coatColors": [
+        "Red",
+        "Grizzle & Tan",
+        "Black & Tan",
+        "Wheaten"
+      ],
+      "size": "Small",
+      "weightRange": "11-12 lbs",
+      "heightRange": "9-10 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Alert",
+        "Plucky",
+        "Lively"
+      ],
+      "trainability": 4,
+      "funFact": "Bred to hunt rats in the United Kingdom.",
+      "historicalPurpose": "Vermin hunting",
+      "originCountry": "United Kingdom",
+      "popularityRank": 101,
+      "categoryTags": [
+        "Terrier"
+      ],
+      "thumbnail": "norwich_terrier_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Japanese Chin",
+      "coatColors": [
+        "Black & White",
+        "Red & White",
+        "Tricolor",
+        "Sesame & White"
+      ],
+      "size": "Toy",
+      "weightRange": "4-9 lbs",
+      "heightRange": "8-11 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Affectionate",
+        "Alert",
+        "Playful",
+        "Independent"
+      ],
+      "trainability": 3,
+      "funFact": "Historically a lapdog of Japanese nobility.",
+      "historicalPurpose": "Companion dog",
+      "originCountry": "Japan",
+      "popularityRank": 102,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "japanese_chin_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Lowchen",
+      "coatColors": [
+        "Blonde",
+        "White & Blonde",
+        "Gray & White",
+        "Chocolate"
+      ],
+      "size": "Small",
+      "weightRange": "9-18 lbs",
+      "heightRange": "12-14 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Playful",
+        "Affectionate",
+        "Alert",
+        "Friendly"
+      ],
+      "trainability": 4,
+      "funFact": "Also called the 'Little Lion Dog.'",
+      "historicalPurpose": "Companion dog",
+      "originCountry": "Germany",
+      "popularityRank": 103,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "lowchen_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Afghan Hound",
+      "coatColors": [
+        "Black",
+        "White",
+        "Cream",
+        "Red",
+        "Blue",
+        "Brindle",
+        "Various combinations"
+      ],
+      "size": "Large",
+      "weightRange": "50-60 lbs",
+      "heightRange": "24-29 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Independent",
+        "Aloof",
+        "Loyal",
+        "Elegant"
+      ],
+      "trainability": 3,
+      "funFact": "Known for its flowing silky coat and aristocratic appearance.",
+      "historicalPurpose": "Hunting large game",
+      "originCountry": "Afghanistan",
+      "popularityRank": 104,
+      "categoryTags": [
+        "Hound"
+      ],
+      "thumbnail": "afghan_hound_thumb.jpg",
+      "coatCount": 7
+    },
+    {
+      "breed": "Australian Terrier",
+      "coatColors": [
+        "Blue & Tan",
+        "Red",
+        "Sand & Tan"
+      ],
+      "size": "Small",
+      "weightRange": "14-16 lbs",
+      "heightRange": "10-11 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Affectionate",
+        "Alert",
+        "Lively",
+        "Intelligent"
+      ],
+      "trainability": 4,
+      "funFact": "One of the oldest terriers from Australia.",
+      "historicalPurpose": "Ratting and farm work",
+      "originCountry": "Australia",
+      "popularityRank": 105,
+      "categoryTags": [
+        "Terrier"
+      ],
+      "thumbnail": "australian_terrier_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Irish Water Spaniel",
+      "coatColors": [
+        "Liver"
+      ],
+      "size": "Large",
+      "weightRange": "45-65 lbs",
+      "heightRange": "21-24 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Intelligent",
+        "Energetic",
+        "Playful",
+        "Alert"
+      ],
+      "trainability": 4,
+      "funFact": "Has a distinctive curly coat and a ‘rat tail.’",
+      "historicalPurpose": "Water retrieving",
+      "originCountry": "Ireland",
+      "popularityRank": 106,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "irish_water_spaniel_thumb.jpg",
+      "coatCount": 1
+    },
+    {
+      "breed": "Sealyham Terrier",
+      "coatColors": [
+        "White",
+        "White & Lemon",
+        "White & Tan"
+      ],
+      "size": "Small",
+      "weightRange": "18-24 lbs",
+      "heightRange": "10-12 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Friendly",
+        "Alert",
+        "Playful",
+        "Loyal"
+      ],
+      "trainability": 4,
+      "funFact": "Developed in Wales in the 1800s for hunting foxes and badgers.",
+      "historicalPurpose": "Fox hunting",
+      "originCountry": "Wales",
+      "popularityRank": 107,
+      "categoryTags": [
+        "Terrier"
+      ],
+      "thumbnail": "sealyham_terrier_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Dandie Dinmont Terrier",
+      "coatColors": [
+        "Pepper",
+        "Mustard"
+      ],
+      "size": "Small",
+      "weightRange": "18-24 lbs",
+      "heightRange": "8-11 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Friendly",
+        "Clever",
+        "Loyal",
+        "Playful"
+      ],
+      "trainability": 4,
+      "funFact": "Named after a character in Sir Walter Scott’s novel.",
+      "historicalPurpose": "Hunting otters and badgers",
+      "originCountry": "Scotland",
+      "popularityRank": 108,
+      "categoryTags": [
+        "Terrier"
+      ],
+      "thumbnail": "dandie_dinmont_terrier_thumb.jpg",
+      "coatCount": 2
+    },
+    {
+      "breed": "Briard",
+      "coatColors": [
+        "Black",
+        "Gray",
+        "Fawn",
+        "Wheaten"
+      ],
+      "size": "Large",
+      "weightRange": "55-100 lbs",
+      "heightRange": "22-27 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Intelligent",
+        "Loyal",
+        "Gentle",
+        "Protective"
+      ],
+      "trainability": 4,
+      "funFact": "French herding dog known for its long wavy coat.",
+      "historicalPurpose": "Herding sheep",
+      "originCountry": "France",
+      "popularityRank": 109,
+      "categoryTags": [
+        "Herding"
+      ],
+      "thumbnail": "briard_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Spinone Italiano",
+      "coatColors": [
+        "White & Orange",
+        "White & Brown",
+        "White & Roan"
+      ],
+      "size": "Large",
+      "weightRange": "55-85 lbs",
+      "heightRange": "23-27 inches",
+      "energyLevel": "Medium/High",
+      "temperament": [
+        "Gentle",
+        "Friendly",
+        "Patient",
+        "Intelligent"
+      ],
+      "trainability": 4,
+      "funFact": "Italian pointing breed for hunting in water and rough terrain.",
+      "historicalPurpose": "Hunting birds and small game",
+      "originCountry": "Italy",
+      "popularityRank": 110,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "spinone_italiano_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Japanese Spitz",
+      "coatColors": [
+        "White"
+      ],
+      "size": "Small/Medium",
+      "weightRange": "11-20 lbs",
+      "heightRange": "12-15 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Friendly",
+        "Playful",
+        "Alert",
+        "Affectionate"
+      ],
+      "trainability": 4,
+      "funFact": "Small companion breed resembling the Samoyed.",
+      "historicalPurpose": "Companion dog",
+      "originCountry": "Japan",
+      "popularityRank": 111,
+      "categoryTags": [
+        "Non-Sporting"
+      ],
+      "thumbnail": "japanese_spitz_thumb.jpg",
+      "coatCount": 1
+    },
+    {
+      "breed": "Bolognese",
+      "coatColors": [
+        "White"
+      ],
+      "size": "Toy",
+      "weightRange": "5-9 lbs",
+      "heightRange": "10-12 inches",
+      "energyLevel": "Low/Medium",
+      "temperament": [
+        "Gentle",
+        "Affectionate",
+        "Playful",
+        "Calm"
+      ],
+      "trainability": 3,
+      "funFact": "Rare Italian companion dog from Bologna.",
+      "historicalPurpose": "Companion dog",
+      "originCountry": "Italy",
+      "popularityRank": 112,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "bolognese_thumb.jpg",
+      "coatCount": 1
+    },
+    {
+      "breed": "Clumber Spaniel",
+      "coatColors": [
+        "White",
+        "White & Orange",
+        "White & Lemon"
+      ],
+      "size": "Large",
+      "weightRange": "55-85 lbs",
+      "heightRange": "17-20 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Gentle",
+        "Loyal",
+        "Affectionate",
+        "Calm"
+      ],
+      "trainability": 4,
+      "funFact": "Heaviest of the spaniel breeds.",
+      "historicalPurpose": "Flushing game",
+      "originCountry": "United Kingdom",
+      "popularityRank": 113,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "clumber_spaniel_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "American Water Spaniel",
+      "coatColors": [
+        "Brown",
+        "Liver",
+        "Chocolate"
+      ],
+      "size": "Medium",
+      "weightRange": "25-45 lbs",
+      "heightRange": "15-18 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Intelligent",
+        "Energetic",
+        "Loyal"
+      ],
+      "trainability": 4,
+      "funFact": "Developed in Wisconsin as a versatile hunting dog.",
+      "historicalPurpose": "Hunting and retrieving",
+      "originCountry": "United States",
+      "popularityRank": 114,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "american_water_spaniel_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Glen of Imaal Terrier",
+      "coatColors": [
+        "Wheaten",
+        "Brindle",
+        "Blue"
+      ],
+      "size": "Small",
+      "weightRange": "32-40 lbs",
+      "heightRange": "12-14 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Friendly",
+        "Loyal",
+        "Brave",
+        "Independent"
+      ],
+      "trainability": 3,
+      "funFact": "Rare Irish terrier breed known for courage and loyalty.",
+      "historicalPurpose": "Fox hunting and vermin control",
+      "originCountry": "Ireland",
+      "popularityRank": 115,
+      "categoryTags": [
+        "Terrier"
+      ],
+      "thumbnail": "glen_of_imaal_terrier_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Spanish Water Dog",
+      "coatColors": [
+        "Black",
+        "Brown",
+        "White",
+        "Cream"
+      ],
+      "size": "Medium",
+      "weightRange": "35-50 lbs",
+      "heightRange": "15-20 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Intelligent",
+        "Loyal",
+        "Energetic",
+        "Alert"
+      ],
+      "trainability": 5,
+      "funFact": "Curly coat often used for water work and herding.",
+      "historicalPurpose": "Herding, water retrieving, guard dog",
+      "originCountry": "Spain",
+      "popularityRank": 116,
+      "categoryTags": [
+        "Herding",
+        "Sporting"
+      ],
+      "thumbnail": "spanish_water_dog_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Wire Fox Terrier",
+      "coatColors": [
+        "White with Black",
+        "White with Tan",
+        "White with Black & Tan"
+      ],
+      "size": "Small",
+      "weightRange": "15-19 lbs",
+      "heightRange": "15.5 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Energetic",
+        "Alert",
+        "Intelligent",
+        "Friendly"
+      ],
+      "trainability": 4,
+      "funFact": "Famous for appearances in dog shows, especially Crufts.",
+      "historicalPurpose": "Fox hunting",
+      "originCountry": "United Kingdom",
+      "popularityRank": 117,
+      "categoryTags": [
+        "Terrier"
+      ],
+      "thumbnail": "wire_fox_terrier_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Coton de Tulear",
+      "coatColors": [
+        "White",
+        "White & Apricot",
+        "White & Black"
+      ],
+      "size": "Small",
+      "weightRange": "8-15 lbs",
+      "heightRange": "9-11 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Affectionate",
+        "Playful",
+        "Friendly",
+        "Intelligent"
+      ],
+      "trainability": 4,
+      "funFact": "Named for its cotton-like coat, a rare Malagasy breed.",
+      "historicalPurpose": "Companion dog",
+      "originCountry": "Madagascar",
+      "popularityRank": 118,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "coton_de_tulear_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Sussex Spaniel",
+      "coatColors": [
+        "Golden Liver"
+      ],
+      "size": "Medium",
+      "weightRange": "35-45 lbs",
+      "heightRange": "13-15 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Loyal",
+        "Gentle",
+        "Affectionate",
+        "Friendly"
+      ],
+      "trainability": 3,
+      "funFact": "Distinct low-set body and rich golden coat.",
+      "historicalPurpose": "Flushing game",
+      "originCountry": "United Kingdom",
+      "popularityRank": 119,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "sussex_spaniel_thumb.jpg",
+      "coatCount": 1
+    },
+    {
+      "breed": "Dogue de Bordeaux",
+      "coatColors": [
+        "Red",
+        "Fawn",
+        "Mahogany"
+      ],
+      "size": "Giant",
+      "weightRange": "99-110 lbs",
+      "heightRange": "23-27 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Loyal",
+        "Protective",
+        "Calm",
+        "Affectionate"
+      ],
+      "trainability": 3,
+      "funFact": "French Mastiff known for its powerful build and gentle nature with family.",
+      "historicalPurpose": "Guard dog and war dog",
+      "originCountry": "France",
+      "popularityRank": 120,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "dogue_de_bordeaux_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Spinone",
+      "coatColors": [
+        "White & Orange",
+        "White & Brown",
+        "White & Roan"
+      ],
+      "size": "Large",
+      "weightRange": "55-85 lbs",
+      "heightRange": "23-27 inches",
+      "energyLevel": "Medium/High",
+      "temperament": [
+        "Gentle",
+        "Friendly",
+        "Patient",
+        "Intelligent"
+      ],
+      "trainability": 4,
+      "funFact": "Italian hunting dog famous for its versatility in rough terrain.",
+      "historicalPurpose": "Hunting",
+      "originCountry": "Italy",
+      "popularityRank": 121,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "spinone_thumb.jpg",
+      "coatCount": 3
+    },
+    {
+      "breed": "Basset Fauve de Bretagne",
+      "coatColors": [
+        "Fawn",
+        "Red"
+      ],
+      "size": "Small/Medium",
+      "weightRange": "25-40 lbs",
+      "heightRange": "13-15 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Friendly",
+        "Energetic",
+        "Lively",
+        "Alert"
+      ],
+      "trainability": 4,
+      "funFact": "French scent hound, agile despite its short legs.",
+      "historicalPurpose": "Hunting small game",
+      "originCountry": "France",
+      "popularityRank": 122,
+      "categoryTags": [
+        "Hound"
+      ],
+      "thumbnail": "basset_fauve_de_bretagne_thumb.jpg",
+      "coatCount": 2
+    },
+    {
+      "breed": "Dogo Argentino",
+      "coatColors": [
+        "White",
+        "White with Black Patch"
+      ],
+      "size": "Large",
+      "weightRange": "80-100 lbs",
+      "heightRange": "24-27 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Courageous",
+        "Loyal",
+        "Protective",
+        "Gentle with family"
+      ],
+      "trainability": 4,
+      "funFact": "Argentinian breed created for big-game hunting, especially boar.",
+      "historicalPurpose": "Big-game hunting",
+      "originCountry": "Argentina",
+      "popularityRank": 123,
+      "categoryTags": [
+        "Working"
+      ],
+      "thumbnail": "dogo_argentino_thumb.jpg",
+      "coatCount": 2
+    },
+    {
+      "breed": "Kerry Blue Terrier",
+      "coatColors": [
+        "Blue",
+        "Blue-Gray"
+      ],
+      "size": "Medium",
+      "weightRange": "33-40 lbs",
+      "heightRange": "17-19 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Alert",
+        "Intelligent",
+        "Friendly",
+        "Loyal"
+      ],
+      "trainability": 4,
+      "funFact": "Famous for its soft, curly blue coat.",
+      "historicalPurpose": "Hunting, farm work, and ratting",
+      "originCountry": "Ireland",
+      "popularityRank": 124,
+      "categoryTags": [
+        "Terrier"
+      ],
+      "thumbnail": "kerry_blue_terrier_thumb.jpg",
+      "coatCount": 2
+    },
+    {
+      "breed": "Puli",
+      "coatColors": [
+        "Black",
+        "White",
+        "Gray",
+        "Fawn"
+      ],
+      "size": "Medium",
+      "weightRange": "25-35 lbs",
+      "heightRange": "16-17 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Energetic",
+        "Loyal",
+        "Intelligent",
+        "Alert"
+      ],
+      "trainability": 5,
+      "funFact": "Hungarian herding dog famous for its corded, mop-like coat.",
+      "historicalPurpose": "Herding sheep",
+      "originCountry": "Hungary",
+      "popularityRank": 125,
+      "categoryTags": [
+        "Herding"
+      ],
+      "thumbnail": "puli_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Otterhound",
+      "coatColors": [
+        "Shaggy Black",
+        "Shaggy Wheaten",
+        "Shaggy Gray",
+        "Shaggy Brindle"
+      ],
+      "size": "Large",
+      "weightRange": "80-115 lbs",
+      "heightRange": "24-27 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Loyal",
+        "Intelligent",
+        "Gentle"
+      ],
+      "trainability": 3,
+      "funFact": "Rare British scent hound bred to hunt otters.",
+      "historicalPurpose": "Otter hunting",
+      "originCountry": "United Kingdom",
+      "popularityRank": 126,
+      "categoryTags": [
+        "Hound"
+      ],
+      "thumbnail": "otterhound_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Brussels Griffon",
+      "coatColors": [
+        "Red",
+        "Belgian Black & Tan",
+        "Rough Coat",
+        "Smooth Coat"
+      ],
+      "size": "Toy",
+      "weightRange": "8-12 lbs",
+      "heightRange": "7-10 inches",
+      "energyLevel": "Medium",
+      "temperament": [
+        "Affectionate",
+        "Intelligent",
+        "Alert",
+        "Curious"
+      ],
+      "trainability": 4,
+      "funFact": "Famous for its expressive, almost human-like face.",
+      "historicalPurpose": "Companion dog",
+      "originCountry": "Belgium",
+      "popularityRank": 127,
+      "categoryTags": [
+        "Toy"
+      ],
+      "thumbnail": "brussels_griffon_thumb.jpg",
+      "coatCount": 4
+    },
+    {
+      "breed": "Barbet",
+      "coatColors": [
+        "Black",
+        "Brown",
+        "Gray",
+        "Fawn",
+        "Various combinations"
+      ],
+      "size": "Medium/Large",
+      "weightRange": "40-65 lbs",
+      "heightRange": "21-25 inches",
+      "energyLevel": "Medium/High",
+      "temperament": [
+        "Friendly",
+        "Intelligent",
+        "Affectionate",
+        "Energetic"
+      ],
+      "trainability": 4,
+      "funFact": "French water dog with a curly coat and webbed feet.",
+      "historicalPurpose": "Water retrieving and hunting",
+      "originCountry": "France",
+      "popularityRank": 128,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "barbet_thumb.jpg",
+      "coatCount": 5
+    },
+    {
+      "breed": "Dachshund (Standard and Miniature)",
+      "coatColors": [
+        "Red",
+        "Black & Tan",
+        "Chocolate & Tan",
+        "Dapple",
+        "Cream",
+        "Blue & Tan",
+        "Wild Boar"
+      ],
+      "size": "Small/Medium",
+      "weightRange": "11-32 lbs",
+      "heightRange": "5-9 inches (Mini), 8-9 inches (Standard)",
+      "energyLevel": "Medium/High",
+      "temperament": [
+        "Clever",
+        "Stubborn",
+        "Playful",
+        "Brave"
+      ],
+      "trainability": 3,
+      "funFact": "Originally bred to hunt badgers underground.",
+      "historicalPurpose": "Hunting badgers and small game",
+      "originCountry": "Germany",
+      "popularityRank": 129,
+      "categoryTags": [
+        "Hound"
+      ],
+      "thumbnail": "dachshund_thumb.jpg",
+      "coatCount": 7
+    },
+    {
+      "breed": "Kooikerhondje",
+      "coatColors": [
+        "Red & White"
+      ],
+      "size": "Small/Medium",
+      "weightRange": "20-30 lbs",
+      "heightRange": "14-17 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Alert",
+        "Intelligent",
+        "Playful"
+      ],
+      "trainability": 4,
+      "funFact": "Dutch duck hunting dog with a distinctive white-tipped tail.",
+      "historicalPurpose": "Duck decoying and hunting",
+      "originCountry": "Netherlands",
+      "popularityRank": 130,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "kooikerhondje_thumb.jpg",
+      "coatCount": 1
+    },
+    {
+      "breed": "Schapendoes",
+      "coatColors": [
+        "Gray",
+        "Black",
+        "White",
+        "Various combinations"
+      ],
+      "size": "Medium",
+      "weightRange": "25-35 lbs",
+      "heightRange": "17-21 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Friendly",
+        "Energetic",
+        "Intelligent",
+        "Affectionate"
+      ],
+      "trainability": 4,
+      "funFact": "Dutch sheepdog known for its shaggy coat and agility.",
+      "historicalPurpose": "Herding sheep",
+      "originCountry": "Netherlands",
+      "popularityRank": 131,
+      "categoryTags": [
+        "Herding"
+      ],
+      "thumbnail": "schapendoes_thumb.jpg",
+      "coatCount": 4
+    }
+  ]
+}

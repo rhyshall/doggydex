@@ -1,0 +1,162 @@
+import { StyleSheet } from 'react-native';
+
+export const quizStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F7FBFF',
+    paddingHorizontal: 14,
+    paddingTop: 14,
+    paddingBottom: 12,
+    gap: 10,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 2,
+  },
+  title: {
+    lineHeight: 30,
+    flexShrink: 1,
+  },
+  scoreText: {
+    fontSize: 14,
+    lineHeight: 20,
+    opacity: 0.9,
+  },
+  prompt: {
+    fontSize: 15,
+    lineHeight: 22,
+    textAlign: 'center',
+    marginBottom: 2,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    justifyContent: 'space-between',
+    marginTop: 2,
+  },
+  card: {
+    width: '48.3%',
+    borderRadius: 12,
+    overflow: 'hidden',
+    alignItems: 'center',
+    paddingBottom: 8,
+    borderWidth: 1,
+    borderColor: '#687076',
+  },
+  image: {
+    width: '100%',
+    height: 132,
+  },
+  cardLabel: {
+    fontSize: 12,
+    lineHeight: 16,
+    paddingTop: 6,
+    paddingHorizontal: 4,
+    textAlign: 'center',
+  },
+  correct: {
+    borderWidth: 3,
+    borderColor: 'green',
+  },
+  wrong: {
+    borderWidth: 3,
+    borderColor: 'red',
+  },
+  controls: {
+    gap: 8,
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  resultText: {
+    fontSize: 15,
+    lineHeight: 22,
+    textAlign: 'center',
+  },
+  unlockText: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: 'green',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  unlockBanner: {
+    width: '100%',
+    maxWidth: 320,
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: '#E9FBEA',
+    borderWidth: 1,
+    borderColor: '#80C783',
+    gap: 2,
+  },
+  unlockTitle: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '700',
+    textAlign: 'center',
+    color: '#1F7A2E',
+  },
+  badgeBanner: {
+    width: '100%',
+    maxWidth: 320,
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: '#FFF7DD',
+    borderWidth: 1,
+    borderColor: '#E3C15A',
+  },
+  badgeText: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '700',
+    textAlign: 'center',
+    color: '#8A6A00',
+  },
+  nextButton: {
+    width: '100%',
+    maxWidth: 300,
+    alignItems: 'center',
+  },
+  buttonPressed: {
+    transform: [{ scale: 0.98 }],
+  },
+  nextButtonHover: {
+    backgroundColor: '#F77777',
+  },
+  nextButtonLabel: {
+    fontWeight: '600',
+    textAlign: 'center',
+    width: '100%',
+  },
+  backLink: {
+    marginTop: 2,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  backLinkHover: {
+    backgroundColor: '#EAF6FB',
+  },
+  backLinkText: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '600',
+    color: '#0A7EA4',
+  },
+  backLinkTextHover: {
+    color: '#086283',
+  },
+  hint: {
+    fontSize: 14,
+    lineHeight: 20,
+    opacity: 0.8,
+    textAlign: 'center',
+    marginTop: 4,
+  },
+});
