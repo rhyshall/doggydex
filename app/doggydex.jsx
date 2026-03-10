@@ -2,27 +2,24 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { auth } from '@/lib/firebase-services';
 import { loadUserProgress, saveUserProgress } from '@/lib/progress-store';
-import { commonStyles } from '@/styles/common';
+import { mapVariantsWithStorageUris, toColorKey } from '@/lib/storage-coat-variants';
+import { getUserProfileUsername, hasUsername, upsertUserProfile } from '@/lib/user-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Google from 'expo-auth-session/providers/google';
 import { Image } from 'expo-image';
-import { Link } from 'expo-router';
-import * as WebBrowser from 'expo-web-browser';
-import {
-    GoogleAuthProvider,
-    createUserWithEmailAndPassword,
-    onAuthStateChanged,
-    signInWithCredential,
-    signInWithEmailAndPassword,
-    signInWithPopup,
-    signOut,
-} from 'firebase/auth';
-import { useCallback, useEffect, useState } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Link, useRouter } from 'expo-router';
+import { onAuthStateChanged } from 'firebase/auth';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import dogBreedsData from '../data/dog-breeds.json';
 
 const BREED_BADGES_KEY = 'breedBadges';
-
-WebBrowser.maybeCompleteAuthSession();
+const PAW_FOCUS_COLOR = '#FF8C66';
+const APP_FONT_FAMILY = Platform.select({
+  web: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  ios: 'System',
+  android: 'sans-serif',
+  default: undefined,
+});
 
 const ALL_DOGS = [
   { id: 'labrador-yellow', breed: 'Labrador Retriever', coat: 'Yellow', uri: 'https://images.dog.ceo/breeds/labrador/n02099712_5640.jpg' },
@@ -35,28 +32,27 @@ const ALL_DOGS = [
   { id: 'golden-dark', breed: 'Golden Retriever', coat: 'Dark Golden', uri: 'https://images.dog.ceo/breeds/retriever/golden/n02099601_5159.jpg' },
 ];
 
+const BREED_SECTIONS = dogBreedsData.breeds.map((breedData) => ({
+  breed: breedData.breed,
+  coats: Array.isArray(breedData.coatColors) && breedData.coatColors.length
+    ? breedData.coatColors
+    : Array.from({ length: Math.max(0, breedData.coatCount ?? 0) }, (_, index) => `Coat ${index + 1}`),
+}));
+
+const TOTAL_COATS = BREED_SECTIONS.reduce(
+  (sum, section) => sum + section.coats.length,
+  0
+);
+
 export default function DoggyDexScreen() {
+  const router = useRouter();
   const [collection, setCollection] = useState([]);
   const [badges, setBadges] = useState([]);
+  const [displayDogs, setDisplayDogs] = useState(ALL_DOGS);
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [checkedAuth, setCheckedAuth] = useState(false);
-  const [signInError, setSignInError] = useState(null);
   const [syncNotice, setSyncNotice] = useState(null);
   const [lastSyncedAt, setLastSyncedAt] = useState(null);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isAuthPending, setIsAuthPending] = useState(false);
-
-  const [request, , promptAsync] = Google.useAuthRequest({
-    webClientId: process.env.WEB_CLIENT_ID,
-    iosClientId: process.env.IOS_CLIENT_ID,
-    androidClientId: process.env.ANDROID_CLIENT_ID,
-    expoClientId: process.env.EXPO_CLIENT_ID,
-    selectAccount: true,
-    extraParams: {
-      prompt: 'select_account',
-    },
-  });
 
   const loadCollection = useCallback(async () => {
     try {
@@ -144,6 +140,27 @@ export default function DoggyDexScreen() {
         return;
       }
 
+      try {
+        await upsertUserProfile(user);
+      } catch (profileError) {
+        console.warn('Failed to sync user profile', profileError);
+      }
+
+      try {
+        const storedUsername = await getUserProfileUsername(user.uid);
+
+        if (!hasUsername(storedUsername)) {
+          router.replace('/username-setup');
+          setCheckedAuth(true);
+          return;
+        }
+      } catch (usernameCheckError) {
+        console.warn('Failed to check username requirement', usernameCheckError);
+        router.replace('/username-setup');
+        setCheckedAuth(true);
+        return;
+      }
+
       const localCollection = await loadCollection();
       const localBadges = await loadBadges();
       await loadRemoteProgress(user.uid, localCollection, localBadges);
@@ -151,96 +168,40 @@ export default function DoggyDexScreen() {
     });
 
     return unsubscribe;
-  }, [loadBadges, loadCollection, loadRemoteProgress]);
+  }, [loadBadges, loadCollection, loadRemoteProgress, router]);
 
-  async function handleGoogleSignIn() {
-    setSignInError(null);
-    setIsAuthPending(true);
+  useEffect(() => {
+    let isCancelled = false;
 
-    try {
-      if (Platform.OS === 'web') {
-        const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
+    async function loadStorageDogVariants() {
+      const mappedVariants = await mapVariantsWithStorageUris(ALL_DOGS);
+
+      if (isCancelled) {
         return;
       }
 
-      const result = await promptAsync();
-
-      if (!result || result.type !== 'success' || !result.authentication) {
-        setSignInError('Sign-in was canceled. Please try again.');
-        return;
-      }
-
-      const { idToken, accessToken } = result.authentication;
-
-      if (!idToken && !accessToken) {
-        setSignInError('Google sign-in token was not returned. Please try again.');
-        return;
-      }
-
-      const credential = GoogleAuthProvider.credential(idToken ?? null, accessToken ?? null);
-      await signInWithCredential(auth, credential);
-    } catch (e) {
-      console.warn('Failed to sign in with Google', e);
-      setSignInError('Could not sign in with Google. Please try again.');
-    } finally {
-      setIsAuthPending(false);
-    }
-  }
-
-  async function handleEmailSignIn() {
-    setSignInError(null);
-    const normalizedEmail = email.trim();
-
-    if (!normalizedEmail || !password) {
-      setSignInError('Enter both email and password.');
-      return;
+      setDisplayDogs(mappedVariants);
     }
 
-    setIsAuthPending(true);
+    loadStorageDogVariants().catch((error) => {
+      console.warn('Failed to load DoggyDex coat images from Firebase Storage', error);
+    });
 
-    try {
-      await signInWithEmailAndPassword(auth, normalizedEmail, password);
-    } catch (e) {
-      console.warn('Failed email sign-in', e);
-      setSignInError('Email sign-in failed. Check credentials and try again.');
-    } finally {
-      setIsAuthPending(false);
-    }
-  }
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
-  async function handleCreateAccount() {
-    setSignInError(null);
-    const normalizedEmail = email.trim();
+  const collected = displayDogs.filter((dog) => collection.includes(dog.id));
+  const dogByBreedColorKey = useMemo(() => {
+    const mapping = new Map();
 
-    if (!normalizedEmail || !password) {
-      setSignInError('Enter both email and password.');
-      return;
-    }
+    displayDogs.forEach((dog) => {
+      mapping.set(`${dog.breed}::${toColorKey(dog.coat)}`, dog);
+    });
 
-    setIsAuthPending(true);
-
-    try {
-      await createUserWithEmailAndPassword(auth, normalizedEmail, password);
-    } catch (e) {
-      console.warn('Failed account creation', e);
-      setSignInError('Could not create account. Use a valid email and 6+ char password.');
-    } finally {
-      setIsAuthPending(false);
-    }
-  }
-
-  async function handleSignOut() {
-    try {
-      await signOut(auth);
-    } catch (e) {
-      console.warn('Failed to sign out', e);
-    }
-  }
-
-  const collected = ALL_DOGS.filter((dog) => collection.includes(dog.id));
-  const locked = ALL_DOGS.filter((dog) => !collection.includes(dog.id));
-  const totalBreeds = new Set(ALL_DOGS.map((dog) => dog.breed)).size;
+    return mapping;
+  }, [displayDogs]);
   const lastSyncedLabel = lastSyncedAt ? `Last synced: ${lastSyncedAt.toLocaleString()}` : null;
 
   if (!checkedAuth) {
@@ -255,91 +216,46 @@ export default function DoggyDexScreen() {
 
   if (!isSignedIn) {
     return (
-      <ThemedView style={styles.container}>
-        <View style={styles.gateContainer}>
-          <Image source={require('../img/coat_stat_icon.png')} style={styles.gateIcon} contentFit="contain" />
-          <View style={styles.titleWrap}>
-            <View style={styles.titleBalanceSpacer} />
-            <ThemedText type="title" style={styles.titleText}>DoggyDex</ThemedText>
-            <View style={styles.titlePawCluster}>
-              <ThemedText style={styles.titlePawBg}>🐾</ThemedText>
-            </View>
-          </View>
-          <ThemedText style={styles.gateText}>Sign in to view your DoggyDex.</ThemedText>
-
-          <TextInput
-            value={email}
-            onChangeText={setEmail}
-            placeholder="Email"
-            autoCapitalize="none"
-            keyboardType="email-address"
-            style={styles.input}
-          />
-          <TextInput
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Password"
-            secureTextEntry
-            style={styles.input}
-          />
-
-          <Pressable
-            style={({ hovered, pressed }) => [
-              commonStyles.playButton,
-              styles.emailButton,
-              (hovered || pressed) && styles.emailButtonHover,
-              pressed && styles.buttonPressed,
-            ]}
-            disabled={isAuthPending}
-            onPress={handleEmailSignIn}>
-            <ThemedText type="subtitle" style={styles.buttonLabel}>Sign in with Email</ThemedText>
-          </Pressable>
-
-          <Pressable
-            style={({ hovered, pressed }) => [
-              commonStyles.playButton,
-              styles.createAccountButton,
-              (hovered || pressed) && styles.createAccountButtonHover,
-              pressed && styles.buttonPressed,
-            ]}
-            disabled={isAuthPending}
-            onPress={handleCreateAccount}>
-            <ThemedText type="subtitle" style={styles.buttonLabel}>Create account</ThemedText>
-          </Pressable>
-
-          <Pressable
-            style={({ hovered, pressed }) => [
-              commonStyles.playButton,
-              styles.signInButton,
-              (hovered || pressed) && styles.signInButtonHover,
-              pressed && styles.buttonPressed,
-            ]}
-            disabled={isAuthPending || (Platform.OS !== 'web' && !request)}
-            onPress={handleGoogleSignIn}>
-            <ThemedText type="subtitle" style={[styles.buttonLabel, styles.lightButtonText]}>
-              Sign in with Google
-            </ThemedText>
-          </Pressable>
-
-          {signInError ? <ThemedText style={styles.signInError}>{signInError}</ThemedText> : null}
-
-          <Link href="/" asChild>
+      <ThemedView style={[styles.container, styles.chooserPageBackground]}>
+        <View style={styles.chooserContainer}>
+          <ThemedText style={styles.chooserSubtitle}>Guess breeds, unlock coats, build your collection!</ThemedText>
+          <View style={styles.chooserCards}>
             <Pressable
               style={({ hovered, pressed }) => [
-                styles.backLink,
-                (hovered || pressed) && styles.backLinkHover,
-              ]}>
+                styles.chooserCard,
+                (hovered || pressed) && styles.chooserCardHover,
+                pressed && styles.buttonPressed,
+              ]}
+              onPress={() => router.push('/signup')}>
               {({ hovered, pressed }) => (
-                <ThemedText
-                  style={[
-                    styles.backLinkText,
-                    (hovered || pressed) && styles.backLinkTextHover,
-                  ]}>
-                  ← Back to Home
-                </ThemedText>
+                <>
+                  <ThemedText style={styles.chooserIcon}>🆕</ThemedText>
+                  <View style={styles.chooserCardTextWrap}>
+                    <ThemedText style={[styles.chooserCardTitle, (hovered || pressed) && styles.chooserCardTitleHover]}>Create an Account</ThemedText>
+                    <ThemedText style={styles.chooserCardBody}>Save progress and unlock breeds</ThemedText>
+                  </View>
+                </>
               )}
             </Pressable>
-          </Link>
+
+            <Pressable
+              style={({ hovered, pressed }) => [
+                styles.chooserCard,
+                (hovered || pressed) && styles.chooserCardHover,
+                pressed && styles.buttonPressed,
+              ]}
+              onPress={() => router.push('/login')}>
+              {({ hovered, pressed }) => (
+                <>
+                  <ThemedText style={styles.chooserIcon}>🔑</ThemedText>
+                  <View style={styles.chooserCardTextWrap}>
+                    <ThemedText style={[styles.chooserCardTitle, (hovered || pressed) && styles.chooserCardTitleHover]}>Sign in</ThemedText>
+                    <ThemedText style={styles.chooserCardBody}>Continue your journey</ThemedText>
+                  </View>
+                </>
+              )}
+            </Pressable>
+          </View>
         </View>
       </ThemedView>
     );
@@ -347,84 +263,75 @@ export default function DoggyDexScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.titleRow}>
-          <Image source={require('../img/coat_stat_icon.png')} style={styles.headerIcon} contentFit="contain" />
-          <View style={styles.titleWrap}>
-            <View style={styles.titleBalanceSpacer} />
-            <ThemedText type="title" style={styles.titleText}>DoggyDex</ThemedText>
-            <View style={styles.titlePawCluster}>
-              <ThemedText style={styles.titlePawBg}>🐾</ThemedText>
-            </View>
-          </View>
-        </View>
-        <View style={styles.headerStats}>
-          <ThemedText style={styles.countText}>
-            {collected.length} / {ALL_DOGS.length} collected
-          </ThemedText>
-          <ThemedText style={styles.badgeCountText}>⭐ {badges.length} / {totalBreeds} breed badges</ThemedText>
-          <Pressable onPress={handleSignOut} style={({ hovered, pressed }) => [(hovered || pressed) && styles.signOutLinkHover, pressed && styles.buttonPressed]}>
-            <ThemedText style={styles.signOutLink}>Sign out</ThemedText>
-          </Pressable>
-        </View>
-      </View>
-      {lastSyncedLabel ? <ThemedText style={styles.syncMeta}>{lastSyncedLabel}</ThemedText> : null}
-      {syncNotice ? <ThemedText style={styles.syncNotice}>{syncNotice}</ThemedText> : null}
-
-      <ScrollView style={styles.scroll}>
-        <ThemedText type="subtitle" style={styles.sectionTitle}>
-          Collected ({collected.length})
+      <View style={styles.contentContainer}>
+        {lastSyncedLabel ? <ThemedText style={styles.syncMeta}>{lastSyncedLabel}</ThemedText> : null}
+        {syncNotice ? <ThemedText style={styles.syncNotice}>{syncNotice}</ThemedText> : null}
+        <ThemedText style={styles.countText}>
+          <ThemedText style={styles.countNumberText}>{collected.length}</ThemedText>
+          {' of '}
+          {TOTAL_COATS}
+          {' coats unlocked'}
         </ThemedText>
-        <View style={styles.grid}>
-          {collected.map((dog) => (
-            <View key={dog.id} style={styles.card}>
-              <Image source={{ uri: dog.uri }} style={styles.image} />
-              <View style={styles.breedRow}>
-                <ThemedText style={styles.breedText}>{dog.breed}</ThemedText>
-                {badges.includes(dog.breed) ? <ThemedText style={styles.badgeIcon}>⭐</ThemedText> : null}
+
+        <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+          {BREED_SECTIONS.map((section) => (
+            <View key={section.breed} style={styles.breedSection}>
+              <View style={styles.sectionTitleRow}>
+                <ThemedText type="subtitle" style={styles.sectionTitle}>{section.breed}</ThemedText>
+                {badges.includes(section.breed) ? <ThemedText style={styles.badgeIcon}>⭐</ThemedText> : null}
               </View>
-              <ThemedText style={styles.coatText}>{dog.coat}</ThemedText>
+              <View style={styles.coatGrid}>
+                {section.coats.map((coat) => {
+                  const matchedDog = dogByBreedColorKey.get(`${section.breed}::${toColorKey(coat)}`) || null;
+                  const isUnlocked = matchedDog ? collection.includes(matchedDog.id) : false;
+
+                  return (
+                    <View key={`${section.breed}-${coat}`} style={styles.coatTile}>
+                      <View style={styles.lockSquare}>
+                        {matchedDog ? (
+                          <>
+                            <Image source={{ uri: matchedDog.uri }} style={styles.coatPreview} contentFit="cover" />
+                            {!isUnlocked ? (
+                              <View style={styles.coatLockedOverlay}>
+                                <ThemedText style={styles.lockIcon}>🔒</ThemedText>
+                              </View>
+                            ) : null}
+                          </>
+                        ) : (
+                          <ThemedText style={styles.lockIcon}>🔒</ThemedText>
+                        )}
+                      </View>
+                      <ThemedText style={styles.coatLabel}>{coat}</ThemedText>
+                    </View>
+                  );
+                })}
+              </View>
             </View>
           ))}
+        </ScrollView>
+
+        <View style={styles.bottomBackWrap}>
+          <Link href="/" asChild>
+            <Pressable
+              style={({ hovered, pressed }) => [
+                styles.switchLink,
+                hovered && styles.switchLinkHover,
+                pressed && styles.switchLinkPressed,
+              ]}>
+              {({ hovered, pressed }) => (
+                <ThemedText
+                  style={[
+                    styles.switchLinkText,
+                    hovered && styles.switchLinkTextHover,
+                    pressed && styles.switchLinkTextPressed,
+                  ]}>
+                  ← Back
+                </ThemedText>
+              )}
+            </Pressable>
+          </Link>
         </View>
-
-        {locked.length > 0 && (
-          <>
-            <ThemedText type="subtitle" style={styles.sectionTitle}>
-              Locked ({locked.length})
-            </ThemedText>
-            <View style={styles.grid}>
-              {locked.map((dog) => (
-                <View key={dog.id} style={[styles.card, styles.locked]}>
-                  <View style={styles.lockedOverlay}>
-                    <ThemedText style={styles.lockIcon}>🔒</ThemedText>
-                  </View>
-                  <ThemedText style={styles.breedText}>???</ThemedText>
-                  <ThemedText style={styles.coatText}>???</ThemedText>
-                </View>
-              ))}
-            </View>
-          </>
-        )}
-
-        <Link href="/" asChild>
-          <Pressable
-            style={({ hovered, pressed }) => [
-              styles.backLink,
-              (hovered || pressed) && styles.backLinkHover,
-            ]}>
-            {({ hovered, pressed }) => (
-              <ThemedText
-                style={[
-                  styles.backLinkText,
-                  (hovered || pressed) && styles.backLinkTextHover,
-                ]}>
-                ← Back to Home
-              </ThemedText>
-            )}
-          </Pressable>
-        </Link>
-      </ScrollView>
+      </View>
     </ThemedView>
   );
 }
@@ -432,7 +339,7 @@ export default function DoggyDexScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F7FBFF',
+    backgroundColor: 'transparent',
     paddingHorizontal: 14,
     paddingTop: 14,
   },
@@ -446,56 +353,70 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     opacity: 0.85,
   },
-  header: {
+  contentContainer: {
+    flex: 1,
+    width: '100%',
+    maxWidth: 520,
+    alignSelf: 'center',
+  },
+  sectionTitleRow: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
     gap: 8,
   },
-  titleRow: {
+  breedSection: {
+    marginTop: 12,
+    marginBottom: 2,
+  },
+  coatGrid: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 7,
+  },
+  coatTile: {
+    width: 66,
     alignItems: 'center',
-    gap: 8,
+    gap: 3,
   },
-  titleText: {
-    lineHeight: 30,
-    flexShrink: 1,
-  },
-  titleWrap: {
-    flexDirection: 'row',
+  lockSquare: {
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#C6D4E1',
+    backgroundColor: '#F0F4F8',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 4,
+    overflow: 'hidden',
+    position: 'relative',
   },
-  titleBalanceSpacer: {
-    width: 42,
+  coatPreview: {
+    ...StyleSheet.absoluteFillObject,
   },
-  titlePawCluster: {
-    marginLeft: 4,
+  coatLockedOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(24, 29, 34, 0.45)',
   },
-  titlePawBg: {
-    fontSize: 36,
-    opacity: 0.44,
-    color: '#0A7EA4',
-    lineHeight: 36,
-    marginTop: -4,
-    textShadowColor: 'rgba(10,126,164,0.22)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-  },
-  headerStats: {
-    alignItems: 'flex-end',
+  coatLabel: {
+    fontSize: 11,
+    lineHeight: 14,
+    textAlign: 'center',
   },
   countText: {
-    fontSize: 14,
-    lineHeight: 20,
     opacity: 0.9,
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: '700',
+    color: '#2F6B3D',
+    alignSelf: 'flex-start',
+    marginTop: 40,
+    marginBottom: 4,
   },
-  badgeCountText: {
-    fontSize: 12,
-    lineHeight: 16,
-    color: '#8A6A00',
+  countNumberText: {
+    color: '#FF9F1C',
   },
   syncNotice: {
     fontSize: 12,
@@ -509,18 +430,22 @@ const styles = StyleSheet.create({
     opacity: 0.75,
     marginBottom: 2,
   },
-  headerIcon: {
-    width: 28,
-    height: 28,
-  },
   scroll: {
     flex: 1,
+    width: '100%',
+    marginTop: 4,
+    marginBottom: 27.92,
+  },
+  scrollContent: {
+    width: '100%',
+    paddingBottom: 52,
   },
   sectionTitle: {
-    fontSize: 15,
-    lineHeight: 22,
-    marginTop: 12,
-    marginBottom: 8,
+    fontSize: 12,
+    lineHeight: 16,
+    color: '#000000',
+    marginTop: 8,
+    marginBottom: 5,
   },
   grid: {
     flexDirection: 'row',
@@ -583,16 +508,46 @@ const styles = StyleSheet.create({
   lockIcon: {
     fontSize: 40,
   },
-  backLink: {
-    marginTop: 14,
-    marginBottom: 28,
+  switchLink: {
     alignSelf: 'flex-start',
-    borderRadius: 8,
+    marginTop: 8,
+    borderRadius: 10,
     paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingVertical: 6,
+    backgroundColor: 'rgba(255,255,255,0.32)',
   },
-  backLinkHover: {
-    backgroundColor: '#EAF6FB',
+  bottomBackWrap: {
+    marginTop: 'auto',
+    alignSelf: 'center',
+    marginBottom: 40,
+  },
+  switchLinkHover: {
+    backgroundColor: 'rgba(255,255,255,0.42)',
+    transform: [{ translateX: -2 }],
+  },
+  switchLinkPressed: {
+    transform: [{ scale: 0.99 }],
+  },
+  switchLinkText: {
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: '500',
+    color: '#4A2A1F',
+    letterSpacing: 0.2,
+    ...(Platform.OS === 'web'
+      ? {
+          transitionProperty: 'color, transform',
+          transitionDuration: '0.2s, 0.15s',
+          transitionTimingFunction: 'ease, ease',
+        }
+      : null),
+  },
+  switchLinkTextHover: {
+    color: '#6B3E2E',
+    textDecorationLine: 'underline',
+  },
+  switchLinkTextPressed: {
+    color: '#3A2018',
   },
   gateContainer: {
     flex: 1,
@@ -602,19 +557,184 @@ const styles = StyleSheet.create({
     maxWidth: 360,
     alignSelf: 'center',
   },
+  chooserContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    maxWidth: 520,
+    alignSelf: 'center',
+  },
+  chooserPageBackground: {
+    backgroundColor: 'rgba(255,255,255,0.10)',
+  },
+  chooserSubtitle: {
+    fontSize: 17,
+    lineHeight: 24,
+    marginTop: 12,
+    marginBottom: 22,
+    textAlign: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.45)',
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    color: '#2F3742',
+    shadowColor: '#ffffff',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 1,
+  },
+  chooserCards: {
+    width: '100%',
+    maxWidth: 420,
+    gap: 12,
+  },
+  chooserCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    paddingVertical: 18,
+    paddingHorizontal: 18,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 14,
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+  },
+  chooserCardHover: {
+    borderColor: PAW_FOCUS_COLOR,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  chooserIcon: {
+    fontSize: 28,
+    lineHeight: 34,
+  },
+  chooserCardTextWrap: {
+    flex: 1,
+    gap: 2,
+  },
+  chooserCardTitle: {
+    fontSize: 18,
+    lineHeight: 24,
+    fontWeight: '700',
+    color: '#1F2937',
+  },
+  chooserCardTitleHover: {
+    color: '#FF9F1C',
+  },
+  chooserCardBody: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#6B7280',
+  },
   gateIcon: {
     width: 56,
     height: 56,
     marginBottom: 10,
   },
   gateText: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
     marginTop: 12,
     textAlign: 'center',
   },
-  input: {
+  authControls: {
+    marginTop: 14,
+    gap: 10,
+    alignItems: 'stretch',
     width: '100%',
+    maxWidth: 340,
+  },
+  authActionButton: {
+    width: '100%',
+    alignItems: 'center',
+    borderRadius: 12,
+    paddingVertical: 13,
+    paddingHorizontal: 14,
+  },
+  authPrimaryButton: {
+    backgroundColor: '#FF9F1C',
+    borderWidth: 1,
+    borderColor: '#E68A00',
+    shadowColor: '#1E3A8A',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  authPrimaryHover: {
+    backgroundColor: '#E58E19',
+    borderColor: '#E68A00',
+  },
+  authSecondary: {
+    backgroundColor: '#FFE066',
+  },
+  authSecondaryHover: {
+    backgroundColor: '#F7D64A',
+  },
+  authTertiary: {
+    backgroundColor: '#B8E1FF',
+  },
+  authTertiaryHover: {
+    backgroundColor: '#9BD3F7',
+  },
+  googleButton: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#DADCE0',
+  },
+  googleButtonHover: {
+    backgroundColor: 'rgba(255,140,102,0.14)',
+    borderColor: PAW_FOCUS_COLOR,
+  },
+  googleButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+  },
+  googleLogo: {
+    width: 18,
+    height: 18,
+  },
+  googleButtonLabel: {
+    fontWeight: '600',
+    color: '#202124',
+    textAlign: 'center',
+  },
+  orRow: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  orLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#B6BDC4',
+  },
+  orText: {
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+    color: '#687076',
+  },
+  input: {
+    fontFamily: APP_FONT_FAMILY,
+    width: '100%',
+    maxWidth: 340,
     marginTop: 10,
     borderRadius: 10,
     borderWidth: 1,
@@ -624,66 +744,60 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     fontSize: 14,
     lineHeight: 20,
+    ...(Platform.OS === 'web'
+      ? {
+          outlineStyle: 'none',
+          outlineWidth: 0,
+        }
+      : null),
   },
-  signInButton: {
-    marginTop: 14,
-    width: '100%',
-    alignItems: 'center',
-    borderRadius: 12,
-    backgroundColor: '#4285F4',
-    paddingHorizontal: 14,
-  },
-  emailButton: {
-    marginTop: 12,
-    width: '100%',
-    alignItems: 'center',
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    backgroundColor: '#B8E1FF',
-  },
-  emailButtonHover: {
-    backgroundColor: '#9BD3F7',
-  },
-  createAccountButton: {
-    marginTop: 10,
-    width: '100%',
-    alignItems: 'center',
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    backgroundColor: '#E8EEF4',
-  },
-  createAccountButtonHover: {
-    backgroundColor: '#D8E0E8',
+  inputFocused: {
+    borderColor: PAW_FOCUS_COLOR,
+    ...(Platform.OS === 'web'
+      ? {
+          outlineStyle: 'solid',
+          outlineWidth: 2,
+          outlineColor: PAW_FOCUS_COLOR,
+        }
+      : null),
   },
   buttonPressed: {
     transform: [{ scale: 0.98 }],
-  },
-  signInButtonHover: {
-    backgroundColor: '#2F74D9',
-  },
-  lightButtonText: {
-    color: '#fff',
-    fontWeight: '600',
   },
   buttonLabel: {
     fontWeight: '600',
     textAlign: 'center',
     width: '100%',
   },
-  signInError: {
-    fontSize: 14,
-    lineHeight: 20,
-    marginTop: 12,
-    textAlign: 'center',
+  authPrimaryLabel: {
+    color: '#FFFFFF',
+    fontSize: Platform.select({ web: 18, default: 16 }),
+    lineHeight: Platform.select({ web: 24, default: 22 }),
+    letterSpacing: 0.75,
+    fontWeight: '500',
   },
-  backLinkText: {
-    fontSize: 14,
-    lineHeight: 20,
+  authSecondaryLabel: {
+    color: '#2D2100',
+    fontSize: Platform.select({ web: 16, default: 15 }),
+    lineHeight: Platform.select({ web: 22, default: 20 }),
+    letterSpacing: 0.4,
     fontWeight: '600',
-    color: '#0A7EA4',
   },
-  backLinkTextHover: {
-    color: '#086283',
+  signInError: {
+    fontSize: 13,
+    lineHeight: 18,
+    marginTop: 12,
+    width: '100%',
+    maxWidth: 340,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#FDA29B',
+    backgroundColor: '#FEF3F2',
+    color: '#B42318',
+    fontWeight: '600',
+    textAlign: 'center',
   },
   signOutLink: {
     marginTop: 6,

@@ -25,7 +25,24 @@
         "Sporting"
       ],
       "thumbnail": "labrador_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 314,
+          "coat_name": "labrador_retriever__yellow",
+          "color_name": "Yellow"
+        },
+        {
+          "coat_id": 312,
+          "coat_name": "labrador_retriever__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 313,
+          "coat_name": "labrador_retriever__chocolate",
+          "color_name": "Chocolate"
+        }
+      ]
     },
     {
       "breed": "French Bulldog",
@@ -53,7 +70,29 @@
         "Non-Sporting"
       ],
       "thumbnail": "french_bulldog_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 242,
+          "coat_name": "french_bulldog__brindle",
+          "color_name": "Brindle"
+        },
+        {
+          "coat_id": 244,
+          "coat_name": "french_bulldog__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 245,
+          "coat_name": "french_bulldog__pied",
+          "color_name": "Pied"
+        },
+        {
+          "coat_id": 243,
+          "coat_name": "french_bulldog__cream",
+          "color_name": "Cream"
+        }
+      ]
     },
     {
       "breed": "Golden Retriever",
@@ -81,7 +120,24 @@
         "Sporting"
       ],
       "thumbnail": "golden_retriever_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 266,
+          "coat_name": "golden_retriever__light_golden",
+          "color_name": "Light Golden"
+        },
+        {
+          "coat_id": 265,
+          "coat_name": "golden_retriever__golden",
+          "color_name": "Golden"
+        },
+        {
+          "coat_id": 264,
+          "coat_name": "golden_retriever__dark_golden",
+          "color_name": "Dark Golden"
+        }
+      ]
     },
     {
       "breed": "German Shepherd",
@@ -109,7 +165,24 @@
         "Herding"
       ],
       "thumbnail": "german_shepherd_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 249,
+          "coat_name": "german_shepherd__black_tan",
+          "color_name": "Black & Tan"
+        },
+        {
+          "coat_id": 250,
+          "coat_name": "german_shepherd__sable",
+          "color_name": "Sable"
+        },
+        {
+          "coat_id": 251,
+          "coat_name": "german_shepherd__black",
+          "color_name": "Black"
+        }
+      ]
     },
     {
       "breed": "Poodle",
@@ -140,7 +213,39 @@
         "Non-Sporting"
       ],
       "thumbnail": "poodle_thumb.jpg",
-      "coatCount": 6
+      "coatCount": 6,
+      "coats": [
+        {
+          "coat_id": 395,
+          "coat_name": "poodle__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 391,
+          "coat_name": "poodle__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 390,
+          "coat_name": "poodle__apricot",
+          "color_name": "Apricot"
+        },
+        {
+          "coat_id": 393,
+          "coat_name": "poodle__gray",
+          "color_name": "Gray"
+        },
+        {
+          "coat_id": 394,
+          "coat_name": "poodle__silver",
+          "color_name": "Silver"
+        },
+        {
+          "coat_id": 392,
+          "coat_name": "poodle__brown",
+          "color_name": "Brown"
+        }
+      ]
     },
     {
       "breed": "Bulldog",
@@ -169,7 +274,34 @@
         "Non-Sporting"
       ],
       "thumbnail": "bulldog_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 124,
+          "coat_name": "bulldog__brindle",
+          "color_name": "Brindle"
+        },
+        {
+          "coat_id": 125,
+          "coat_name": "bulldog__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 128,
+          "coat_name": "bulldog__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 127,
+          "coat_name": "bulldog__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 126,
+          "coat_name": "bulldog__pied",
+          "color_name": "Pied"
+        }
+      ]
     },
     {
       "breed": "Beagle",
@@ -197,7 +329,29 @@
         "Hound"
       ],
       "thumbnail": "beagle_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 66,
+          "coat_name": "beagle__tricolor",
+          "color_name": "Tricolor"
+        },
+        {
+          "coat_id": 64,
+          "coat_name": "beagle__lemon_white",
+          "color_name": "Lemon & White"
+        },
+        {
+          "coat_id": 65,
+          "coat_name": "beagle__red_white",
+          "color_name": "Red & White"
+        },
+        {
+          "coat_id": 63,
+          "coat_name": "beagle__chocolate_white",
+          "color_name": "Chocolate & White"
+        }
+      ]
     },
     {
       "breed": "Rottweiler",
@@ -224,7 +378,19 @@
         "Working"
       ],
       "thumbnail": "rottweiler_thumb.jpg",
-      "coatCount": 2
+      "coatCount": 2,
+      "coats": [
+        {
+          "coat_id": 413,
+          "coat_name": "rottweiler__black_tan",
+          "color_name": "Black & Tan"
+        },
+        {
+          "coat_id": 412,
+          "coat_name": "rottweiler__black_mahogany",
+          "color_name": "Black & Mahogany"
+        }
+      ]
     },
     {
       "breed": "Yorkshire Terrier",
@@ -252,7 +418,24 @@
         "Toy"
       ],
       "thumbnail": "yorkshire_terrier_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 512,
+          "coat_name": "yorkshire_terrier__blue_tan",
+          "color_name": "Blue & Tan"
+        },
+        {
+          "coat_id": 513,
+          "coat_name": "yorkshire_terrier__silver_tan",
+          "color_name": "Silver & Tan"
+        },
+        {
+          "coat_id": 511,
+          "coat_name": "yorkshire_terrier__black_tan",
+          "color_name": "Black & Tan"
+        }
+      ]
     },
     {
       "breed": "Boxer",
@@ -281,7 +464,29 @@
         "Working"
       ],
       "thumbnail": "boxer_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 103,
+          "coat_name": "boxer__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 102,
+          "coat_name": "boxer__brindle",
+          "color_name": "Brindle"
+        },
+        {
+          "coat_id": 105,
+          "coat_name": "boxer__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 104,
+          "coat_name": "boxer__mantle",
+          "color_name": "Mantle"
+        }
+      ]
     },
     {
       "breed": "Dachshund",
@@ -310,7 +515,34 @@
         "Hound"
       ],
       "thumbnail": "dachshund_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 201,
+          "coat_name": "dachshund__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 197,
+          "coat_name": "dachshund__black_tan",
+          "color_name": "Black & Tan"
+        },
+        {
+          "coat_id": 198,
+          "coat_name": "dachshund__chocolate_tan",
+          "color_name": "Chocolate & Tan"
+        },
+        {
+          "coat_id": 200,
+          "coat_name": "dachshund__dapple",
+          "color_name": "Dapple"
+        },
+        {
+          "coat_id": 199,
+          "coat_name": "dachshund__cream",
+          "color_name": "Cream"
+        }
+      ]
     },
     {
       "breed": "Pembroke Welsh Corgi",
@@ -340,7 +572,34 @@
         "Herding"
       ],
       "thumbnail": "pembroke_welsh_corgi_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 375,
+          "coat_name": "pembroke_welsh_corgi__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 376,
+          "coat_name": "pembroke_welsh_corgi__sable",
+          "color_name": "Sable"
+        },
+        {
+          "coat_id": 374,
+          "coat_name": "pembroke_welsh_corgi__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 373,
+          "coat_name": "pembroke_welsh_corgi__black_tan",
+          "color_name": "Black & Tan"
+        },
+        {
+          "coat_id": 377,
+          "coat_name": "pembroke_welsh_corgi__tricolor",
+          "color_name": "Tricolor"
+        }
+      ]
     },
     {
       "breed": "Siberian Husky",
@@ -370,7 +629,34 @@
         "Working"
       ],
       "thumbnail": "siberian_husky_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 457,
+          "coat_name": "siberian_husky__black_white",
+          "color_name": "Black & White"
+        },
+        {
+          "coat_id": 458,
+          "coat_name": "siberian_husky__gray_white",
+          "color_name": "Gray & White"
+        },
+        {
+          "coat_id": 459,
+          "coat_name": "siberian_husky__red_white",
+          "color_name": "Red & White"
+        },
+        {
+          "coat_id": 456,
+          "coat_name": "siberian_husky__agouti",
+          "color_name": "Agouti"
+        },
+        {
+          "coat_id": 460,
+          "coat_name": "siberian_husky__white",
+          "color_name": "White"
+        }
+      ]
     },
     {
       "breed": "Australian Shepherd",
@@ -400,7 +686,34 @@
         "Herding"
       ],
       "thumbnail": "australian_shepherd_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 41,
+          "coat_name": "australian_shepherd__blue_merle",
+          "color_name": "Blue Merle"
+        },
+        {
+          "coat_id": 43,
+          "coat_name": "australian_shepherd__red_merle",
+          "color_name": "Red Merle"
+        },
+        {
+          "coat_id": 40,
+          "coat_name": "australian_shepherd__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 42,
+          "coat_name": "australian_shepherd__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 44,
+          "coat_name": "australian_shepherd__white_markings",
+          "color_name": "White Markings"
+        }
+      ]
     },
     {
       "breed": "Cavalier King Charles Spaniel",
@@ -429,7 +742,29 @@
         "Toy"
       ],
       "thumbnail": "cavalier_king_charles_spaniel_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 148,
+          "coat_name": "cavalier_king_charles_spaniel__blenheim_chestnut_white",
+          "color_name": "Blenheim (Chestnut & White)"
+        },
+        {
+          "coat_id": 150,
+          "coat_name": "cavalier_king_charles_spaniel__tricolor",
+          "color_name": "Tricolor"
+        },
+        {
+          "coat_id": 149,
+          "coat_name": "cavalier_king_charles_spaniel__ruby",
+          "color_name": "Ruby"
+        },
+        {
+          "coat_id": 147,
+          "coat_name": "cavalier_king_charles_spaniel__black_tan",
+          "color_name": "Black & Tan"
+        }
+      ]
     },
     {
       "breed": "Shih Tzu",
@@ -459,7 +794,39 @@
         "Toy"
       ],
       "thumbnail": "shih_tzu_thumb.jpg",
-      "coatCount": 6
+      "coatCount": 6,
+      "coats": [
+        {
+          "coat_id": 455,
+          "coat_name": "shih_tzu__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 450,
+          "coat_name": "shih_tzu__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 451,
+          "coat_name": "shih_tzu__brindle",
+          "color_name": "Brindle"
+        },
+        {
+          "coat_id": 453,
+          "coat_name": "shih_tzu__gold",
+          "color_name": "Gold"
+        },
+        {
+          "coat_id": 452,
+          "coat_name": "shih_tzu__chocolate",
+          "color_name": "Chocolate"
+        },
+        {
+          "coat_id": 454,
+          "coat_name": "shih_tzu__parti_color",
+          "color_name": "Parti-color"
+        }
+      ]
     },
     {
       "breed": "Boston Terrier",
@@ -487,7 +854,29 @@
         "Non-Sporting"
       ],
       "thumbnail": "boston_terrier_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 99,
+          "coat_name": "boston_terrier__brindle_white",
+          "color_name": "Brindle & White"
+        },
+        {
+          "coat_id": 101,
+          "coat_name": "boston_terrier__seal_white",
+          "color_name": "Seal & White"
+        },
+        {
+          "coat_id": 98,
+          "coat_name": "boston_terrier__black_white",
+          "color_name": "Black & White"
+        },
+        {
+          "coat_id": 100,
+          "coat_name": "boston_terrier__fawn_white",
+          "color_name": "Fawn & White"
+        }
+      ]
     },
     {
       "breed": "Havanese",
@@ -519,7 +908,49 @@
         "Toy"
       ],
       "thumbnail": "havanese_thumb.jpg",
-      "coatCount": 8
+      "coatCount": 8,
+      "coats": [
+        {
+          "coat_id": 284,
+          "coat_name": "havanese__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 281,
+          "coat_name": "havanese__cream",
+          "color_name": "Cream"
+        },
+        {
+          "coat_id": 277,
+          "coat_name": "havanese__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 283,
+          "coat_name": "havanese__silver",
+          "color_name": "Silver"
+        },
+        {
+          "coat_id": 280,
+          "coat_name": "havanese__chocolate",
+          "color_name": "Chocolate"
+        },
+        {
+          "coat_id": 282,
+          "coat_name": "havanese__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 279,
+          "coat_name": "havanese__chestnut",
+          "color_name": "Chestnut"
+        },
+        {
+          "coat_id": 278,
+          "coat_name": "havanese__blonde",
+          "color_name": "Blonde"
+        }
+      ]
     },
     {
       "breed": "Shetland Sheepdog",
@@ -548,7 +979,29 @@
         "Herding"
       ],
       "thumbnail": "shetland_sheepdog_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 444,
+          "coat_name": "shetland_sheepdog__sable",
+          "color_name": "Sable"
+        },
+        {
+          "coat_id": 445,
+          "coat_name": "shetland_sheepdog__tricolor",
+          "color_name": "Tricolor"
+        },
+        {
+          "coat_id": 443,
+          "coat_name": "shetland_sheepdog__blue_merle",
+          "color_name": "Blue Merle"
+        },
+        {
+          "coat_id": 442,
+          "coat_name": "shetland_sheepdog__black_white",
+          "color_name": "Black & White"
+        }
+      ]
     },
     {
       "breed": "Brittany",
@@ -577,7 +1030,34 @@
         "Sporting"
       ],
       "thumbnail": "brittany_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 113,
+          "coat_name": "brittany__orange_white",
+          "color_name": "Orange & White"
+        },
+        {
+          "coat_id": 111,
+          "coat_name": "brittany__liver_white",
+          "color_name": "Liver & White"
+        },
+        {
+          "coat_id": 114,
+          "coat_name": "brittany__roan",
+          "color_name": "Roan"
+        },
+        {
+          "coat_id": 110,
+          "coat_name": "brittany__liver_roan",
+          "color_name": "Liver Roan"
+        },
+        {
+          "coat_id": 112,
+          "coat_name": "brittany__orange_roan",
+          "color_name": "Orange Roan"
+        }
+      ]
     },
     {
       "breed": "English Springer Spaniel",
@@ -607,7 +1087,34 @@
         "Sporting"
       ],
       "thumbnail": "english_springer_spaniel_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 235,
+          "coat_name": "english_springer_spaniel__liver_white",
+          "color_name": "Liver & White"
+        },
+        {
+          "coat_id": 233,
+          "coat_name": "english_springer_spaniel__black_white",
+          "color_name": "Black & White"
+        },
+        {
+          "coat_id": 234,
+          "coat_name": "english_springer_spaniel__liver_roan",
+          "color_name": "Liver Roan"
+        },
+        {
+          "coat_id": 232,
+          "coat_name": "english_springer_spaniel__black_roan",
+          "color_name": "Black Roan"
+        },
+        {
+          "coat_id": 236,
+          "coat_name": "english_springer_spaniel__tricolor",
+          "color_name": "Tricolor"
+        }
+      ]
     },
     {
       "breed": "Miniature Schnauzer",
@@ -635,7 +1142,29 @@
         "Terrier"
       ],
       "thumbnail": "miniature_schnauzer_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 340,
+          "coat_name": "miniature_schnauzer__salt_pepper",
+          "color_name": "Salt & Pepper"
+        },
+        {
+          "coat_id": 338,
+          "coat_name": "miniature_schnauzer__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 339,
+          "coat_name": "miniature_schnauzer__black_silver",
+          "color_name": "Black & Silver"
+        },
+        {
+          "coat_id": 341,
+          "coat_name": "miniature_schnauzer__white",
+          "color_name": "White"
+        }
+      ]
     },
     {
       "breed": "Maltese",
@@ -661,7 +1190,19 @@
         "Toy"
       ],
       "thumbnail": "maltese_thumb.jpg",
-      "coatCount": 2
+      "coatCount": 2,
+      "coats": [
+        {
+          "coat_id": 326,
+          "coat_name": "maltese__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 325,
+          "coat_name": "maltese__cream",
+          "color_name": "Cream"
+        }
+      ]
     },
     {
       "breed": "Weimaraner",
@@ -688,7 +1229,19 @@
         "Sporting"
       ],
       "thumbnail": "weimaraner_thumb.jpg",
-      "coatCount": 2
+      "coatCount": 2,
+      "coats": [
+        {
+          "coat_id": 500,
+          "coat_name": "weimaraner__silver_gray",
+          "color_name": "Silver Gray"
+        },
+        {
+          "coat_id": 499,
+          "coat_name": "weimaraner__mouse_gray",
+          "color_name": "Mouse Gray"
+        }
+      ]
     },
     {
       "breed": "Belgian Malinois",
@@ -717,7 +1270,29 @@
         "Herding"
       ],
       "thumbnail": "belgian_malinois_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 72,
+          "coat_name": "belgian_malinois__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 74,
+          "coat_name": "belgian_malinois__red_fawn",
+          "color_name": "Red Fawn"
+        },
+        {
+          "coat_id": 73,
+          "coat_name": "belgian_malinois__mahogany",
+          "color_name": "Mahogany"
+        },
+        {
+          "coat_id": 71,
+          "coat_name": "belgian_malinois__black_mask",
+          "color_name": "Black Mask"
+        }
+      ]
     },
     {
       "breed": "Pomeranian",
@@ -748,7 +1323,44 @@
         "Toy"
       ],
       "thumbnail": "pomeranian_thumb.jpg",
-      "coatCount": 7
+      "coatCount": 7,
+      "coats": [
+        {
+          "coat_id": 387,
+          "coat_name": "pomeranian__orange",
+          "color_name": "Orange"
+        },
+        {
+          "coat_id": 383,
+          "coat_name": "pomeranian__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 389,
+          "coat_name": "pomeranian__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 386,
+          "coat_name": "pomeranian__cream",
+          "color_name": "Cream"
+        },
+        {
+          "coat_id": 384,
+          "coat_name": "pomeranian__blue",
+          "color_name": "Blue"
+        },
+        {
+          "coat_id": 385,
+          "coat_name": "pomeranian__chocolate",
+          "color_name": "Chocolate"
+        },
+        {
+          "coat_id": 388,
+          "coat_name": "pomeranian__sable",
+          "color_name": "Sable"
+        }
+      ]
     },
     {
       "breed": "English Cocker Spaniel",
@@ -779,7 +1391,39 @@
         "Sporting"
       ],
       "thumbnail": "english_cocker_spaniel_thumb.jpg",
-      "coatCount": 6
+      "coatCount": 6,
+      "coats": [
+        {
+          "coat_id": 222,
+          "coat_name": "english_cocker_spaniel__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 224,
+          "coat_name": "english_cocker_spaniel__liver",
+          "color_name": "Liver"
+        },
+        {
+          "coat_id": 223,
+          "coat_name": "english_cocker_spaniel__golden",
+          "color_name": "Golden"
+        },
+        {
+          "coat_id": 225,
+          "coat_name": "english_cocker_spaniel__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 226,
+          "coat_name": "english_cocker_spaniel__roan",
+          "color_name": "Roan"
+        },
+        {
+          "coat_id": 227,
+          "coat_name": "english_cocker_spaniel__tricolor",
+          "color_name": "Tricolor"
+        }
+      ]
     },
     {
       "breed": "Vizsla",
@@ -806,7 +1450,19 @@
         "Sporting"
       ],
       "thumbnail": "vizsla_thumb.jpg",
-      "coatCount": 2
+      "coatCount": 2,
+      "coats": [
+        {
+          "coat_id": 497,
+          "coat_name": "vizsla__golden_rust",
+          "color_name": "Golden Rust"
+        },
+        {
+          "coat_id": 498,
+          "coat_name": "vizsla__rust",
+          "color_name": "Rust"
+        }
+      ]
     },
     {
       "breed": "Chihuahua",
@@ -838,7 +1494,39 @@
         "Toy"
       ],
       "thumbnail": "chihuahua_thumb.jpg",
-      "coatCount": 6
+      "coatCount": 6,
+      "coats": [
+        {
+          "coat_id": 157,
+          "coat_name": "chihuahua__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 154,
+          "coat_name": "chihuahua__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 159,
+          "coat_name": "chihuahua__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 155,
+          "coat_name": "chihuahua__chocolate",
+          "color_name": "Chocolate"
+        },
+        {
+          "coat_id": 156,
+          "coat_name": "chihuahua__cream",
+          "color_name": "Cream"
+        },
+        {
+          "coat_id": 158,
+          "coat_name": "chihuahua__tricolor",
+          "color_name": "Tricolor"
+        }
+      ]
     },
     {
       "breed": "Border Collie",
@@ -868,7 +1556,34 @@
         "Herding"
       ],
       "thumbnail": "border_collie_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 84,
+          "coat_name": "border_collie__black_white",
+          "color_name": "Black & White"
+        },
+        {
+          "coat_id": 86,
+          "coat_name": "border_collie__red_white",
+          "color_name": "Red & White"
+        },
+        {
+          "coat_id": 85,
+          "coat_name": "border_collie__blue_merle",
+          "color_name": "Blue Merle"
+        },
+        {
+          "coat_id": 88,
+          "coat_name": "border_collie__tricolor",
+          "color_name": "Tricolor"
+        },
+        {
+          "coat_id": 87,
+          "coat_name": "border_collie__sable",
+          "color_name": "Sable"
+        }
+      ]
     },
     {
       "breed": "Miniature Pinscher",
@@ -897,7 +1612,29 @@
         "Toy"
       ],
       "thumbnail": "miniature_pinscher_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 334,
+          "coat_name": "miniature_pinscher__black_tan",
+          "color_name": "Black & Tan"
+        },
+        {
+          "coat_id": 335,
+          "coat_name": "miniature_pinscher__chocolate_tan",
+          "color_name": "Chocolate & Tan"
+        },
+        {
+          "coat_id": 337,
+          "coat_name": "miniature_pinscher__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 336,
+          "coat_name": "miniature_pinscher__fawn",
+          "color_name": "Fawn"
+        }
+      ]
     },
     {
       "breed": "Italian Greyhound",
@@ -927,7 +1664,39 @@
         "Toy"
       ],
       "thumbnail": "italian_greyhound_thumb.jpg",
-      "coatCount": 6
+      "coatCount": 6,
+      "coats": [
+        {
+          "coat_id": 298,
+          "coat_name": "italian_greyhound__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 296,
+          "coat_name": "italian_greyhound__blue",
+          "color_name": "Blue"
+        },
+        {
+          "coat_id": 295,
+          "coat_name": "italian_greyhound__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 299,
+          "coat_name": "italian_greyhound__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 297,
+          "coat_name": "italian_greyhound__cream",
+          "color_name": "Cream"
+        },
+        {
+          "coat_id": 300,
+          "coat_name": "italian_greyhound__white",
+          "color_name": "White"
+        }
+      ]
     },
     {
       "breed": "Whippet",
@@ -957,7 +1726,39 @@
         "Hound"
       ],
       "thumbnail": "whippet_thumb.jpg",
-      "coatCount": 6
+      "coatCount": 6,
+      "coats": [
+        {
+          "coat_id": 505,
+          "coat_name": "whippet__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 504,
+          "coat_name": "whippet__brindle",
+          "color_name": "Brindle"
+        },
+        {
+          "coat_id": 502,
+          "coat_name": "whippet__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 503,
+          "coat_name": "whippet__blue",
+          "color_name": "Blue"
+        },
+        {
+          "coat_id": 507,
+          "coat_name": "whippet__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 506,
+          "coat_name": "whippet__tri_color",
+          "color_name": "Tri-color"
+        }
+      ]
     },
     {
       "breed": "Staffordshire Bull Terrier",
@@ -989,7 +1790,44 @@
         "Terrier"
       ],
       "thumbnail": "staffordshire_bull_terrier_thumb.jpg",
-      "coatCount": 7
+      "coatCount": 7,
+      "coats": [
+        {
+          "coat_id": 478,
+          "coat_name": "staffordshire_bull_terrier__brindle",
+          "color_name": "Brindle"
+        },
+        {
+          "coat_id": 479,
+          "coat_name": "staffordshire_bull_terrier__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 481,
+          "coat_name": "staffordshire_bull_terrier__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 476,
+          "coat_name": "staffordshire_bull_terrier__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 477,
+          "coat_name": "staffordshire_bull_terrier__blue",
+          "color_name": "Blue"
+        },
+        {
+          "coat_id": 482,
+          "coat_name": "staffordshire_bull_terrier__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 480,
+          "coat_name": "staffordshire_bull_terrier__pied",
+          "color_name": "Pied"
+        }
+      ]
     },
     {
       "breed": "Border Terrier",
@@ -1017,7 +1855,29 @@
         "Terrier"
       ],
       "thumbnail": "border_terrier_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 91,
+          "coat_name": "border_terrier__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 90,
+          "coat_name": "border_terrier__grizzle_tan",
+          "color_name": "Grizzle & Tan"
+        },
+        {
+          "coat_id": 89,
+          "coat_name": "border_terrier__blue_tan",
+          "color_name": "Blue & Tan"
+        },
+        {
+          "coat_id": 92,
+          "coat_name": "border_terrier__wheaten",
+          "color_name": "Wheaten"
+        }
+      ]
     },
     {
       "breed": "Bichon Frise",
@@ -1045,7 +1905,24 @@
         "Toy"
       ],
       "thumbnail": "bichon_frise_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 79,
+          "coat_name": "bichon_frise__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 77,
+          "coat_name": "bichon_frise__apricot",
+          "color_name": "Apricot"
+        },
+        {
+          "coat_id": 78,
+          "coat_name": "bichon_frise__cream",
+          "color_name": "Cream"
+        }
+      ]
     },
     {
       "breed": "Akita",
@@ -1075,7 +1952,34 @@
         "Working"
       ],
       "thumbnail": "akita_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 14,
+          "coat_name": "akita__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 10,
+          "coat_name": "akita__brindle",
+          "color_name": "Brindle"
+        },
+        {
+          "coat_id": 12,
+          "coat_name": "akita__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 13,
+          "coat_name": "akita__sesame",
+          "color_name": "Sesame"
+        },
+        {
+          "coat_id": 11,
+          "coat_name": "akita__pinto",
+          "color_name": "Pinto"
+        }
+      ]
     },
     {
       "breed": "Cane Corso",
@@ -1105,7 +2009,34 @@
         "Working"
       ],
       "thumbnail": "cane_corso_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 137,
+          "coat_name": "cane_corso__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 140,
+          "coat_name": "cane_corso__gray",
+          "color_name": "Gray"
+        },
+        {
+          "coat_id": 139,
+          "coat_name": "cane_corso__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 141,
+          "coat_name": "cane_corso__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 138,
+          "coat_name": "cane_corso__brindle",
+          "color_name": "Brindle"
+        }
+      ]
     },
     {
       "breed": "English Setter",
@@ -1134,7 +2065,29 @@
         "Sporting"
       ],
       "thumbnail": "english_setter_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 228,
+          "coat_name": "english_setter__blue_belton",
+          "color_name": "Blue Belton"
+        },
+        {
+          "coat_id": 230,
+          "coat_name": "english_setter__orange_belton",
+          "color_name": "Orange Belton"
+        },
+        {
+          "coat_id": 229,
+          "coat_name": "english_setter__liver_belton",
+          "color_name": "Liver Belton"
+        },
+        {
+          "coat_id": 231,
+          "coat_name": "english_setter__tricolor",
+          "color_name": "Tricolor"
+        }
+      ]
     },
     {
       "breed": "Newfoundland",
@@ -1163,7 +2116,29 @@
         "Working"
       ],
       "thumbnail": "newfoundland_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 342,
+          "coat_name": "newfoundland__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 343,
+          "coat_name": "newfoundland__brown",
+          "color_name": "Brown"
+        },
+        {
+          "coat_id": 344,
+          "coat_name": "newfoundland__gray",
+          "color_name": "Gray"
+        },
+        {
+          "coat_id": 345,
+          "coat_name": "newfoundland__landseer_white_black",
+          "color_name": "Landseer (White & Black)"
+        }
+      ]
     },
     {
       "breed": "Scottish Terrier",
@@ -1191,7 +2166,24 @@
         "Terrier"
       ],
       "thumbnail": "scottish_terrier_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 436,
+          "coat_name": "scottish_terrier__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 438,
+          "coat_name": "scottish_terrier__wheaten",
+          "color_name": "Wheaten"
+        },
+        {
+          "coat_id": 437,
+          "coat_name": "scottish_terrier__brindle",
+          "color_name": "Brindle"
+        }
+      ]
     },
     {
       "breed": "Irish Setter",
@@ -1218,7 +2210,19 @@
         "Sporting"
       ],
       "thumbnail": "irish_setter_thumb.jpg",
-      "coatCount": 2
+      "coatCount": 2,
+      "coats": [
+        {
+          "coat_id": 286,
+          "coat_name": "irish_setter__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 285,
+          "coat_name": "irish_setter__mahogany",
+          "color_name": "Mahogany"
+        }
+      ]
     },
     {
       "breed": "Airedale Terrier",
@@ -1244,7 +2248,19 @@
         "Terrier"
       ],
       "thumbnail": "airedale_terrier_thumb.jpg",
-      "coatCount": 2
+      "coatCount": 2,
+      "coats": [
+        {
+          "coat_id": 8,
+          "coat_name": "airedale_terrier__tan_black",
+          "color_name": "Tan & Black"
+        },
+        {
+          "coat_id": 9,
+          "coat_name": "airedale_terrier__tan_grizzle",
+          "color_name": "Tan & Grizzle"
+        }
+      ]
     },
     {
       "breed": "Soft Coated Wheaten Terrier",
@@ -1271,7 +2287,19 @@
         "Terrier"
       ],
       "thumbnail": "soft_coated_wheaten_terrier_thumb.jpg",
-      "coatCount": 2
+      "coatCount": 2,
+      "coats": [
+        {
+          "coat_id": 462,
+          "coat_name": "soft_coated_wheaten_terrier__wheaten",
+          "color_name": "Wheaten"
+        },
+        {
+          "coat_id": 461,
+          "coat_name": "soft_coated_wheaten_terrier__light_beige",
+          "color_name": "Light Beige"
+        }
+      ]
     },
     {
       "breed": "Norfolk Terrier",
@@ -1299,7 +2327,29 @@
         "Terrier"
       ],
       "thumbnail": "norfolk_terrier_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 348,
+          "coat_name": "norfolk_terrier__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 349,
+          "coat_name": "norfolk_terrier__wheaten",
+          "color_name": "Wheaten"
+        },
+        {
+          "coat_id": 347,
+          "coat_name": "norfolk_terrier__grizzle",
+          "color_name": "Grizzle"
+        },
+        {
+          "coat_id": 346,
+          "coat_name": "norfolk_terrier__black_tan",
+          "color_name": "Black & Tan"
+        }
+      ]
     },
     {
       "breed": "Tibetan Spaniel",
@@ -1329,7 +2379,39 @@
         "Toy"
       ],
       "thumbnail": "tibetan_spaniel_thumb.jpg",
-      "coatCount": 6
+      "coatCount": 6,
+      "coats": [
+        {
+          "coat_id": 487,
+          "coat_name": "tibetan_spaniel__gold",
+          "color_name": "Gold"
+        },
+        {
+          "coat_id": 486,
+          "coat_name": "tibetan_spaniel__cream",
+          "color_name": "Cream"
+        },
+        {
+          "coat_id": 488,
+          "coat_name": "tibetan_spaniel__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 485,
+          "coat_name": "tibetan_spaniel__blonde",
+          "color_name": "Blonde"
+        },
+        {
+          "coat_id": 489,
+          "coat_name": "tibetan_spaniel__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 484,
+          "coat_name": "tibetan_spaniel__black_mask",
+          "color_name": "Black Mask"
+        }
+      ]
     },
     {
       "breed": "Samoyed",
@@ -1357,7 +2439,24 @@
         "Working"
       ],
       "thumbnail": "samoyed_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 427,
+          "coat_name": "samoyed__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 426,
+          "coat_name": "samoyed__cream",
+          "color_name": "Cream"
+        },
+        {
+          "coat_id": 425,
+          "coat_name": "samoyed__biscuit",
+          "color_name": "Biscuit"
+        }
+      ]
     },
     {
       "breed": "Alaskan Malamute",
@@ -1386,7 +2485,29 @@
         "Working"
       ],
       "thumbnail": "alaskan_malamute_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 21,
+          "coat_name": "alaskan_malamute__gray_white",
+          "color_name": "Gray & White"
+        },
+        {
+          "coat_id": 20,
+          "coat_name": "alaskan_malamute__black_white",
+          "color_name": "Black & White"
+        },
+        {
+          "coat_id": 23,
+          "coat_name": "alaskan_malamute__sable_white",
+          "color_name": "Sable & White"
+        },
+        {
+          "coat_id": 22,
+          "coat_name": "alaskan_malamute__red_white",
+          "color_name": "Red & White"
+        }
+      ]
     },
     {
       "breed": "Basset Hound",
@@ -1415,7 +2536,29 @@
         "Hound"
       ],
       "thumbnail": "basset_hound_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 62,
+          "coat_name": "basset_hound__tri_color",
+          "color_name": "Tri-color"
+        },
+        {
+          "coat_id": 60,
+          "coat_name": "basset_hound__lemon_white",
+          "color_name": "Lemon & White"
+        },
+        {
+          "coat_id": 61,
+          "coat_name": "basset_hound__red_white",
+          "color_name": "Red & White"
+        },
+        {
+          "coat_id": 59,
+          "coat_name": "basset_hound__chocolate_white",
+          "color_name": "Chocolate & White"
+        }
+      ]
     },
     {
       "breed": "Scottish Deerhound",
@@ -1444,7 +2587,29 @@
         "Hound"
       ],
       "thumbnail": "scottish_deerhound_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 434,
+          "coat_name": "scottish_deerhound__gray",
+          "color_name": "Gray"
+        },
+        {
+          "coat_id": 432,
+          "coat_name": "scottish_deerhound__brindle",
+          "color_name": "Brindle"
+        },
+        {
+          "coat_id": 433,
+          "coat_name": "scottish_deerhound__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 435,
+          "coat_name": "scottish_deerhound__wheaten",
+          "color_name": "Wheaten"
+        }
+      ]
     },
     {
       "breed": "German Shorthaired Pointer",
@@ -1474,7 +2639,34 @@
         "Sporting"
       ],
       "thumbnail": "gsp_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 253,
+          "coat_name": "german_shorthaired_pointer__liver",
+          "color_name": "Liver"
+        },
+        {
+          "coat_id": 255,
+          "coat_name": "german_shorthaired_pointer__liver_white",
+          "color_name": "Liver & White"
+        },
+        {
+          "coat_id": 252,
+          "coat_name": "german_shorthaired_pointer__black_white",
+          "color_name": "Black & White"
+        },
+        {
+          "coat_id": 256,
+          "coat_name": "german_shorthaired_pointer__roan",
+          "color_name": "Roan"
+        },
+        {
+          "coat_id": 254,
+          "coat_name": "german_shorthaired_pointer__liver_roan",
+          "color_name": "Liver Roan"
+        }
+      ]
     },
     {
       "breed": "Rhodesian Ridgeback",
@@ -1502,7 +2694,24 @@
         "Hound"
       ],
       "thumbnail": "rhodesian_ridgeback_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 409,
+          "coat_name": "rhodesian_ridgeback__light_wheaten",
+          "color_name": "Light Wheaten"
+        },
+        {
+          "coat_id": 410,
+          "coat_name": "rhodesian_ridgeback__red_wheaten",
+          "color_name": "Red Wheaten"
+        },
+        {
+          "coat_id": 411,
+          "coat_name": "rhodesian_ridgeback__wheaten",
+          "color_name": "Wheaten"
+        }
+      ]
     },
     {
       "breed": "Saint Bernard",
@@ -1531,7 +2740,29 @@
         "Working"
       ],
       "thumbnail": "saint_bernard_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 417,
+          "coat_name": "saint_bernard__red_white",
+          "color_name": "Red & White"
+        },
+        {
+          "coat_id": 415,
+          "coat_name": "saint_bernard__brown_white",
+          "color_name": "Brown & White"
+        },
+        {
+          "coat_id": 414,
+          "coat_name": "saint_bernard__brindle",
+          "color_name": "Brindle"
+        },
+        {
+          "coat_id": 416,
+          "coat_name": "saint_bernard__mahogany",
+          "color_name": "Mahogany"
+        }
+      ]
     },
     {
       "breed": "Portuguese Water Dog",
@@ -1561,7 +2792,34 @@
         "Working"
       ],
       "thumbnail": "portuguese_water_dog_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 396,
+          "coat_name": "portuguese_water_dog__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 400,
+          "coat_name": "portuguese_water_dog__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 397,
+          "coat_name": "portuguese_water_dog__black_white",
+          "color_name": "Black & White"
+        },
+        {
+          "coat_id": 398,
+          "coat_name": "portuguese_water_dog__brown",
+          "color_name": "Brown"
+        },
+        {
+          "coat_id": 399,
+          "coat_name": "portuguese_water_dog__gray",
+          "color_name": "Gray"
+        }
+      ]
     },
     {
       "breed": "Bull Terrier",
@@ -1591,7 +2849,34 @@
         "Terrier"
       ],
       "thumbnail": "bull_terrier_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 123,
+          "coat_name": "bull_terrier__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 119,
+          "coat_name": "bull_terrier__brindle",
+          "color_name": "Brindle"
+        },
+        {
+          "coat_id": 120,
+          "coat_name": "bull_terrier__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 121,
+          "coat_name": "bull_terrier__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 122,
+          "coat_name": "bull_terrier__tri_color",
+          "color_name": "Tri-color"
+        }
+      ]
     },
     {
       "breed": "Norwegian Elkhound",
@@ -1619,7 +2904,24 @@
         "Hound"
       ],
       "thumbnail": "norwegian_elkhound_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 351,
+          "coat_name": "norwegian_elkhound__gray",
+          "color_name": "Gray"
+        },
+        {
+          "coat_id": 350,
+          "coat_name": "norwegian_elkhound__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 352,
+          "coat_name": "norwegian_elkhound__silver_gray",
+          "color_name": "Silver Gray"
+        }
+      ]
     },
     {
       "breed": "Finnish Spitz",
@@ -1647,7 +2949,24 @@
         "Hound"
       ],
       "thumbnail": "finnish_spitz_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 238,
+          "coat_name": "finnish_spitz__red_gold",
+          "color_name": "Red-Gold"
+        },
+        {
+          "coat_id": 237,
+          "coat_name": "finnish_spitz__golden_red",
+          "color_name": "Golden Red"
+        },
+        {
+          "coat_id": 239,
+          "coat_name": "finnish_spitz__yellow",
+          "color_name": "Yellow"
+        }
+      ]
     },
     {
       "breed": "Toy Poodle",
@@ -1679,7 +2998,44 @@
         "Toy"
       ],
       "thumbnail": "toy_poodle_thumb.jpg",
-      "coatCount": 7
+      "coatCount": 7,
+      "coats": [
+        {
+          "coat_id": 496,
+          "coat_name": "toy_poodle__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 491,
+          "coat_name": "toy_poodle__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 490,
+          "coat_name": "toy_poodle__apricot",
+          "color_name": "Apricot"
+        },
+        {
+          "coat_id": 493,
+          "coat_name": "toy_poodle__cream",
+          "color_name": "Cream"
+        },
+        {
+          "coat_id": 494,
+          "coat_name": "toy_poodle__gray",
+          "color_name": "Gray"
+        },
+        {
+          "coat_id": 495,
+          "coat_name": "toy_poodle__silver",
+          "color_name": "Silver"
+        },
+        {
+          "coat_id": 492,
+          "coat_name": "toy_poodle__brown",
+          "color_name": "Brown"
+        }
+      ]
     },
     {
       "breed": "German Wirehaired Pointer",
@@ -1708,7 +3064,29 @@
         "Sporting"
       ],
       "thumbnail": "german_wirehaired_pointer_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 260,
+          "coat_name": "german_wirehaired_pointer__liver_white",
+          "color_name": "Liver & White"
+        },
+        {
+          "coat_id": 259,
+          "coat_name": "german_wirehaired_pointer__liver_roan",
+          "color_name": "Liver Roan"
+        },
+        {
+          "coat_id": 258,
+          "coat_name": "german_wirehaired_pointer__grizzle",
+          "color_name": "Grizzle"
+        },
+        {
+          "coat_id": 257,
+          "coat_name": "german_wirehaired_pointer__black_white",
+          "color_name": "Black & White"
+        }
+      ]
     },
     {
       "breed": "Irish Wolfhound",
@@ -1739,7 +3117,39 @@
         "Hound"
       ],
       "thumbnail": "irish_wolfhound_thumb.jpg",
-      "coatCount": 6
+      "coatCount": 6,
+      "coats": [
+        {
+          "coat_id": 292,
+          "coat_name": "irish_wolfhound__gray",
+          "color_name": "Gray"
+        },
+        {
+          "coat_id": 290,
+          "coat_name": "irish_wolfhound__brindle",
+          "color_name": "Brindle"
+        },
+        {
+          "coat_id": 293,
+          "coat_name": "irish_wolfhound__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 291,
+          "coat_name": "irish_wolfhound__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 289,
+          "coat_name": "irish_wolfhound__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 294,
+          "coat_name": "irish_wolfhound__white",
+          "color_name": "White"
+        }
+      ]
     },
     {
       "breed": "Great Dane",
@@ -1770,7 +3180,39 @@
         "Working"
       ],
       "thumbnail": "great_dane_thumb.jpg",
-      "coatCount": 6
+      "coatCount": 6,
+      "coats": [
+        {
+          "coat_id": 270,
+          "coat_name": "great_dane__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 269,
+          "coat_name": "great_dane__brindle",
+          "color_name": "Brindle"
+        },
+        {
+          "coat_id": 268,
+          "coat_name": "great_dane__blue",
+          "color_name": "Blue"
+        },
+        {
+          "coat_id": 267,
+          "coat_name": "great_dane__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 271,
+          "coat_name": "great_dane__harlequin",
+          "color_name": "Harlequin"
+        },
+        {
+          "coat_id": 272,
+          "coat_name": "great_dane__mantle",
+          "color_name": "Mantle"
+        }
+      ]
     },
     {
       "breed": "Cairn Terrier",
@@ -1800,7 +3242,34 @@
         "Terrier"
       ],
       "thumbnail": "cairn_terrier_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 133,
+          "coat_name": "cairn_terrier__cream",
+          "color_name": "Cream"
+        },
+        {
+          "coat_id": 136,
+          "coat_name": "cairn_terrier__wheaten",
+          "color_name": "Wheaten"
+        },
+        {
+          "coat_id": 135,
+          "coat_name": "cairn_terrier__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 134,
+          "coat_name": "cairn_terrier__gray",
+          "color_name": "Gray"
+        },
+        {
+          "coat_id": 132,
+          "coat_name": "cairn_terrier__brindle",
+          "color_name": "Brindle"
+        }
+      ]
     },
     {
       "breed": "Chesapeake Bay Retriever",
@@ -1828,7 +3297,24 @@
         "Sporting"
       ],
       "thumbnail": "chesapeake_bay_retriever_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 151,
+          "coat_name": "chesapeake_bay_retriever__brown",
+          "color_name": "Brown"
+        },
+        {
+          "coat_id": 153,
+          "coat_name": "chesapeake_bay_retriever__sedge",
+          "color_name": "Sedge"
+        },
+        {
+          "coat_id": 152,
+          "coat_name": "chesapeake_bay_retriever__deadgrass",
+          "color_name": "Deadgrass"
+        }
+      ]
     },
     {
       "breed": "Shiba Inu",
@@ -1857,7 +3343,29 @@
         "Non-Sporting"
       ],
       "thumbnail": "shiba_inu_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 448,
+          "coat_name": "shiba_inu__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 446,
+          "coat_name": "shiba_inu__black_tan",
+          "color_name": "Black & Tan"
+        },
+        {
+          "coat_id": 449,
+          "coat_name": "shiba_inu__sesame",
+          "color_name": "Sesame"
+        },
+        {
+          "coat_id": 447,
+          "coat_name": "shiba_inu__cream",
+          "color_name": "Cream"
+        }
+      ]
     },
     {
       "breed": "West Highland White Terrier",
@@ -1883,7 +3391,14 @@
         "Terrier"
       ],
       "thumbnail": "west_highland_white_terrier_thumb.jpg",
-      "coatCount": 1
+      "coatCount": 1,
+      "coats": [
+        {
+          "coat_id": 501,
+          "coat_name": "west_highland_white_terrier__white",
+          "color_name": "White"
+        }
+      ]
     },
     {
       "breed": "Chinese Shar-Pei",
@@ -1914,7 +3429,39 @@
         "Non-Sporting"
       ],
       "thumbnail": "chinese_shar_pei_thumb.jpg",
-      "coatCount": 6
+      "coatCount": 6,
+      "coats": [
+        {
+          "coat_id": 165,
+          "coat_name": "chinese_shar_pei__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 168,
+          "coat_name": "chinese_shar_pei__cream",
+          "color_name": "Cream"
+        },
+        {
+          "coat_id": 169,
+          "coat_name": "chinese_shar_pei__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 170,
+          "coat_name": "chinese_shar_pei__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 166,
+          "coat_name": "chinese_shar_pei__blue",
+          "color_name": "Blue"
+        },
+        {
+          "coat_id": 167,
+          "coat_name": "chinese_shar_pei__chocolate",
+          "color_name": "Chocolate"
+        }
+      ]
     },
     {
       "breed": "Basenji",
@@ -1943,7 +3490,29 @@
         "Hound"
       ],
       "thumbnail": "basenji_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 55,
+          "coat_name": "basenji__red_white",
+          "color_name": "Red & White"
+        },
+        {
+          "coat_id": 53,
+          "coat_name": "basenji__black_white",
+          "color_name": "Black & White"
+        },
+        {
+          "coat_id": 54,
+          "coat_name": "basenji__brindle_white",
+          "color_name": "Brindle & White"
+        },
+        {
+          "coat_id": 56,
+          "coat_name": "basenji__tri_color",
+          "color_name": "Tri-color"
+        }
+      ]
     },
     {
       "breed": "Miniature American Shepherd",
@@ -1972,7 +3541,29 @@
         "Herding"
       ],
       "thumbnail": "mini_american_shepherd_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 330,
+          "coat_name": "miniature_american_shepherd__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 332,
+          "coat_name": "miniature_american_shepherd__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 331,
+          "coat_name": "miniature_american_shepherd__blue_merle",
+          "color_name": "Blue Merle"
+        },
+        {
+          "coat_id": 333,
+          "coat_name": "miniature_american_shepherd__red_merle",
+          "color_name": "Red Merle"
+        }
+      ]
     },
     {
       "breed": "Keeshond",
@@ -2000,7 +3591,24 @@
         "Non-Sporting"
       ],
       "thumbnail": "keeshond_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 307,
+          "coat_name": "keeshond__gray_black",
+          "color_name": "Gray & Black"
+        },
+        {
+          "coat_id": 308,
+          "coat_name": "keeshond__silver_black",
+          "color_name": "Silver & Black"
+        },
+        {
+          "coat_id": 306,
+          "coat_name": "keeshond__cream",
+          "color_name": "Cream"
+        }
+      ]
     },
     {
       "breed": "Papillon",
@@ -2029,7 +3637,29 @@
         "Toy"
       ],
       "thumbnail": "papillon_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 364,
+          "coat_name": "papillon__white_black",
+          "color_name": "White & Black"
+        },
+        {
+          "coat_id": 365,
+          "coat_name": "papillon__white_brown",
+          "color_name": "White & Brown"
+        },
+        {
+          "coat_id": 366,
+          "coat_name": "papillon__white_red",
+          "color_name": "White & Red"
+        },
+        {
+          "coat_id": 363,
+          "coat_name": "papillon__tri_color",
+          "color_name": "Tri-color"
+        }
+      ]
     },
     {
       "breed": "Lhasa Apso",
@@ -2060,7 +3690,39 @@
         "Non-Sporting"
       ],
       "thumbnail": "lhasa_apso_thumb.jpg",
-      "coatCount": 6
+      "coatCount": 6,
+      "coats": [
+        {
+          "coat_id": 317,
+          "coat_name": "lhasa_apso__gold",
+          "color_name": "Gold"
+        },
+        {
+          "coat_id": 316,
+          "coat_name": "lhasa_apso__cream",
+          "color_name": "Cream"
+        },
+        {
+          "coat_id": 318,
+          "coat_name": "lhasa_apso__honey",
+          "color_name": "Honey"
+        },
+        {
+          "coat_id": 315,
+          "coat_name": "lhasa_apso__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 320,
+          "coat_name": "lhasa_apso__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 319,
+          "coat_name": "lhasa_apso__slate",
+          "color_name": "Slate"
+        }
+      ]
     },
     {
       "breed": "Dalmatian",
@@ -2087,7 +3749,19 @@
         "Non-Sporting"
       ],
       "thumbnail": "dalmatian_thumb.jpg",
-      "coatCount": 2
+      "coatCount": 2,
+      "coats": [
+        {
+          "coat_id": 209,
+          "coat_name": "dalmatian__white_black",
+          "color_name": "White & Black"
+        },
+        {
+          "coat_id": 210,
+          "coat_name": "dalmatian__white_liver",
+          "color_name": "White & Liver"
+        }
+      ]
     },
     {
       "breed": "American Staffordshire Terrier",
@@ -2119,7 +3793,44 @@
         "Terrier"
       ],
       "thumbnail": "american_staffordshire_terrier_thumb.jpg",
-      "coatCount": 7
+      "coatCount": 7,
+      "coats": [
+        {
+          "coat_id": 27,
+          "coat_name": "american_staffordshire_terrier__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 28,
+          "coat_name": "american_staffordshire_terrier__blue",
+          "color_name": "Blue"
+        },
+        {
+          "coat_id": 29,
+          "coat_name": "american_staffordshire_terrier__brindle",
+          "color_name": "Brindle"
+        },
+        {
+          "coat_id": 30,
+          "coat_name": "american_staffordshire_terrier__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 31,
+          "coat_name": "american_staffordshire_terrier__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 32,
+          "coat_name": "american_staffordshire_terrier__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 26,
+          "coat_name": "american_staffordshire_terrier__bi_color",
+          "color_name": "Bi-color"
+        }
+      ]
     },
     {
       "breed": "Cocker Spaniel",
@@ -2150,7 +3861,39 @@
         "Sporting"
       ],
       "thumbnail": "cocker_spaniel_thumb.jpg",
-      "coatCount": 6
+      "coatCount": 6,
+      "coats": [
+        {
+          "coat_id": 179,
+          "coat_name": "cocker_spaniel__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 180,
+          "coat_name": "cocker_spaniel__buff",
+          "color_name": "Buff"
+        },
+        {
+          "coat_id": 181,
+          "coat_name": "cocker_spaniel__chocolate",
+          "color_name": "Chocolate"
+        },
+        {
+          "coat_id": 183,
+          "coat_name": "cocker_spaniel__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 182,
+          "coat_name": "cocker_spaniel__parti_color",
+          "color_name": "Parti-color"
+        },
+        {
+          "coat_id": 184,
+          "coat_name": "cocker_spaniel__tri_color",
+          "color_name": "Tri-color"
+        }
+      ]
     },
     {
       "breed": "Bernese Mountain Dog",
@@ -2176,7 +3919,14 @@
         "Working"
       ],
       "thumbnail": "bernese_mountain_dog_thumb.jpg",
-      "coatCount": 1
+      "coatCount": 1,
+      "coats": [
+        {
+          "coat_id": 76,
+          "coat_name": "bernese_mountain_dog__tri_color_black_rust_white",
+          "color_name": "Tri-color (Black, Rust & White)"
+        }
+      ]
     },
     {
       "breed": "Pekingese",
@@ -2207,7 +3957,39 @@
         "Toy"
       ],
       "thumbnail": "pekingese_thumb.jpg",
-      "coatCount": 6
+      "coatCount": 6,
+      "coats": [
+        {
+          "coat_id": 369,
+          "coat_name": "pekingese__gold",
+          "color_name": "Gold"
+        },
+        {
+          "coat_id": 370,
+          "coat_name": "pekingese__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 367,
+          "coat_name": "pekingese__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 372,
+          "coat_name": "pekingese__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 368,
+          "coat_name": "pekingese__cream",
+          "color_name": "Cream"
+        },
+        {
+          "coat_id": 371,
+          "coat_name": "pekingese__sable",
+          "color_name": "Sable"
+        }
+      ]
     },
     {
       "breed": "Bloodhound",
@@ -2235,7 +4017,24 @@
         "Hound"
       ],
       "thumbnail": "bloodhound_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 80,
+          "coat_name": "bloodhound__black_tan",
+          "color_name": "Black & Tan"
+        },
+        {
+          "coat_id": 81,
+          "coat_name": "bloodhound__liver_tan",
+          "color_name": "Liver & Tan"
+        },
+        {
+          "coat_id": 82,
+          "coat_name": "bloodhound__red",
+          "color_name": "Red"
+        }
+      ]
     },
     {
       "breed": "Collie",
@@ -2264,7 +4063,29 @@
         "Herding"
       ],
       "thumbnail": "collie_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 191,
+          "coat_name": "collie__sable_white",
+          "color_name": "Sable & White"
+        },
+        {
+          "coat_id": 192,
+          "coat_name": "collie__tricolor",
+          "color_name": "Tricolor"
+        },
+        {
+          "coat_id": 190,
+          "coat_name": "collie__blue_merle",
+          "color_name": "Blue Merle"
+        },
+        {
+          "coat_id": 193,
+          "coat_name": "collie__white",
+          "color_name": "White"
+        }
+      ]
     },
     {
       "breed": "Chow Chow",
@@ -2294,7 +4115,34 @@
         "Non-Sporting"
       ],
       "thumbnail": "chow_chow_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 175,
+          "coat_name": "chow_chow__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 171,
+          "coat_name": "chow_chow__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 172,
+          "coat_name": "chow_chow__blue",
+          "color_name": "Blue"
+        },
+        {
+          "coat_id": 173,
+          "coat_name": "chow_chow__cinnamon",
+          "color_name": "Cinnamon"
+        },
+        {
+          "coat_id": 174,
+          "coat_name": "chow_chow__cream",
+          "color_name": "Cream"
+        }
+      ]
     },
     {
       "breed": "Doberman Pinscher",
@@ -2323,7 +4171,29 @@
         "Working"
       ],
       "thumbnail": "doberman_pinscher_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 213,
+          "coat_name": "doberman_pinscher__black_rust",
+          "color_name": "Black & Rust"
+        },
+        {
+          "coat_id": 216,
+          "coat_name": "doberman_pinscher__red_rust",
+          "color_name": "Red & Rust"
+        },
+        {
+          "coat_id": 214,
+          "coat_name": "doberman_pinscher__blue_rust",
+          "color_name": "Blue & Rust"
+        },
+        {
+          "coat_id": 215,
+          "coat_name": "doberman_pinscher__fawn_rust",
+          "color_name": "Fawn & Rust"
+        }
+      ]
     },
     {
       "breed": "Pug",
@@ -2352,7 +4222,29 @@
         "Toy"
       ],
       "thumbnail": "pug_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 403,
+          "coat_name": "pug__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 402,
+          "coat_name": "pug__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 404,
+          "coat_name": "pug__silver",
+          "color_name": "Silver"
+        },
+        {
+          "coat_id": 401,
+          "coat_name": "pug__apricot",
+          "color_name": "Apricot"
+        }
+      ]
     },
     {
       "breed": "Great Pyrenees",
@@ -2381,7 +4273,29 @@
         "Working"
       ],
       "thumbnail": "great_pyrenees_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 273,
+          "coat_name": "great_pyrenees__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 274,
+          "coat_name": "great_pyrenees__white_with_badger_markings",
+          "color_name": "White with Badger Markings"
+        },
+        {
+          "coat_id": 275,
+          "coat_name": "great_pyrenees__white_with_gray",
+          "color_name": "White with Gray"
+        },
+        {
+          "coat_id": 276,
+          "coat_name": "great_pyrenees__white_with_tan",
+          "color_name": "White with Tan"
+        }
+      ]
     },
     {
       "breed": "Mastiff",
@@ -2409,7 +4323,24 @@
         "Working"
       ],
       "thumbnail": "mastiff_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 329,
+          "coat_name": "mastiff__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 327,
+          "coat_name": "mastiff__apricot",
+          "color_name": "Apricot"
+        },
+        {
+          "coat_id": 328,
+          "coat_name": "mastiff__brindle",
+          "color_name": "Brindle"
+        }
+      ]
     },
     {
       "breed": "St. Bernard",
@@ -2437,7 +4368,24 @@
         "Working"
       ],
       "thumbnail": "st_bernard_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 475,
+          "coat_name": "st_bernard__red_white",
+          "color_name": "Red & White"
+        },
+        {
+          "coat_id": 473,
+          "coat_name": "st_bernard__brindle_white",
+          "color_name": "Brindle & White"
+        },
+        {
+          "coat_id": 474,
+          "coat_name": "st_bernard__brown_white",
+          "color_name": "Brown & White"
+        }
+      ]
     },
     {
       "breed": "Bullmastiff",
@@ -2465,7 +4413,24 @@
         "Working"
       ],
       "thumbnail": "bullmastiff_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 130,
+          "coat_name": "bullmastiff__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 131,
+          "coat_name": "bullmastiff__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 129,
+          "coat_name": "bullmastiff__brindle",
+          "color_name": "Brindle"
+        }
+      ]
     },
     {
       "breed": "Australian Cattle Dog",
@@ -2494,7 +4459,29 @@
         "Herding"
       ],
       "thumbnail": "australian_cattle_dog_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 36,
+          "coat_name": "australian_cattle_dog__blue",
+          "color_name": "Blue"
+        },
+        {
+          "coat_id": 37,
+          "coat_name": "australian_cattle_dog__blue_mottled",
+          "color_name": "Blue Mottled"
+        },
+        {
+          "coat_id": 38,
+          "coat_name": "australian_cattle_dog__blue_speckled",
+          "color_name": "Blue Speckled"
+        },
+        {
+          "coat_id": 39,
+          "coat_name": "australian_cattle_dog__red_speckled",
+          "color_name": "Red Speckled"
+        }
+      ]
     },
     {
       "breed": "Cocker Spaniel (American)",
@@ -2524,7 +4511,34 @@
         "Sporting"
       ],
       "thumbnail": "american_cocker_spaniel_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 185,
+          "coat_name": "cocker_spaniel_american__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 186,
+          "coat_name": "cocker_spaniel_american__buff",
+          "color_name": "Buff"
+        },
+        {
+          "coat_id": 187,
+          "coat_name": "cocker_spaniel_american__chocolate",
+          "color_name": "Chocolate"
+        },
+        {
+          "coat_id": 188,
+          "coat_name": "cocker_spaniel_american__parti_color",
+          "color_name": "Parti-color"
+        },
+        {
+          "coat_id": 189,
+          "coat_name": "cocker_spaniel_american__roan",
+          "color_name": "Roan"
+        }
+      ]
     },
     {
       "breed": "Old English Sheepdog",
@@ -2551,7 +4565,19 @@
         "Herding"
       ],
       "thumbnail": "old_english_sheepdog_thumb.jpg",
-      "coatCount": 2
+      "coatCount": 2,
+      "coats": [
+        {
+          "coat_id": 358,
+          "coat_name": "old_english_sheepdog__gray_white",
+          "color_name": "Gray & White"
+        },
+        {
+          "coat_id": 357,
+          "coat_name": "old_english_sheepdog__blue_white",
+          "color_name": "Blue & White"
+        }
+      ]
     },
     {
       "breed": "Akita (American)",
@@ -2581,7 +4607,34 @@
         "Working"
       ],
       "thumbnail": "american_akita_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 19,
+          "coat_name": "akita_american__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 17,
+          "coat_name": "akita_american__pinto",
+          "color_name": "Pinto"
+        },
+        {
+          "coat_id": 16,
+          "coat_name": "akita_american__brindle",
+          "color_name": "Brindle"
+        },
+        {
+          "coat_id": 15,
+          "coat_name": "akita_american__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 18,
+          "coat_name": "akita_american__red",
+          "color_name": "Red"
+        }
+      ]
     },
     {
       "breed": "Belgian Tervuren",
@@ -2607,7 +4660,14 @@
         "Herding"
       ],
       "thumbnail": "belgian_tervuren_thumb.jpg",
-      "coatCount": 1
+      "coatCount": 1,
+      "coats": [
+        {
+          "coat_id": 75,
+          "coat_name": "belgian_tervuren__mahogany_with_black_overlay",
+          "color_name": "Mahogany with Black Overlay"
+        }
+      ]
     },
     {
       "breed": "Bearded Collie",
@@ -2636,7 +4696,29 @@
         "Herding"
       ],
       "thumbnail": "bearded_collie_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 67,
+          "coat_name": "bearded_collie__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 68,
+          "coat_name": "bearded_collie__blue",
+          "color_name": "Blue"
+        },
+        {
+          "coat_id": 69,
+          "coat_name": "bearded_collie__brown",
+          "color_name": "Brown"
+        },
+        {
+          "coat_id": 70,
+          "coat_name": "bearded_collie__fawn",
+          "color_name": "Fawn"
+        }
+      ]
     },
     {
       "breed": "Chinese Crested",
@@ -2666,7 +4748,34 @@
         "Toy"
       ],
       "thumbnail": "chinese_crested_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 160,
+          "coat_name": "chinese_crested__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 164,
+          "coat_name": "chinese_crested__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 161,
+          "coat_name": "chinese_crested__pink_black",
+          "color_name": "Pink & Black"
+        },
+        {
+          "coat_id": 162,
+          "coat_name": "chinese_crested__spotted",
+          "color_name": "Spotted"
+        },
+        {
+          "coat_id": 163,
+          "coat_name": "chinese_crested__various_combinations",
+          "color_name": "Various combinations"
+        }
+      ]
     },
     {
       "breed": "Cardigan Welsh Corgi",
@@ -2696,7 +4805,34 @@
         "Herding"
       ],
       "thumbnail": "cardigan_welsh_corgi_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 145,
+          "coat_name": "cardigan_welsh_corgi__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 146,
+          "coat_name": "cardigan_welsh_corgi__sable",
+          "color_name": "Sable"
+        },
+        {
+          "coat_id": 144,
+          "coat_name": "cardigan_welsh_corgi__brindle",
+          "color_name": "Brindle"
+        },
+        {
+          "coat_id": 143,
+          "coat_name": "cardigan_welsh_corgi__blue_merle",
+          "color_name": "Blue Merle"
+        },
+        {
+          "coat_id": 142,
+          "coat_name": "cardigan_welsh_corgi__black_white",
+          "color_name": "Black & White"
+        }
+      ]
     },
     {
       "breed": "Borzoi",
@@ -2726,7 +4862,34 @@
         "Hound"
       ],
       "thumbnail": "borzoi_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 97,
+          "coat_name": "borzoi__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 93,
+          "coat_name": "borzoi__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 96,
+          "coat_name": "borzoi__gray",
+          "color_name": "Gray"
+        },
+        {
+          "coat_id": 94,
+          "coat_name": "borzoi__brindle",
+          "color_name": "Brindle"
+        },
+        {
+          "coat_id": 95,
+          "coat_name": "borzoi__golden",
+          "color_name": "Golden"
+        }
+      ]
     },
     {
       "breed": "Flat-Coated Retriever",
@@ -2753,7 +4916,19 @@
         "Sporting"
       ],
       "thumbnail": "flat_coated_retriever_thumb.jpg",
-      "coatCount": 2
+      "coatCount": 2,
+      "coats": [
+        {
+          "coat_id": 240,
+          "coat_name": "flat_coated_retriever__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 241,
+          "coat_name": "flat_coated_retriever__liver",
+          "color_name": "Liver"
+        }
+      ]
     },
     {
       "breed": "American Eskimo Dog",
@@ -2780,7 +4955,19 @@
         "Non-Sporting"
       ],
       "thumbnail": "american_eskimo_dog_thumb.jpg",
-      "coatCount": 2
+      "coatCount": 2,
+      "coats": [
+        {
+          "coat_id": 24,
+          "coat_name": "american_eskimo_dog__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 25,
+          "coat_name": "american_eskimo_dog__white_biscuit",
+          "color_name": "White & Biscuit"
+        }
+      ]
     },
     {
       "breed": "Saluki",
@@ -2812,7 +4999,44 @@
         "Hound"
       ],
       "thumbnail": "saluki_thumb.jpg",
-      "coatCount": 7
+      "coatCount": 7,
+      "coats": [
+        {
+          "coat_id": 424,
+          "coat_name": "saluki__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 419,
+          "coat_name": "saluki__cream",
+          "color_name": "Cream"
+        },
+        {
+          "coat_id": 420,
+          "coat_name": "saluki__golden",
+          "color_name": "Golden"
+        },
+        {
+          "coat_id": 422,
+          "coat_name": "saluki__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 421,
+          "coat_name": "saluki__grizzle_tan",
+          "color_name": "Grizzle & Tan"
+        },
+        {
+          "coat_id": 423,
+          "coat_name": "saluki__tricolor",
+          "color_name": "Tricolor"
+        },
+        {
+          "coat_id": 418,
+          "coat_name": "saluki__black_tan",
+          "color_name": "Black & Tan"
+        }
+      ]
     },
     {
       "breed": "Irish Terrier",
@@ -2838,7 +5062,14 @@
         "Terrier"
       ],
       "thumbnail": "irish_terrier_thumb.jpg",
-      "coatCount": 1
+      "coatCount": 1,
+      "coats": [
+        {
+          "coat_id": 287,
+          "coat_name": "irish_terrier__red",
+          "color_name": "Red"
+        }
+      ]
     },
     {
       "breed": "German Pinscher",
@@ -2866,7 +5097,24 @@
         "Working"
       ],
       "thumbnail": "german_pinscher_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 246,
+          "coat_name": "german_pinscher__black_tan",
+          "color_name": "Black & Tan"
+        },
+        {
+          "coat_id": 248,
+          "coat_name": "german_pinscher__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 247,
+          "coat_name": "german_pinscher__chocolate_tan",
+          "color_name": "Chocolate & Tan"
+        }
+      ]
     },
     {
       "breed": "Pointer (German Shorthaired)",
@@ -2896,7 +5144,34 @@
         "Sporting"
       ],
       "thumbnail": "german_shorthaired_pointer_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 379,
+          "coat_name": "pointer_german_shorthaired__liver",
+          "color_name": "Liver"
+        },
+        {
+          "coat_id": 381,
+          "coat_name": "pointer_german_shorthaired__liver_white",
+          "color_name": "Liver & White"
+        },
+        {
+          "coat_id": 378,
+          "coat_name": "pointer_german_shorthaired__black_white",
+          "color_name": "Black & White"
+        },
+        {
+          "coat_id": 380,
+          "coat_name": "pointer_german_shorthaired__liver_roan",
+          "color_name": "Liver Roan"
+        },
+        {
+          "coat_id": 382,
+          "coat_name": "pointer_german_shorthaired__tri_color",
+          "color_name": "Tri-color"
+        }
+      ]
     },
     {
       "breed": "Norwich Terrier",
@@ -2925,7 +5200,29 @@
         "Terrier"
       ],
       "thumbnail": "norwich_terrier_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 355,
+          "coat_name": "norwich_terrier__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 354,
+          "coat_name": "norwich_terrier__grizzle_tan",
+          "color_name": "Grizzle & Tan"
+        },
+        {
+          "coat_id": 353,
+          "coat_name": "norwich_terrier__black_tan",
+          "color_name": "Black & Tan"
+        },
+        {
+          "coat_id": 356,
+          "coat_name": "norwich_terrier__wheaten",
+          "color_name": "Wheaten"
+        }
+      ]
     },
     {
       "breed": "Japanese Chin",
@@ -2954,7 +5251,29 @@
         "Toy"
       ],
       "thumbnail": "japanese_chin_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 301,
+          "coat_name": "japanese_chin__black_white",
+          "color_name": "Black & White"
+        },
+        {
+          "coat_id": 302,
+          "coat_name": "japanese_chin__red_white",
+          "color_name": "Red & White"
+        },
+        {
+          "coat_id": 304,
+          "coat_name": "japanese_chin__tricolor",
+          "color_name": "Tricolor"
+        },
+        {
+          "coat_id": 303,
+          "coat_name": "japanese_chin__sesame_white",
+          "color_name": "Sesame & White"
+        }
+      ]
     },
     {
       "breed": "Lowchen",
@@ -2983,7 +5302,29 @@
         "Toy"
       ],
       "thumbnail": "lowchen_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 321,
+          "coat_name": "lowchen__blonde",
+          "color_name": "Blonde"
+        },
+        {
+          "coat_id": 324,
+          "coat_name": "lowchen__white_blonde",
+          "color_name": "White & Blonde"
+        },
+        {
+          "coat_id": 323,
+          "coat_name": "lowchen__gray_white",
+          "color_name": "Gray & White"
+        },
+        {
+          "coat_id": 322,
+          "coat_name": "lowchen__chocolate",
+          "color_name": "Chocolate"
+        }
+      ]
     },
     {
       "breed": "Afghan Hound",
@@ -3015,7 +5356,44 @@
         "Hound"
       ],
       "thumbnail": "afghan_hound_thumb.jpg",
-      "coatCount": 7
+      "coatCount": 7,
+      "coats": [
+        {
+          "coat_id": 1,
+          "coat_name": "afghan_hound__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 7,
+          "coat_name": "afghan_hound__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 4,
+          "coat_name": "afghan_hound__cream",
+          "color_name": "Cream"
+        },
+        {
+          "coat_id": 5,
+          "coat_name": "afghan_hound__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 2,
+          "coat_name": "afghan_hound__blue",
+          "color_name": "Blue"
+        },
+        {
+          "coat_id": 3,
+          "coat_name": "afghan_hound__brindle",
+          "color_name": "Brindle"
+        },
+        {
+          "coat_id": 6,
+          "coat_name": "afghan_hound__various_combinations",
+          "color_name": "Various combinations"
+        }
+      ]
     },
     {
       "breed": "Australian Terrier",
@@ -3043,7 +5421,24 @@
         "Terrier"
       ],
       "thumbnail": "australian_terrier_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 45,
+          "coat_name": "australian_terrier__blue_tan",
+          "color_name": "Blue & Tan"
+        },
+        {
+          "coat_id": 46,
+          "coat_name": "australian_terrier__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 47,
+          "coat_name": "australian_terrier__sand_tan",
+          "color_name": "Sand & Tan"
+        }
+      ]
     },
     {
       "breed": "Irish Water Spaniel",
@@ -3069,7 +5464,14 @@
         "Sporting"
       ],
       "thumbnail": "irish_water_spaniel_thumb.jpg",
-      "coatCount": 1
+      "coatCount": 1,
+      "coats": [
+        {
+          "coat_id": 288,
+          "coat_name": "irish_water_spaniel__liver",
+          "color_name": "Liver"
+        }
+      ]
     },
     {
       "breed": "Sealyham Terrier",
@@ -3097,7 +5499,24 @@
         "Terrier"
       ],
       "thumbnail": "sealyham_terrier_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 439,
+          "coat_name": "sealyham_terrier__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 440,
+          "coat_name": "sealyham_terrier__white_lemon",
+          "color_name": "White & Lemon"
+        },
+        {
+          "coat_id": 441,
+          "coat_name": "sealyham_terrier__white_tan",
+          "color_name": "White & Tan"
+        }
+      ]
     },
     {
       "breed": "Dandie Dinmont Terrier",
@@ -3124,7 +5543,19 @@
         "Terrier"
       ],
       "thumbnail": "dandie_dinmont_terrier_thumb.jpg",
-      "coatCount": 2
+      "coatCount": 2,
+      "coats": [
+        {
+          "coat_id": 212,
+          "coat_name": "dandie_dinmont_terrier__pepper",
+          "color_name": "Pepper"
+        },
+        {
+          "coat_id": 211,
+          "coat_name": "dandie_dinmont_terrier__mustard",
+          "color_name": "Mustard"
+        }
+      ]
     },
     {
       "breed": "Briard",
@@ -3153,7 +5584,29 @@
         "Herding"
       ],
       "thumbnail": "briard_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 106,
+          "coat_name": "briard__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 108,
+          "coat_name": "briard__gray",
+          "color_name": "Gray"
+        },
+        {
+          "coat_id": 107,
+          "coat_name": "briard__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 109,
+          "coat_name": "briard__wheaten",
+          "color_name": "Wheaten"
+        }
+      ]
     },
     {
       "breed": "Spinone Italiano",
@@ -3181,7 +5634,24 @@
         "Sporting"
       ],
       "thumbnail": "spinone_italiano_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 471,
+          "coat_name": "spinone_italiano__white_orange",
+          "color_name": "White & Orange"
+        },
+        {
+          "coat_id": 470,
+          "coat_name": "spinone_italiano__white_brown",
+          "color_name": "White & Brown"
+        },
+        {
+          "coat_id": 472,
+          "coat_name": "spinone_italiano__white_roan",
+          "color_name": "White & Roan"
+        }
+      ]
     },
     {
       "breed": "Japanese Spitz",
@@ -3207,7 +5677,14 @@
         "Non-Sporting"
       ],
       "thumbnail": "japanese_spitz_thumb.jpg",
-      "coatCount": 1
+      "coatCount": 1,
+      "coats": [
+        {
+          "coat_id": 305,
+          "coat_name": "japanese_spitz__white",
+          "color_name": "White"
+        }
+      ]
     },
     {
       "breed": "Bolognese",
@@ -3233,7 +5710,14 @@
         "Toy"
       ],
       "thumbnail": "bolognese_thumb.jpg",
-      "coatCount": 1
+      "coatCount": 1,
+      "coats": [
+        {
+          "coat_id": 83,
+          "coat_name": "bolognese__white",
+          "color_name": "White"
+        }
+      ]
     },
     {
       "breed": "Clumber Spaniel",
@@ -3261,7 +5745,24 @@
         "Sporting"
       ],
       "thumbnail": "clumber_spaniel_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 176,
+          "coat_name": "clumber_spaniel__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 178,
+          "coat_name": "clumber_spaniel__white_orange",
+          "color_name": "White & Orange"
+        },
+        {
+          "coat_id": 177,
+          "coat_name": "clumber_spaniel__white_lemon",
+          "color_name": "White & Lemon"
+        }
+      ]
     },
     {
       "breed": "American Water Spaniel",
@@ -3289,7 +5790,24 @@
         "Sporting"
       ],
       "thumbnail": "american_water_spaniel_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 33,
+          "coat_name": "american_water_spaniel__brown",
+          "color_name": "Brown"
+        },
+        {
+          "coat_id": 35,
+          "coat_name": "american_water_spaniel__liver",
+          "color_name": "Liver"
+        },
+        {
+          "coat_id": 34,
+          "coat_name": "american_water_spaniel__chocolate",
+          "color_name": "Chocolate"
+        }
+      ]
     },
     {
       "breed": "Glen of Imaal Terrier",
@@ -3317,7 +5835,24 @@
         "Terrier"
       ],
       "thumbnail": "glen_of_imaal_terrier_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 263,
+          "coat_name": "glen_of_imaal_terrier__wheaten",
+          "color_name": "Wheaten"
+        },
+        {
+          "coat_id": 262,
+          "coat_name": "glen_of_imaal_terrier__brindle",
+          "color_name": "Brindle"
+        },
+        {
+          "coat_id": 261,
+          "coat_name": "glen_of_imaal_terrier__blue",
+          "color_name": "Blue"
+        }
+      ]
     },
     {
       "breed": "Spanish Water Dog",
@@ -3347,7 +5882,29 @@
         "Sporting"
       ],
       "thumbnail": "spanish_water_dog_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 463,
+          "coat_name": "spanish_water_dog__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 464,
+          "coat_name": "spanish_water_dog__brown",
+          "color_name": "Brown"
+        },
+        {
+          "coat_id": 466,
+          "coat_name": "spanish_water_dog__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 465,
+          "coat_name": "spanish_water_dog__cream",
+          "color_name": "Cream"
+        }
+      ]
     },
     {
       "breed": "Wire Fox Terrier",
@@ -3375,7 +5932,24 @@
         "Terrier"
       ],
       "thumbnail": "wire_fox_terrier_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 508,
+          "coat_name": "wire_fox_terrier__white_with_black",
+          "color_name": "White with Black"
+        },
+        {
+          "coat_id": 510,
+          "coat_name": "wire_fox_terrier__white_with_tan",
+          "color_name": "White with Tan"
+        },
+        {
+          "coat_id": 509,
+          "coat_name": "wire_fox_terrier__white_with_black_tan",
+          "color_name": "White with Black & Tan"
+        }
+      ]
     },
     {
       "breed": "Coton de Tulear",
@@ -3403,7 +5977,24 @@
         "Toy"
       ],
       "thumbnail": "coton_de_tulear_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 194,
+          "coat_name": "coton_de_tulear__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 195,
+          "coat_name": "coton_de_tulear__white_apricot",
+          "color_name": "White & Apricot"
+        },
+        {
+          "coat_id": 196,
+          "coat_name": "coton_de_tulear__white_black",
+          "color_name": "White & Black"
+        }
+      ]
     },
     {
       "breed": "Sussex Spaniel",
@@ -3429,7 +6020,14 @@
         "Sporting"
       ],
       "thumbnail": "sussex_spaniel_thumb.jpg",
-      "coatCount": 1
+      "coatCount": 1,
+      "coats": [
+        {
+          "coat_id": 483,
+          "coat_name": "sussex_spaniel__golden_liver",
+          "color_name": "Golden Liver"
+        }
+      ]
     },
     {
       "breed": "Dogue de Bordeaux",
@@ -3457,7 +6055,24 @@
         "Working"
       ],
       "thumbnail": "dogue_de_bordeaux_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 221,
+          "coat_name": "dogue_de_bordeaux__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 219,
+          "coat_name": "dogue_de_bordeaux__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 220,
+          "coat_name": "dogue_de_bordeaux__mahogany",
+          "color_name": "Mahogany"
+        }
+      ]
     },
     {
       "breed": "Spinone",
@@ -3485,7 +6100,24 @@
         "Sporting"
       ],
       "thumbnail": "spinone_thumb.jpg",
-      "coatCount": 3
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 468,
+          "coat_name": "spinone__white_orange",
+          "color_name": "White & Orange"
+        },
+        {
+          "coat_id": 467,
+          "coat_name": "spinone__white_brown",
+          "color_name": "White & Brown"
+        },
+        {
+          "coat_id": 469,
+          "coat_name": "spinone__white_roan",
+          "color_name": "White & Roan"
+        }
+      ]
     },
     {
       "breed": "Basset Fauve de Bretagne",
@@ -3512,7 +6144,19 @@
         "Hound"
       ],
       "thumbnail": "basset_fauve_de_bretagne_thumb.jpg",
-      "coatCount": 2
+      "coatCount": 2,
+      "coats": [
+        {
+          "coat_id": 57,
+          "coat_name": "basset_fauve_de_bretagne__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 58,
+          "coat_name": "basset_fauve_de_bretagne__red",
+          "color_name": "Red"
+        }
+      ]
     },
     {
       "breed": "Dogo Argentino",
@@ -3539,7 +6183,19 @@
         "Working"
       ],
       "thumbnail": "dogo_argentino_thumb.jpg",
-      "coatCount": 2
+      "coatCount": 2,
+      "coats": [
+        {
+          "coat_id": 217,
+          "coat_name": "dogo_argentino__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 218,
+          "coat_name": "dogo_argentino__white_with_black_patch",
+          "color_name": "White with Black Patch"
+        }
+      ]
     },
     {
       "breed": "Kerry Blue Terrier",
@@ -3566,7 +6222,19 @@
         "Terrier"
       ],
       "thumbnail": "kerry_blue_terrier_thumb.jpg",
-      "coatCount": 2
+      "coatCount": 2,
+      "coats": [
+        {
+          "coat_id": 309,
+          "coat_name": "kerry_blue_terrier__blue",
+          "color_name": "Blue"
+        },
+        {
+          "coat_id": 310,
+          "coat_name": "kerry_blue_terrier__blue_gray",
+          "color_name": "Blue-Gray"
+        }
+      ]
     },
     {
       "breed": "Puli",
@@ -3595,7 +6263,29 @@
         "Herding"
       ],
       "thumbnail": "puli_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 405,
+          "coat_name": "puli__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 408,
+          "coat_name": "puli__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 407,
+          "coat_name": "puli__gray",
+          "color_name": "Gray"
+        },
+        {
+          "coat_id": 406,
+          "coat_name": "puli__fawn",
+          "color_name": "Fawn"
+        }
+      ]
     },
     {
       "breed": "Otterhound",
@@ -3624,7 +6314,29 @@
         "Hound"
       ],
       "thumbnail": "otterhound_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 359,
+          "coat_name": "otterhound__shaggy_black",
+          "color_name": "Shaggy Black"
+        },
+        {
+          "coat_id": 362,
+          "coat_name": "otterhound__shaggy_wheaten",
+          "color_name": "Shaggy Wheaten"
+        },
+        {
+          "coat_id": 361,
+          "coat_name": "otterhound__shaggy_gray",
+          "color_name": "Shaggy Gray"
+        },
+        {
+          "coat_id": 360,
+          "coat_name": "otterhound__shaggy_brindle",
+          "color_name": "Shaggy Brindle"
+        }
+      ]
     },
     {
       "breed": "Brussels Griffon",
@@ -3653,7 +6365,29 @@
         "Toy"
       ],
       "thumbnail": "brussels_griffon_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 116,
+          "coat_name": "brussels_griffon__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 115,
+          "coat_name": "brussels_griffon__belgian_black_tan",
+          "color_name": "Belgian Black & Tan"
+        },
+        {
+          "coat_id": 117,
+          "coat_name": "brussels_griffon__rough_coat",
+          "color_name": "Rough Coat"
+        },
+        {
+          "coat_id": 118,
+          "coat_name": "brussels_griffon__smooth_coat",
+          "color_name": "Smooth Coat"
+        }
+      ]
     },
     {
       "breed": "Barbet",
@@ -3683,7 +6417,34 @@
         "Sporting"
       ],
       "thumbnail": "barbet_thumb.jpg",
-      "coatCount": 5
+      "coatCount": 5,
+      "coats": [
+        {
+          "coat_id": 48,
+          "coat_name": "barbet__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 49,
+          "coat_name": "barbet__brown",
+          "color_name": "Brown"
+        },
+        {
+          "coat_id": 51,
+          "coat_name": "barbet__gray",
+          "color_name": "Gray"
+        },
+        {
+          "coat_id": 50,
+          "coat_name": "barbet__fawn",
+          "color_name": "Fawn"
+        },
+        {
+          "coat_id": 52,
+          "coat_name": "barbet__various_combinations",
+          "color_name": "Various combinations"
+        }
+      ]
     },
     {
       "breed": "Dachshund (Standard and Miniature)",
@@ -3715,7 +6476,44 @@
         "Hound"
       ],
       "thumbnail": "dachshund_thumb.jpg",
-      "coatCount": 7
+      "coatCount": 7,
+      "coats": [
+        {
+          "coat_id": 207,
+          "coat_name": "dachshund_standard_and_miniature__red",
+          "color_name": "Red"
+        },
+        {
+          "coat_id": 202,
+          "coat_name": "dachshund_standard_and_miniature__black_tan",
+          "color_name": "Black & Tan"
+        },
+        {
+          "coat_id": 204,
+          "coat_name": "dachshund_standard_and_miniature__chocolate_tan",
+          "color_name": "Chocolate & Tan"
+        },
+        {
+          "coat_id": 206,
+          "coat_name": "dachshund_standard_and_miniature__dapple",
+          "color_name": "Dapple"
+        },
+        {
+          "coat_id": 205,
+          "coat_name": "dachshund_standard_and_miniature__cream",
+          "color_name": "Cream"
+        },
+        {
+          "coat_id": 203,
+          "coat_name": "dachshund_standard_and_miniature__blue_tan",
+          "color_name": "Blue & Tan"
+        },
+        {
+          "coat_id": 208,
+          "coat_name": "dachshund_standard_and_miniature__wild_boar",
+          "color_name": "Wild Boar"
+        }
+      ]
     },
     {
       "breed": "Kooikerhondje",
@@ -3741,7 +6539,14 @@
         "Sporting"
       ],
       "thumbnail": "kooikerhondje_thumb.jpg",
-      "coatCount": 1
+      "coatCount": 1,
+      "coats": [
+        {
+          "coat_id": 311,
+          "coat_name": "kooikerhondje__red_white",
+          "color_name": "Red & White"
+        }
+      ]
     },
     {
       "breed": "Schapendoes",
@@ -3770,7 +6575,29 @@
         "Herding"
       ],
       "thumbnail": "schapendoes_thumb.jpg",
-      "coatCount": 4
+      "coatCount": 4,
+      "coats": [
+        {
+          "coat_id": 429,
+          "coat_name": "schapendoes__gray",
+          "color_name": "Gray"
+        },
+        {
+          "coat_id": 428,
+          "coat_name": "schapendoes__black",
+          "color_name": "Black"
+        },
+        {
+          "coat_id": 431,
+          "coat_name": "schapendoes__white",
+          "color_name": "White"
+        },
+        {
+          "coat_id": 430,
+          "coat_name": "schapendoes__various_combinations",
+          "color_name": "Various combinations"
+        }
+      ]
     }
   ]
 }

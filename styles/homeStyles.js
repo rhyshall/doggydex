@@ -3,11 +3,11 @@ import { StyleSheet } from 'react-native';
 export const homeStyles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#F7FBFF',
+    backgroundColor: 'transparent',
   },
   container: {
     flex: 1,
-    paddingTop: 0,
+    paddingTop: 0, // No padding, content at top
     paddingHorizontal: 8,
     position: 'relative',
     overflow: 'hidden',
@@ -115,84 +115,98 @@ export const homeStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
+    marginTop: -32, // Negative margin to raise title higher
   },
   titleBalanceSpacer: {
     width: 42,
   },
   titlePawCluster: {
-    marginLeft: 4,
+    marginLeft: 2,
   },
-  titlePawBg: {
-    fontSize: 36,
-    opacity: 0.44,
-    color: '#0A7EA4',
-    lineHeight: 36,
-    marginTop: -4,
-    textShadowColor: 'rgba(10,126,164,0.22)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
+  titlePawIcon: {
+    width: 40,
+    height: 40,
+    marginTop: -2,
+    transform: [{ translateY: -4 }],
   },
   title: {
-    textAlign: 'center',
-    marginBottom: 0,
     lineHeight: 30,
+    flexShrink: 1,
+    color: '#FF9F1C',
+    marginBottom: 24, // Added space below title
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: 17,
+    lineHeight: 24,
+    marginTop: -16, // Negative margin to raise subtitle higher
+    marginBottom: 16, // Reduced margin for less space above buttons
     textAlign: 'center',
-    opacity: 0.85,
-    lineHeight: 22,
-    marginBottom: 4,
-  },
-  controls: {
-    marginTop: 2,
-    gap: 10,
-    alignItems: 'stretch',
-    width: '100%',
-    maxWidth: 340,
-  },
-  actionButton: {
-    width: '100%',
-    alignItems: 'center',
-    borderRadius: 12,
-    paddingVertical: 13,
     paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.45)',
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    color: '#2F3742',
+    shadowColor: '#ffffff',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 1,
+  },
+  chooserCards: {
+    width: '100%',
+    maxWidth: 420,
+    gap: 12,
+    marginTop: 32, // Added space above Play Quiz button
+  },
+  chooserCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    paddingVertical: 18,
+    paddingHorizontal: 18,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 14,
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+  },
+  chooserCardHover: {
+    borderColor: '#FF8C66',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  chooserIcon: {
+    fontSize: 28,
+    lineHeight: 34,
+  },
+  chooserCardTextWrap: {
+    flex: 1,
+    gap: 2,
+  },
+  chooserCardTitle: {
+    fontSize: 18,
+    lineHeight: 24,
+    fontWeight: '700',
+    color: '#1F2937',
+  },
+  chooserCardTitleHover: {
+    color: '#FF9F1C',
+  },
+  chooserCardBody: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#6B7280',
   },
   buttonPressed: {
     transform: [{ scale: 0.98 }],
-  },
-  startButtonHover: {
-    backgroundColor: '#F77777',
-  },
-  doggydexButton: {
-    backgroundColor: '#FFE066',
-  },
-  doggydexButtonHover: {
-    backgroundColor: '#F7D64A',
-  },
-  statsButton: {
-    backgroundColor: '#B8E1FF',
-  },
-  statsButtonHover: {
-    backgroundColor: '#9BD3F7',
-  },
-  statsCard: {
-    width: '100%',
-    maxWidth: 340,
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    gap: 4,
-  },
-  buttonLabel: {
-    fontWeight: '600',
-    textAlign: 'center',
-    width: '100%',
-  },
-  statsLine: {
-    fontSize: 14,
-    lineHeight: 20,
-    textAlign: 'center',
-    opacity: 0.9,
   },
 });

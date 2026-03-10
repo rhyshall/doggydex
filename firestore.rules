@@ -1,0 +1,89 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /usernames/{usernameKey} {
+      allow get: if isSignedIn();
+      allow list: if false;
+      allow create: if isSignedIn()
+                    && request.resource.data.uid == request.auth.uid;
+      allow update: if isSignedIn()
+                    && resource.data.uid == request.auth.uid
+                    && request.resource.data.uid == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    match /userProgress/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /user_coats/{docId} {
+      allow read: if isSignedIn() && resource.data.user_id == request.auth.uid;
+      allow create: if isSignedIn()
+                    && request.resource.data.user_id == request.auth.uid;
+      allow update: if isSignedIn()
+                    && resource.data.user_id == request.auth.uid
+                    && request.resource.data.user_id == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.user_id == request.auth.uid;
+    }
+
+    match /user_breed_badges/{docId} {
+      allow read: if isSignedIn() && resource.data.user_id == request.auth.uid;
+      allow create: if isSignedIn()
+                    && request.resource.data.user_id == request.auth.uid;
+      allow update: if isSignedIn()
+                    && resource.data.user_id == request.auth.uid
+                    && request.resource.data.user_id == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.user_id == request.auth.uid;
+    }
+
+    match /breeds/{breedId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /coats/{coatId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /_meta/user_id_counter {
+      allow read: if true;
+
+      allow create: if isSignedIn()
+                    && request.resource.data.last_id is int
+                    && request.resource.data.last_id == 1
+                    && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.id
+                       == request.resource.data.last_id;
+
+      allow update: if isSignedIn()
+                    && resource.data.last_id is int
+                    && request.resource.data.last_id is int
+                    && request.resource.data.last_id == resource.data.last_id + 1
+                    && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.id
+                       == request.resource.data.last_id;
+
+      allow delete: if false;
+    }
+
+    match /_meta/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

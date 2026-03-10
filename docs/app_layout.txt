@@ -1,0 +1,72 @@
+breeds
+   |
+   |-- golden_retriever
+        name: "Golden Retriever"
+        totalCoats: 3
+        |
+        |-- coats (subcollection)
+              |
+              |-- golden
+                    imageUrl: "..."
+              |
+              |-- cream
+                    imageUrl: "..."
+              |
+              |-- dark_golden
+                    imageUrl: "..."
+
+users
+   |
+   |-- UID
+        username: "rhys"
+        email: "user@email.com"
+        createdAt: timestamp
+        quizzesCompleted: 0
+        coatsUnlocked: 0
+
+users
+   |
+   |-- UID
+        |
+        |-- unlockedCoats
+              |
+              |-- golden_retriever_golden
+                    breedId: "golden_retriever"
+                    coatId: "golden"
+                    unlockedAt: timestamp
+
+users
+   |
+   |-- UID
+        |
+        |-- badges
+              |
+              |-- golden_retriever
+                    earnedAt: timestamp
+
+
+Final Firestore Structure
+breeds
+   breedId
+      name
+      totalCoats
+      coats (subcollection)
+
+users
+   uid
+      username
+      quizzesCompleted
+      unlockedCoats (subcollection)
+      breedProgress (subcollection)
+      badges (subcollection)
+
+users
+   |
+   |-- UID
+        |
+        |-- breedProgress
+              |
+              |-- golden_retriever
+                    coatsUnlocked: 2
+                    totalCoats: 3
+                    badgeEarned: false

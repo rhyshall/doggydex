@@ -3,6 +3,7 @@
     "name": "DoggyDex",
     "slug": "dog-quiz",
     "version": "1.0.0",
+    "description": "Guess breeds, unlock coats, build your DoggyDex",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "dogquiz",
@@ -23,7 +24,7 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/paw-favicon.png"
     },
     "plugins": [
       "expo-router",

@@ -1,0 +1,61 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "user_coats",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "user_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "coat_id",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "user_breed_badges",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "user_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "breed_id",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "breeds",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "weight_min_lbs",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "weight_max_lbs",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "breeds",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "height_min_inches",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "height_max_inches",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 export const quizStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F7FBFF',
+    backgroundColor: 'transparent',
     paddingHorizontal: 14,
     paddingTop: 14,
     paddingBottom: 12,
@@ -11,9 +11,10 @@ export const quizStyles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     gap: 8,
+    marginTop: 10,
     marginBottom: 2,
   },
   title: {
@@ -26,45 +27,59 @@ export const quizStyles = StyleSheet.create({
     opacity: 0.9,
   },
   prompt: {
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 20,
+    lineHeight: 28,
     textAlign: 'center',
-    marginBottom: 2,
+    color: '#FF9F1C',
+    marginTop: 24, // Increased margin to lower breed text
+    marginBottom: 4,
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 10,
-    justifyContent: 'space-between',
-    marginTop: 2,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    width: '100%',
+    maxWidth: 450,
+    marginTop: 12,
   },
   card: {
-    width: '48.3%',
+    width: '42.3%',
+    maxWidth: 198,
+    aspectRatio: 1,
     borderRadius: 12,
     overflow: 'hidden',
-    alignItems: 'center',
-    paddingBottom: 8,
+    justifyContent: 'flex-end',
     borderWidth: 1,
     borderColor: '#687076',
+    position: 'relative',
   },
+  cardHover: {
+    borderWidth: 3,
+    borderColor: '#FF8C66', // Paw logo coral color
+  },
+    wrongReveal: {
+      borderWidth: 3,
+      borderColor: 'red',
+    },
   image: {
-    width: '100%',
-    height: 132,
+    ...StyleSheet.absoluteFillObject,
+    objectFit: 'cover', // Fill container and crop as needed
   },
   cardLabel: {
     fontSize: 12,
     lineHeight: 16,
-    paddingTop: 6,
+    paddingVertical: 6,
     paddingHorizontal: 4,
     textAlign: 'center',
+    width: '100%',
+    backgroundColor: 'rgba(26, 32, 37, 0.52)',
+    color: '#FFFFFF',
   },
-  correct: {
+  correctReveal: {
     borderWidth: 3,
     borderColor: 'green',
-  },
-  wrong: {
-    borderWidth: 3,
-    borderColor: 'red',
   },
   controls: {
     gap: 8,
@@ -134,23 +149,46 @@ export const quizStyles = StyleSheet.create({
     textAlign: 'center',
     width: '100%',
   },
-  backLink: {
-    marginTop: 2,
-    borderRadius: 8,
+  switchLink: {
+    alignSelf: 'flex-start',
+    marginTop: 8,
+    borderRadius: 10,
     paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingVertical: 6,
+    backgroundColor: 'rgba(255,255,255,0.32)',
   },
-  backLinkHover: {
-    backgroundColor: '#EAF6FB',
+  bottomBackWrap: {
+    marginTop: 'auto',
+    alignSelf: 'center',
+    marginBottom: 56,
   },
-  backLinkText: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '600',
-    color: '#0A7EA4',
+  switchLinkHover: {
+    backgroundColor: 'rgba(255,255,255,0.42)',
+    transform: [{ translateX: -2 }],
   },
-  backLinkTextHover: {
-    color: '#086283',
+  switchLinkPressed: {
+    transform: [{ scale: 0.99 }],
+  },
+  switchLinkText: {
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: '500',
+    color: '#4A2A1F',
+    letterSpacing: 0.2,
+    ...(Platform.OS === 'web'
+      ? {
+          transitionProperty: 'color, transform',
+          transitionDuration: '0.2s, 0.15s',
+          transitionTimingFunction: 'ease, ease',
+        }
+      : null),
+  },
+  switchLinkTextHover: {
+    color: '#6B3E2E',
+    textDecorationLine: 'underline',
+  },
+  switchLinkTextPressed: {
+    color: '#3A2018',
   },
   hint: {
     fontSize: 14,
@@ -158,5 +196,8 @@ export const quizStyles = StyleSheet.create({
     opacity: 0.8,
     textAlign: 'center',
     marginTop: 4,
+  },
+  chooseHint: {
+    marginTop: 12,
   },
 });

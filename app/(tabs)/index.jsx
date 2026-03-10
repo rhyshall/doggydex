@@ -1,24 +1,14 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { auth } from '@/lib/firebase-services';
+import { getUserProfileUsername, hasUsername, upsertUserProfile } from '@/lib/user-store';
 import { commonStyles } from '@/styles/common';
 import { homeStyles } from '@/styles/homeStyles';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Google from 'expo-auth-session/providers/google';
 import { Image } from 'expo-image';
-import { useFocusEffect, useRouter } from 'expo-router';
-import * as WebBrowser from 'expo-web-browser';
-import { GoogleAuthProvider, onAuthStateChanged, signInWithCredential, signInWithPopup, signOut } from 'firebase/auth';
-import { useCallback, useEffect, useState } from 'react';
-import { Platform, Pressable, View } from 'react-native';
-import dogBreedsData from '../../data/dog-breeds.json';
-
-WebBrowser.maybeCompleteAuthSession();
-
-const TOTAL_COATS = dogBreedsData.breeds.reduce(
-  (sum, breed) => sum + (breed.coatCount ?? breed.coatColors?.length ?? 0),
-  0
-);
+import { Redirect, useRouter } from 'expo-router';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { useEffect, useState } from 'react';
+import { Pressable, View } from 'react-native';
 
 const LABRADOR_BACKGROUND_IMAGES = {
   yellow: 'https://images.dog.ceo/breeds/labrador/n02099712_5640.jpg',
@@ -29,71 +19,45 @@ const LABRADOR_BACKGROUND_IMAGES = {
 export default function HomeScreen() {
   const router = useRouter();
   const [user, setUser] = useState(null);
-  const [coatsUnlocked, setCoatsUnlocked] = useState(0);
-  const [showStats, setShowStats] = useState(false);
-
-  const [request, , promptAsync] = Google.useAuthRequest({
-    webClientId: process.env.WEB_CLIENT_ID,
-    iosClientId: process.env.IOS_CLIENT_ID,
-    androidClientId: process.env.ANDROID_CLIENT_ID,
-    expoClientId: process.env.EXPO_CLIENT_ID,
-    selectAccount: true,
-    extraParams: {
-      prompt: 'select_account',
-    },
-  });
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    let isActive = true;
+
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (!isActive) {
+        return;
+      }
+
       setUser(firebaseUser ?? null);
+      setAuthChecked(true);
+
+      if (!firebaseUser) {
+        return;
+      }
+
+      try {
+        await upsertUserProfile(firebaseUser);
+      } catch (profileError) {
+        console.warn('Failed to sync user profile', profileError);
+      }
+
+      try {
+        const storedUsername = await getUserProfileUsername(firebaseUser.uid);
+        if (!hasUsername(storedUsername)) {
+          router.replace('/username-setup');
+        }
+      } catch (usernameCheckError) {
+        console.warn('Failed to check username requirement', usernameCheckError);
+        router.replace('/username-setup');
+      }
     });
 
-    return unsubscribe;
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const storedCollection = await AsyncStorage.getItem('dogCollection');
-        if (storedCollection) {
-          const parsedCollection = JSON.parse(storedCollection);
-          const uniqueCoats = Array.isArray(parsedCollection) ? new Set(parsedCollection).size : 0;
-          setCoatsUnlocked(uniqueCoats);
-        } else {
-          setCoatsUnlocked(0);
-        }
-      } catch (e) {
-        console.warn('Failed to load home state', e);
-      }
-    })();
-  }, []);
-
-  async function handleGoogleSignIn() {
-    try {
-      if (Platform.OS === 'web') {
-        const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
-        return;
-      }
-
-      const result = await promptAsync();
-
-      if (!result || result.type !== 'success' || !result.authentication) {
-        return;
-      }
-
-      const { idToken, accessToken } = result.authentication;
-
-      if (!idToken && !accessToken) {
-        return;
-      }
-
-      const credential = GoogleAuthProvider.credential(idToken ?? null, accessToken ?? null);
-      await signInWithCredential(auth, credential);
-    } catch (e) {
-      console.warn('Failed to launch Google sign-in', e);
-    }
-  }
+    return () => {
+      isActive = false;
+      unsubscribe();
+    };
+  }, [router]);
 
   async function handleSignOut() {
     try {
@@ -103,26 +67,19 @@ export default function HomeScreen() {
     }
   }
 
-  useFocusEffect(
-    useCallback(() => {
-      (async () => {
-        try {
-          const storedCollection = await AsyncStorage.getItem('dogCollection');
-          if (storedCollection) {
-            const parsedCollection = JSON.parse(storedCollection);
-            const uniqueCoats = Array.isArray(parsedCollection) ? new Set(parsedCollection).size : 0;
-            setCoatsUnlocked(uniqueCoats);
-          } else {
-            setCoatsUnlocked(0);
-          }
-        } catch (e) {
-          console.warn('Failed to refresh coat unlock count', e);
-        }
-      })();
-    }, [])
-  );
+  if (!authChecked) {
+    return (
+      <ThemedView style={homeStyles.screen}>
+        <View style={[commonStyles.container, homeStyles.container]}>
+          <ThemedText style={homeStyles.subtitle}>Checking sign-in...</ThemedText>
+        </View>
+      </ThemedView>
+    );
+  }
 
-  const progressPct = TOTAL_COATS > 0 ? Math.round((coatsUnlocked / TOTAL_COATS) * 100) : 0;
+  if (!user) {
+    return <Redirect href="/doggydex" />;
+  }
 
   return (
     <ThemedView style={homeStyles.screen}>
@@ -144,17 +101,7 @@ export default function HomeScreen() {
                 <ThemedText style={homeStyles.signOutText}>Sign out</ThemedText>
               </Pressable>
             </View>
-          ) : (
-            <Pressable
-              style={({ hovered, pressed }) => [
-                homeStyles.signInButton,
-                (hovered || pressed) && homeStyles.signInButtonHover,
-              ]}
-              disabled={Platform.OS !== 'web' && !request}
-              onPress={handleGoogleSignIn}>
-              <ThemedText style={homeStyles.signInText}>Sign in with Google</ThemedText>
-            </Pressable>
-          )}
+          ) : null}
         </View>
 
         <View pointerEvents="none" style={homeStyles.bgDogsLayer}>
@@ -179,52 +126,47 @@ export default function HomeScreen() {
             <View style={homeStyles.titleBalanceSpacer} />
             <ThemedText type="title" style={homeStyles.title}>DoggyDex</ThemedText>
             <View style={homeStyles.titlePawCluster}>
-              <ThemedText style={homeStyles.titlePawBg}>🐾</ThemedText>
+              <Image source={require('../../assets/images/paw-favicon.png')} style={homeStyles.titlePawIcon} contentFit="contain" />
             </View>
           </View>
-          <ThemedText style={homeStyles.subtitle}>Guess the dog breed from any coat colour</ThemedText>
+          <ThemedText style={homeStyles.subtitle}>Guess breeds, unlock coats, build your collection!</ThemedText>
 
-          <View style={homeStyles.controls}>
+          <View style={homeStyles.chooserCards}>
             <Pressable
               style={({ hovered, pressed }) => [
-                commonStyles.playButton,
-                homeStyles.actionButton,
-                (hovered || pressed) && homeStyles.startButtonHover,
+                homeStyles.chooserCard,
+                (hovered || pressed) && homeStyles.chooserCardHover,
                 pressed && homeStyles.buttonPressed,
               ]}
               onPress={() => router.push('/quiz')}>
-              <ThemedText type="subtitle" style={homeStyles.buttonLabel}>Start Quiz</ThemedText>
+              {({ hovered, pressed }) => (
+                <>
+                  <ThemedText style={homeStyles.chooserIcon}>🎯</ThemedText>
+                  <View style={homeStyles.chooserCardTextWrap}>
+                    <ThemedText style={[homeStyles.chooserCardTitle, (hovered || pressed) && homeStyles.chooserCardTitleHover]}>Play Quiz</ThemedText>
+                    <ThemedText style={homeStyles.chooserCardBody}>Guess correct breeds to unlock new coats</ThemedText>
+                  </View>
+                </>
+              )}
             </Pressable>
             <Pressable
               style={({ hovered, pressed }) => [
-                commonStyles.playButton,
-                homeStyles.actionButton,
-                homeStyles.doggydexButton,
-                (hovered || pressed) && homeStyles.doggydexButtonHover,
+                homeStyles.chooserCard,
+                (hovered || pressed) && homeStyles.chooserCardHover,
                 pressed && homeStyles.buttonPressed,
               ]}
               onPress={() => router.push('/doggydex')}>
-              <ThemedText type="subtitle" style={homeStyles.buttonLabel}>View DoggyDex</ThemedText>
-            </Pressable>
-            <Pressable
-              style={({ hovered, pressed }) => [
-                commonStyles.playButton,
-                homeStyles.actionButton,
-                homeStyles.statsButton,
-                (hovered || pressed) && homeStyles.statsButtonHover,
-                pressed && homeStyles.buttonPressed,
-              ]}
-              onPress={() => setShowStats((prev) => !prev)}>
-              <ThemedText type="subtitle" style={homeStyles.buttonLabel}>Stats</ThemedText>
+              {({ hovered, pressed }) => (
+                <>
+                  <ThemedText style={homeStyles.chooserIcon}>📘</ThemedText>
+                  <View style={homeStyles.chooserCardTextWrap}>
+                    <ThemedText style={[homeStyles.chooserCardTitle, (hovered || pressed) && homeStyles.chooserCardTitleHover]}>View DoggyDex</ThemedText>
+                    <ThemedText style={homeStyles.chooserCardBody}>View your coat collection for each breed</ThemedText>
+                  </View>
+                </>
+              )}
             </Pressable>
           </View>
-
-          {showStats ? (
-            <View style={homeStyles.statsCard}>
-              <ThemedText style={homeStyles.statsLine}>Coats unlocked: {coatsUnlocked} / {TOTAL_COATS}</ThemedText>
-              <ThemedText style={homeStyles.statsLine}>Completion: {progressPct}%</ThemedText>
-            </View>
-          ) : null}
         </View>
       </View>
     </ThemedView>

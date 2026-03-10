@@ -5,6 +5,16 @@
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
+    "seed:breeds": "node ./scripts/seed-breeds-to-firestore.js",
+    "seed:breeds:dry-run": "node ./scripts/seed-breeds-to-firestore.js --dry-run",
+    "sync:images": "node ./scripts/sync-images-to-storage.js",
+    "sync:images:dry-run": "node ./scripts/sync-images-to-storage.js --dry-run",
+    "migrate:coats:ids": "node ./scripts/migrate-coat-id-sequence.js",
+    "migrate:coats:ids:dry-run": "node ./scripts/migrate-coat-id-sequence.js --dry-run",
+    "migrate:breeds:ids": "node ./scripts/migrate-breed-id-sequence.js",
+    "migrate:breeds:ids:dry-run": "node ./scripts/migrate-breed-id-sequence.js --dry-run",
+    "coats:image-exists": "node ./scripts/update-coat-image-exists.js",
+    "coats:image-exists:dry-run": "node ./scripts/update-coat-image-exists.js --dry-run",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
@@ -31,6 +41,7 @@
     "expo-system-ui": "~6.0.9",
     "expo-web-browser": "~15.0.10",
     "firebase": "^12.10.0",
+    "firebase-admin": "^13.5.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.5",
@@ -47,6 +58,7 @@
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
     "expo-module-scripts": "^55.0.2",
+    "firebase-tools": "^15.9.0",
     "typescript": "~5.9.2"
   },
   "private": true

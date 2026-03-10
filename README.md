@@ -83,3 +83,109 @@ For Google sign-in on Expo/native flows, also set:
 - `WEB_CLIENT_ID`
 
 Quiz progress sync is tracked in Firestore by Firebase Auth `uid`.
+
+## Firestore rules and indexes
+
+This repo includes:
+
+- `firestore.rules`
+- `firestore.indexes.json`
+- `firebase.json`
+
+### Deploy
+
+```bash
+npm install -g firebase-tools
+firebase login
+firebase use <your-firebase-project-id>
+firebase deploy --only firestore:rules,firestore:indexes
+```
+
+### Security model
+
+- `users/{uid}` and `userProgress/{uid}` are user-private (owner-only read/write).
+- `user_coats` and `user_breed_badges` are user-private by `user_id == request.auth.uid`.
+- `breeds`, `coats`, and `_meta` are read-only from clients.
+
+User profile upserts now use `_meta/user_id_counter` in a transaction to assign ascending numeric
+`users.id` values and set `users.date_created`.
+If you pull these changes, deploy updated Firestore rules before testing registration flows.
+
+### Catalog seeding note
+
+Breed/coat catalog writes are blocked by the locked client rules above.
+Seed catalog documents with Admin SDK / server-side tooling (or temporarily relax rules during controlled seeding, then re-deploy locked rules).
+
+### Seed breeds/coats with Admin SDK
+
+1. Generate a Firebase service account key (Firebase Console → Project settings → Service accounts).
+2. Set one of these env vars:
+
+```bash
+FIREBASE_SERVICE_ACCOUNT_KEY=./service-account.json
+```
+
+or
+
+```bash
+FIREBASE_SERVICE_ACCOUNT_JSON={...full-json...}
+```
+
+3. Run:
+
+```bash
+npm run seed:breeds
+```
+
+Preview write counts only (no credentials required, no writes):
+
+```bash
+npm run seed:breeds:dry-run
+```
+
+This upserts:
+
+- `breeds`
+- `coats`
+- `_meta/breed_catalog`
+
+If `coats.coat_id` has already been migrated to numeric values, rerunning `seed:breeds`
+preserves existing numeric IDs for matching coat docs and only assigns new numbers to new coats.
+
+The seeder now prefers each breed's `coats` array (`coat_id`, `coat_name`, `color_name`) when present,
+and falls back to `coatColors` for backward compatibility.
+
+### Sync local images to Firebase Storage
+
+Use this Admin SDK script to sync files from local `img/` to your Firebase Storage bucket.
+
+Run a preview first:
+
+```bash
+npm run sync:images:dry-run
+```
+
+Run the real sync:
+
+```bash
+npm run sync:images
+```
+
+Optional flags:
+
+- `--dir=img` to choose a different local source folder.
+- `--prefix=img` to choose a different Storage path prefix.
+- `--bucket=<bucket-name>` to force a specific Storage bucket.
+- `--delete-remote` to remove remote files under the prefix that do not exist locally.
+
+Examples:
+
+```bash
+node ./scripts/sync-images-to-storage.js --dry-run --prefix=img
+node ./scripts/sync-images-to-storage.js --dry-run --bucket=your-project.appspot.com
+node ./scripts/sync-images-to-storage.js --delete-remote
+```
+
+The script reads credentials from `FIREBASE_SERVICE_ACCOUNT_KEY` or
+`FIREBASE_SERVICE_ACCOUNT_JSON` (same as the seeding scripts), and uses
+`FIREBASE_STORAGE_BUCKET` or `EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET` for bucket selection.

@@ -1,25 +1,18 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { auth } from '@/lib/firebase-services';
+import { auth, db } from '@/lib/firebase-services';
 import { loadUserProgress, saveUserProgress } from '@/lib/progress-store';
+import { indexVariantsByBreed } from '@/lib/storage-coat-variants';
 import { commonStyles } from '@/styles/common';
 import { quizStyles } from '@/styles/quizStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
+import { collection as firestoreCollection, getDocs, query, where } from 'firebase/firestore';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, View } from 'react-native';
 
-const DOGS = [
-  { id: 'labrador-yellow', breed: 'Labrador Retriever', coat: 'Yellow', uri: 'https://images.dog.ceo/breeds/labrador/n02099712_5640.jpg' },
-  { id: 'labrador-black', breed: 'Labrador Retriever', coat: 'Black', uri: 'https://images.dog.ceo/breeds/labrador/n02099712_1978.jpg' },
-  { id: 'pug-fawn', breed: 'Pug', coat: 'Fawn', uri: 'https://images.dog.ceo/breeds/pug/n02110958_15761.jpg' },
-  { id: 'pug-black', breed: 'Pug', coat: 'Black', uri: 'https://images.dog.ceo/breeds/pug/n02110958_8270.jpg' },
-  { id: 'germanshepherd-tan', breed: 'German Shepherd', coat: 'Tan & Black', uri: 'https://images.dog.ceo/breeds/germanshepherd/n02106662_5705.jpg' },
-  { id: 'germanshepherd-sable', breed: 'German Shepherd', coat: 'Sable', uri: 'https://images.dog.ceo/breeds/germanshepherd/n02106662_2169.jpg' },
-  { id: 'golden-light', breed: 'Golden Retriever', coat: 'Light Golden', uri: 'https://images.dog.ceo/breeds/retriever/golden/n02099601_3004.jpg' },
-  { id: 'golden-dark', breed: 'Golden Retriever', coat: 'Dark Golden', uri: 'https://images.dog.ceo/breeds/retriever/golden/n02099601_5159.jpg' },
-];
+const QUIZ_IMAGE_BASE_URL = 'https://storage.googleapis.com/doggydex-storage-f83a1/img/';
 
 function shuffle(arr) {
   const a = arr.slice();
@@ -30,8 +23,8 @@ function shuffle(arr) {
   return a;
 }
 
-const BREEDS = [...new Set(DOGS.map((dog) => dog.breed))];
 const BREED_BADGES_KEY = 'breedBadges';
+const MIN_BREEDS_PER_QUESTION = 4;
 
 function weightedPick(items, weightFn) {
   if (!items.length) return null;
@@ -67,6 +60,14 @@ function pickImageUri(variant, previousUri) {
   return finalPool[Math.floor(Math.random() * finalPool.length)];
 }
 
+function toTitleCaseFromId(value) {
+  return String(value || '')
+    .split('_')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
 export default function QuizScreen() {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -76,12 +77,11 @@ export default function QuizScreen() {
   const [newUnlock, setNewUnlock] = useState(null);
   const [newBadge, setNewBadge] = useState(null);
   const [syncNotice, setSyncNotice] = useState(null);
-  const collectionRef = useRef([]);
+  const [cloudQuizNotice, setCloudQuizNotice] = useState(null);
+  const [isCloudQuizLoading, setIsCloudQuizLoading] = useState(true);
+  const [storageVariantMap, setStorageVariantMap] = useState({});
+  const [lives, setLives] = useState(3);
   const lastTargetImageUriRef = useRef(null);
-
-  useEffect(() => {
-    collectionRef.current = collection;
-  }, [collection]);
 
   const loadCollection = useCallback(async () => {
     try {
@@ -152,6 +152,112 @@ export default function QuizScreen() {
     loadProgress();
   }, [loadProgress]);
 
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function loadStorageVariants() {
+      setIsCloudQuizLoading(true);
+      setCloudQuizNotice(null);
+
+      const [coatsSnapshot, breedsSnapshot] = await Promise.all([
+        getDocs(query(firestoreCollection(db, 'coats'), where('image_exists', '==', true))),
+        getDocs(firestoreCollection(db, 'breeds')),
+      ]);
+
+      if (isCancelled) {
+        return;
+      }
+
+      const breedNameById = new Map();
+      breedsSnapshot.docs.forEach((breedDoc) => {
+        const data = breedDoc.data() || {};
+        const breedId = typeof data.breed_id === 'string' ? data.breed_id.trim() : breedDoc.id;
+        const breedName = typeof data.breed_name === 'string' ? data.breed_name.trim() : '';
+
+        if (breedId && breedName) {
+          breedNameById.set(breedId, breedName);
+        }
+      });
+
+      const coatsWithImageFiles = coatsSnapshot.docs
+        .map((coatDoc) => {
+          const data = coatDoc.data() || {};
+          const breedId = typeof data.breed_id === 'string' ? data.breed_id.trim() : '';
+          const imgFilename = typeof data.img_filename === 'string' ? data.img_filename.trim() : '';
+
+          if (!breedId || !imgFilename) {
+            return null;
+          }
+
+          const breedNameFromDoc = typeof data.breed_name === 'string' ? data.breed_name.trim() : '';
+          const colorName = typeof data.color_name === 'string' ? data.color_name.trim() : '';
+          const coatName = typeof data.coat_name === 'string' ? data.coat_name.trim() : '';
+
+          const breedLabel = breedNameFromDoc || breedNameById.get(breedId) || toTitleCaseFromId(breedId);
+          const coatLabel = colorName || coatName || coatDoc.id;
+
+          return {
+            id: coatDoc.id,
+            breed: breedLabel,
+            breedId,
+            coat: coatLabel,
+            imgFilename,
+          };
+        })
+        .filter(Boolean);
+
+      const cloudBackedVariants = coatsWithImageFiles.map((variant) => {
+        // Add cache-busting query parameter
+        const cacheBust = `?v=${Date.now()}`;
+        const uri = `${QUIZ_IMAGE_BASE_URL}${variant.imgFilename}${cacheBust}`;
+
+        return {
+          ...variant,
+          uri,
+          images: [uri],
+        };
+      });
+
+      if (isCancelled) {
+        return;
+      }
+
+      const variantsByBreed = indexVariantsByBreed(cloudBackedVariants);
+      setStorageVariantMap(variantsByBreed);
+
+      const availableBreeds = Object.keys(variantsByBreed);
+      if (availableBreeds.length < MIN_BREEDS_PER_QUESTION) {
+        setCloudQuizNotice(
+          `Cloud quiz setup incomplete (${availableBreeds.length}/${MIN_BREEDS_PER_QUESTION} breeds ready from ${coatsWithImageFiles.length} coats where image_exists=true).`
+        );
+      } else {
+        setCloudQuizNotice(null);
+      }
+
+      setIsCloudQuizLoading(false);
+    }
+
+    loadStorageVariants().catch((error) => {
+      console.warn('Failed to load quiz options from Firestore/Storage', error);
+      if (isCancelled) {
+        return;
+      }
+
+      setStorageVariantMap({});
+      const errorCode = typeof error?.code === 'string' ? error.code : null;
+      setCloudQuizNotice(
+        errorCode
+          ? `Cloud quiz request failed (${errorCode}). Check coats.image_exists/img_filename and Storage bucket img files.`
+          : 'Cloud quiz request failed. Check coats.image_exists/img_filename and Storage bucket img files.'
+      );
+      setIsCloudQuizLoading(false);
+    });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+
   async function unlockDog(dogId) {
     if (collection.includes(dogId)) {
       return { isNew: false, updatedCollection: collection };
@@ -181,67 +287,64 @@ export default function QuizScreen() {
     return { isNew: true, updatedCollection: updated };
   }
 
-  function pickWeightedCoatForBreed(breed, unlockedSet, previousTargetUri = null) {
-    const variants = DOGS.filter((dog) => dog.breed === breed);
-    const pickedVariant = weightedPick(
-      variants,
-      (variant) => (unlockedSet.has(variant.id) ? 1 : 3)
-    );
+  const pickRandomCoatForBreed = useCallback((breed, previousTargetUri = null) => {
+    const variants = storageVariantMap[breed] || [];
+    if (!variants.length) {
+      return null;
+    }
+
+    const pickedVariant = weightedPick(variants, () => 1);
+    if (!pickedVariant) {
+      return null;
+    }
 
     const chosenUri = pickImageUri(pickedVariant, previousTargetUri);
     return { ...pickedVariant, uri: chosenUri };
-  }
+  }, [storageVariantMap]);
 
   const { choices, targetIndex } = useMemo(() => {
-    const unlockedSet = new Set(collectionRef.current);
+    const availableBreeds = Object.keys(storageVariantMap).filter((breed) => {
+      const variants = storageVariantMap[breed];
+      return Array.isArray(variants) && variants.length > 0;
+    });
+
+    if (availableBreeds.length < MIN_BREEDS_PER_QUESTION) {
+      return { choices: [], targetIndex: -1 };
+    }
+
     const previousImageUri = questionIndex === 0 ? null : lastTargetImageUriRef.current;
 
-    const targetBreed = weightedPick(
-      BREEDS,
-      (breed) => {
-        const coats = DOGS.filter((dog) => dog.breed === breed);
-        const isCompleted = coats.every((coat) => unlockedSet.has(coat.id));
-        return isCompleted ? 1 : 3;
-      }
-    );
+    const targetBreed = weightedPick(availableBreeds, () => 1);
+    const targetDog = pickRandomCoatForBreed(targetBreed, previousImageUri);
 
-    const targetDog = pickWeightedCoatForBreed(
-      targetBreed,
-      unlockedSet,
-      previousImageUri
-    );
+    if (!targetDog) {
+      return { choices: [], targetIndex: -1 };
+    }
 
     lastTargetImageUriRef.current = targetDog.uri;
 
-    const otherBreeds = BREEDS.filter((breed) => breed !== targetBreed);
-    const distractorBreeds = [];
+    const distractorBreeds = shuffle(
+      availableBreeds.filter((breed) => breed !== targetBreed)
+    ).slice(0, 3);
 
-    while (distractorBreeds.length < 3 && otherBreeds.length > 0) {
-      const selectedBreed = weightedPick(
-        otherBreeds,
-        (breed) => {
-          const coats = DOGS.filter((dog) => dog.breed === breed);
-          const isCompleted = coats.every((coat) => unlockedSet.has(coat.id));
-          return isCompleted ? 1 : 3;
-        }
-      );
+    const distractors = distractorBreeds
+      .map((breed) => pickRandomCoatForBreed(breed))
+      .filter(Boolean);
 
-      distractorBreeds.push(selectedBreed);
-      const removeIndex = otherBreeds.indexOf(selectedBreed);
-      otherBreeds.splice(removeIndex, 1);
+    if (distractors.length < 3) {
+      return { choices: [], targetIndex: -1 };
     }
 
-    const distractors = distractorBreeds.map((breed) => pickWeightedCoatForBreed(breed, unlockedSet));
     const shuffledChoices = shuffle([targetDog, ...distractors]);
     const computedTargetIndex = shuffledChoices.findIndex((choice) => choice.id === targetDog.id);
 
     return { choices: shuffledChoices, targetIndex: computedTargetIndex };
-  }, [questionIndex]);
+  }, [questionIndex, pickRandomCoatForBreed, storageVariantMap]);
 
-  const targetDog = choices[targetIndex];
+  const targetDog = targetIndex >= 0 ? choices[targetIndex] : null;
 
   async function handlePick(dog) {
-    if (selected) return;
+    if (selected || !targetDog || lives === 0) return;
     setSelected(dog);
 
     if (dog.id === targetDog.id) {
@@ -250,8 +353,9 @@ export default function QuizScreen() {
 
       if (isNew) setNewUnlock(targetDog);
 
-      const breedCoats = DOGS.filter((variant) => variant.breed === targetDog.breed);
-      const isBreedCompleted = breedCoats.every((variant) => updatedCollection.includes(variant.id));
+      const breedCoats = storageVariantMap[targetDog.breed] || [];
+      const isBreedCompleted = breedCoats.length > 0
+        && breedCoats.every((variant) => updatedCollection.includes(variant.id));
 
       if (isBreedCompleted && !badges.includes(targetDog.breed)) {
         const updatedBadges = [...badges, targetDog.breed];
@@ -276,6 +380,8 @@ export default function QuizScreen() {
           console.warn('Failed to sync badges to cloud', e);
         }
       }
+    } else {
+      setLives((l) => Math.max(0, l - 1));
     }
   }
 
@@ -289,32 +395,52 @@ export default function QuizScreen() {
   return (
     <ThemedView style={quizStyles.container}>
       <View style={quizStyles.header}>
-        <ThemedText type="title" style={quizStyles.title}>DoggyDex</ThemedText>
         <ThemedText style={quizStyles.scoreText}>{`Score: ${score}`}</ThemedText>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 12 }}>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <ThemedText key={i} style={{ fontSize: 22, marginHorizontal: 2, color: lives > i ? '#FF4F4F' : '#D3D3D3' }}>
+              ♥
+            </ThemedText>
+          ))}
+        </View>
       </View>
 
-      <ThemedText type="subtitle" style={quizStyles.prompt}>Tap the photo of: {targetDog.breed}</ThemedText>
+      {targetDog ? (
+        <ThemedText type="subtitle" style={quizStyles.prompt}>{targetDog.breed}</ThemedText>
+      ) : null}
+      {isCloudQuizLoading ? (
+        <ThemedText style={quizStyles.hint}>Loading quiz breeds with cloud images...</ThemedText>
+      ) : null}
       {syncNotice ? <ThemedText style={quizStyles.hint}>{syncNotice}</ThemedText> : null}
+      {!isCloudQuizLoading && cloudQuizNotice ? <ThemedText style={quizStyles.hint}>{cloudQuizNotice}</ThemedText> : null}
+      {!selected && targetDog ? <ThemedText style={[quizStyles.hint, quizStyles.chooseHint]}>Choose an image below</ThemedText> : null}
 
-      <View style={quizStyles.grid}>
-        {choices.map((c) => {
-          const correct = selected && c.id === targetDog.id;
-          const wrong = selected && c.id === selected.id && c.id !== targetDog.id;
-          return (
-            <Pressable
-              key={c.id}
-              style={[quizStyles.card, correct && quizStyles.correct, wrong && quizStyles.wrong]}
-              onPress={() => handlePick(c)}>
-              <Image source={{ uri: c.uri }} style={quizStyles.image} />
-              {selected ? (
-                <ThemedText type="default" style={quizStyles.cardLabel}>{c.breed}</ThemedText>
-              ) : null}
-            </Pressable>
-          );
-        })}
-      </View>
+      {targetDog ? (
+        <View style={quizStyles.grid}>
+          {choices.map((c) => {
+            const correct = selected && c.id === targetDog.id;
+            const wrong = selected && c.id === selected.id && c.id !== targetDog.id;
+            return (
+              <Pressable
+                key={c.id}
+                style={({ hovered, pressed }) => [
+                  quizStyles.card,
+                  hovered && quizStyles.cardHover,
+                  selected && c.id === targetDog.id && quizStyles.correctReveal,
+                  wrong && quizStyles.wrongReveal,
+                ]}
+                onPress={() => handlePick(c)}>
+                <Image source={{ uri: c.uri }} style={quizStyles.image} contentFit="cover" />
+                {selected && selected.id === c.id ? (
+                  <ThemedText type="default" style={quizStyles.cardLabel}>{c.breed}</ThemedText>
+                ) : null}
+              </Pressable>
+            );
+          })}
+        </View>
+      ) : null}
 
-      {selected ? (
+      {selected && targetDog ? (
         <View style={quizStyles.controls}>
           <ThemedText style={quizStyles.resultText}>
             {selected.id === targetDog.id ? 'Correct!' : `Wrong — it was ${targetDog.breed}`}
@@ -341,27 +467,30 @@ export default function QuizScreen() {
             onPress={next}>
             <ThemedText type="subtitle" style={quizStyles.nextButtonLabel}>Next</ThemedText>
           </Pressable>
-          <Link href="/" asChild>
-            <Pressable
-              style={({ hovered, pressed }) => [
-                quizStyles.backLink,
-                (hovered || pressed) && quizStyles.backLinkHover,
-              ]}>
-              {({ hovered, pressed }) => (
-                <ThemedText
-                  style={[
-                    quizStyles.backLinkText,
-                    (hovered || pressed) && quizStyles.backLinkTextHover,
-                  ]}>
-                  Back
-                </ThemedText>
-              )}
-            </Pressable>
-          </Link>
         </View>
-      ) : (
-        <ThemedText style={quizStyles.hint}>Choose an image above</ThemedText>
-      )}
+      ) : null}
+
+      <View style={quizStyles.bottomBackWrap}>
+        <Link href="/" asChild>
+          <Pressable
+            style={({ hovered, pressed }) => [
+              quizStyles.switchLink,
+              hovered && quizStyles.switchLinkHover,
+              pressed && quizStyles.switchLinkPressed,
+            ]}>
+            {({ hovered, pressed }) => (
+              <ThemedText
+                style={[
+                  quizStyles.switchLinkText,
+                  hovered && quizStyles.switchLinkTextHover,
+                  pressed && quizStyles.switchLinkTextPressed,
+                ]}>
+                ← Back
+              </ThemedText>
+            )}
+          </Pressable>
+        </Link>
+      </View>
     </ThemedView>
   );
 }
