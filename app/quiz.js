@@ -394,26 +394,49 @@ export default function QuizScreen() {
 
   return (
     <ThemedView style={quizStyles.container}>
+      <View style={quizStyles.grassBackground} />
       <View style={quizStyles.header}>
-        <ThemedText style={quizStyles.scoreText}>{`Score: ${score}`}</ThemedText>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 12 }}>
-          {Array.from({ length: 3 }).map((_, i) => (
-            <ThemedText key={i} style={{ fontSize: 22, marginHorizontal: 2, color: lives > i ? '#FF4F4F' : '#D3D3D3' }}>
-              ♥
-            </ThemedText>
-          ))}
+        <Link href="/" style={quizStyles.backButton}>
+          <ThemedText style={quizStyles.backButton}>Back</ThemedText>
+        </Link>
+      </View>
+      <View style={quizStyles.scoreHeartsContainer}>
+        <View style={quizStyles.scoreHeartsRow}>
+          <ThemedText style={quizStyles.scoreText}>{`Score: ${score}`}</ThemedText>
+          <View style={quizStyles.heartsRow}>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <ThemedText key={i} style={quizStyles.heartIcon(lives > i)}>
+                ♥
+              </ThemedText>
+            ))}
+          </View>
         </View>
       </View>
-
       {targetDog ? (
-        <ThemedText type="subtitle" style={quizStyles.prompt}>{targetDog.breed}</ThemedText>
+        <>
+          <View style={{ alignItems: 'center', width: '100%' }}>
+            <ThemedText type="subtitle" style={quizStyles.promptLarge}>
+              <span style={{
+                color: 'black',
+                fontWeight: 500,
+                fontSize: 20,
+                textShadow: '0 0 2px #FF8C66, 0 0 1px #FF8C66',
+                fontFamily: 'inherit',
+                verticalAlign: 'middle',
+                display: 'inline-block',
+                marginTop: '-2px',
+              }}>
+                {targetDog.breed}
+              </span>
+            </ThemedText>
+          </View>
+        </>
       ) : null}
       {isCloudQuizLoading ? (
         <ThemedText style={quizStyles.hint}>Loading quiz breeds with cloud images...</ThemedText>
       ) : null}
       {syncNotice ? <ThemedText style={quizStyles.hint}>{syncNotice}</ThemedText> : null}
       {!isCloudQuizLoading && cloudQuizNotice ? <ThemedText style={quizStyles.hint}>{cloudQuizNotice}</ThemedText> : null}
-      {!selected && targetDog ? <ThemedText style={[quizStyles.hint, quizStyles.chooseHint]}>Choose an image below</ThemedText> : null}
 
       {targetDog ? (
         <View style={quizStyles.grid}>

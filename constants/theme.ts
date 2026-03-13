@@ -8,6 +8,9 @@ import { Platform } from 'react-native';
 const tintColorLight = '#0a7ea4';
 const tintColorDark = '#fff';
 
+export const DOGGYDEX_ORANGE = '#FF9F1C'; // Doggydex orange font color
+export const DOGGYDEX_CORAL_RED = '#FF8C66'; // Doggydex coral red logo color
+
 export const Colors = {
   light: {
     text: '#11181C',
@@ -16,6 +19,8 @@ export const Colors = {
     icon: '#687076',
     tabIconDefault: '#687076',
     tabIconSelected: tintColorLight,
+    doggydexOrange: DOGGYDEX_ORANGE,
+    doggydexCoralRed: DOGGYDEX_CORAL_RED,
   },
   dark: {
     text: '#ECEDEE',
@@ -24,6 +29,8 @@ export const Colors = {
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
+    doggydexOrange: DOGGYDEX_ORANGE,
+    doggydexCoralRed: DOGGYDEX_CORAL_RED,
   },
 };
 
