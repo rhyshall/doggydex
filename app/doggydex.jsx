@@ -1,3 +1,5 @@
+import { DoggyDexHeader } from '@/components/doggydex-header';
+import { FrostedGlassCard } from '@/components/frosted-glass-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { auth } from '@/lib/firebase-services';
@@ -5,11 +7,10 @@ import { loadUserProgress, saveUserProgress } from '@/lib/progress-store';
 import { mapVariantsWithStorageUris, toColorKey } from '@/lib/storage-coat-variants';
 import { getUserProfileUsername, hasUsername, upsertUserProfile } from '@/lib/user-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Image } from 'expo-image';
-import { Link, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import dogBreedsData from '../data/dog-breeds.json';
 
 const BREED_BADGES_KEY = 'breedBadges';
@@ -216,46 +217,55 @@ export default function DoggyDexScreen() {
 
   if (!isSignedIn) {
     return (
-      <ThemedView style={[styles.container, styles.chooserPageBackground]}>
+      <ThemedView style={styles.container}>
         <View style={styles.chooserContainer}>
-          <ThemedText style={styles.chooserSubtitle}>Guess breeds, unlock coats, build your collection!</ThemedText>
-          <View style={styles.chooserCards}>
-            <Pressable
-              style={({ hovered, pressed }) => [
-                styles.chooserCard,
-                (hovered || pressed) && styles.chooserCardHover,
-                pressed && styles.buttonPressed,
-              ]}
-              onPress={() => router.push('/signup')}>
-              {({ hovered, pressed }) => (
-                <>
-                  <ThemedText style={styles.chooserIcon}>🆕</ThemedText>
-                  <View style={styles.chooserCardTextWrap}>
-                    <ThemedText style={[styles.chooserCardTitle, (hovered || pressed) && styles.chooserCardTitleHover]}>Create an Account</ThemedText>
-                    <ThemedText style={styles.chooserCardBody}>Save progress and unlock breeds</ThemedText>
-                  </View>
-                </>
-              )}
-            </Pressable>
+          <FrostedGlassCard>
+            <DoggyDexHeader style={{ marginBottom: 28 }} />
+            <ThemedText style={[styles.chooserSubtitle, { marginBottom: 28 }]}>Guess breeds, unlock coats, build your collection!</ThemedText>
+            <View style={[styles.chooserCards, { marginTop: 8 }]}>
+              <Pressable
+                style={({ hovered, pressed }) => [
+                  styles.chooserCard,
+                  (hovered || pressed) && [
+                    styles.chooserCardHover,
+                    { transform: [{ scale: 1.035 }] },
+                  ],
+                  pressed && styles.buttonPressed,
+                ]}
+                onPress={() => router.push('/signup')}>
+                {({ hovered, pressed }) => (
+                  <>
+                    <ThemedText style={styles.chooserIcon}>🆕</ThemedText>
+                    <View style={styles.chooserCardTextWrap}>
+                      <ThemedText style={[styles.chooserCardTitle, (hovered || pressed) && styles.chooserCardTitleHover]}>Create an Account</ThemedText>
+                      <ThemedText style={styles.chooserCardBody}>Save progress and unlock breeds</ThemedText>
+                    </View>
+                  </>
+                )}
+              </Pressable>
 
-            <Pressable
-              style={({ hovered, pressed }) => [
-                styles.chooserCard,
-                (hovered || pressed) && styles.chooserCardHover,
-                pressed && styles.buttonPressed,
-              ]}
-              onPress={() => router.push('/login')}>
-              {({ hovered, pressed }) => (
-                <>
-                  <ThemedText style={styles.chooserIcon}>🔑</ThemedText>
-                  <View style={styles.chooserCardTextWrap}>
-                    <ThemedText style={[styles.chooserCardTitle, (hovered || pressed) && styles.chooserCardTitleHover]}>Sign in</ThemedText>
-                    <ThemedText style={styles.chooserCardBody}>Continue your journey</ThemedText>
-                  </View>
-                </>
-              )}
-            </Pressable>
-          </View>
+              <Pressable
+                style={({ hovered, pressed }) => [
+                  styles.chooserCard,
+                  (hovered || pressed) && [
+                    styles.chooserCardHover,
+                    { transform: [{ scale: 1.035 }] },
+                  ],
+                  pressed && styles.buttonPressed,
+                ]}
+                onPress={() => router.push('/login')}>
+                {({ hovered, pressed }) => (
+                  <>
+                    <ThemedText style={styles.chooserIcon}>🔑</ThemedText>
+                    <View style={styles.chooserCardTextWrap}>
+                      <ThemedText style={[styles.chooserCardTitle, (hovered || pressed) && styles.chooserCardTitleHover]}>Sign in</ThemedText>
+                      <ThemedText style={styles.chooserCardBody}>Continue your journey</ThemedText>
+                    </View>
+                  </>
+                )}
+              </Pressable>
+            </View>
+          </FrostedGlassCard>
         </View>
       </ThemedView>
     );
@@ -263,74 +273,57 @@ export default function DoggyDexScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <View style={styles.contentContainer}>
-        {lastSyncedLabel ? <ThemedText style={styles.syncMeta}>{lastSyncedLabel}</ThemedText> : null}
-        {syncNotice ? <ThemedText style={styles.syncNotice}>{syncNotice}</ThemedText> : null}
-        <ThemedText style={styles.countText}>
-          <ThemedText style={styles.countNumberText}>{collected.length}</ThemedText>
-          {' of '}
-          {TOTAL_COATS}
-          {' coats unlocked'}
-        </ThemedText>
-
-        <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
-          {BREED_SECTIONS.map((section) => (
-            <View key={section.breed} style={styles.breedSection}>
-              <View style={styles.sectionTitleRow}>
-                <ThemedText type="subtitle" style={styles.sectionTitle}>{section.breed}</ThemedText>
-                {badges.includes(section.breed) ? <ThemedText style={styles.badgeIcon}>⭐</ThemedText> : null}
-              </View>
-              <View style={styles.coatGrid}>
-                {section.coats.map((coat) => {
-                  const matchedDog = dogByBreedColorKey.get(`${section.breed}::${toColorKey(coat)}`) || null;
-                  const isUnlocked = matchedDog ? collection.includes(matchedDog.id) : false;
-
-                  return (
-                    <View key={`${section.breed}-${coat}`} style={styles.coatTile}>
-                      <View style={styles.lockSquare}>
-                        {matchedDog ? (
-                          <>
-                            <Image source={{ uri: matchedDog.uri }} style={styles.coatPreview} contentFit="cover" />
-                            {!isUnlocked ? (
-                              <View style={styles.coatLockedOverlay}>
-                                <ThemedText style={styles.lockIcon}>🔒</ThemedText>
-                              </View>
-                            ) : null}
-                          </>
-                        ) : (
-                          <ThemedText style={styles.lockIcon}>🔒</ThemedText>
-                        )}
-                      </View>
-                      <ThemedText style={styles.coatLabel}>{coat}</ThemedText>
-                    </View>
-                  );
-                })}
-              </View>
-            </View>
-          ))}
-        </ScrollView>
-
-        <View style={styles.bottomBackWrap}>
-          <Link href="/" asChild>
+      <View style={[styles.chooserContainer, { flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 400 }]}> 
+        <FrostedGlassCard style={styles.chooserGlassCard}>
+          <View style={{ width: '100%', marginBottom: 36 }}>
+            <DoggyDexHeader />
+          </View>
+          <View style={{ width: '100%', marginBottom: 36 }}>
+            <ThemedText style={styles.chooserSubtitle}>Guess breeds, unlock coats, build your collection!</ThemedText>
+          </View>
+          <View style={{ width: '100%', marginBottom: 0 }}>
             <Pressable
               style={({ hovered, pressed }) => [
-                styles.switchLink,
-                hovered && styles.switchLinkHover,
-                pressed && styles.switchLinkPressed,
-              ]}>
+                styles.chooserCard,
+                (hovered || pressed) && [
+                  styles.chooserCardHover,
+                  { transform: [{ scale: 1.035 }] },
+                ],
+                pressed && styles.buttonPressed,
+              ]}
+              onPress={() => router.push('/quiz')}>
               {({ hovered, pressed }) => (
-                <ThemedText
-                  style={[
-                    styles.switchLinkText,
-                    hovered && styles.switchLinkTextHover,
-                    pressed && styles.switchLinkTextPressed,
-                  ]}>
-                  ← Back
-                </ThemedText>
+                <>
+                  <ThemedText style={styles.chooserIcon}>🎯</ThemedText>
+                  <View style={styles.chooserCardTextWrap}>
+                    <ThemedText style={[styles.chooserCardTitle, (hovered || pressed) && styles.chooserCardTitleHover]}>Play Quiz</ThemedText>
+                    <ThemedText style={styles.chooserCardBody}>Guess correct breeds to unlock new coats</ThemedText>
+                  </View>
+                </>
               )}
             </Pressable>
-          </Link>
-        </View>
+            <Pressable
+              style={({ hovered, pressed }) => [
+                styles.chooserCard,
+                (hovered || pressed) && [
+                  styles.chooserCardHover,
+                  { transform: [{ scale: 1.035 }] },
+                ],
+                pressed && styles.buttonPressed,
+              ]}
+              onPress={() => router.push('/doggydex')}>
+              {({ hovered, pressed }) => (
+                <>
+                  <ThemedText style={styles.chooserIcon}>📘</ThemedText>
+                  <View style={styles.chooserCardTextWrap}>
+                    <ThemedText style={[styles.chooserCardTitle, (hovered || pressed) && styles.chooserCardTitleHover]}>View DoggyDex</ThemedText>
+                    <ThemedText style={styles.chooserCardBody}>View your coat collection for each breed</ThemedText>
+                  </View>
+                </>
+              )}
+            </Pressable>
+          </View>
+        </FrostedGlassCard>
       </View>
     </ThemedView>
   );

@@ -1,3 +1,5 @@
+import { DoggyDexHeader } from '@/components/doggydex-header';
+import { FrostedGlassCard } from '@/components/frosted-glass-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { auth } from '@/lib/firebase-services';
@@ -291,83 +293,79 @@ export default function AuthGateScreen({ mode }) {
   return (
     <ThemedView style={styles.container}>
       <View style={styles.gateContainer}>
-        <View style={styles.titleWrap}>
-          <View style={styles.titleBalanceSpacer} />
-          <ThemedText type="title" style={styles.titleText}>DoggyDex</ThemedText>
-          <View style={styles.titlePawCluster}>
-            <Image source={require('../assets/images/paw-favicon.png')} style={styles.titlePawIcon} contentFit="contain" />
-          </View>
-        </View>
-        <ThemedText style={styles.gateText}>Guess breeds, unlock coats, build your collection!</ThemedText>
+        <FrostedGlassCard style={{ width: '100%', maxWidth: 460, alignItems: 'center', justifyContent: 'center' }}>
+          <DoggyDexHeader style={{ marginBottom: 0 }} />
+          <ThemedText style={styles.gateText}>Guess breeds, unlock coats, build your collection!</ThemedText>
 
-        <TextInput
-          value={email}
-          onChangeText={handleEmailChange}
-          placeholder="Email"
-          autoCapitalize="none"
-          keyboardType="email-address"
-          onFocus={() => setFocusedField('email')}
-          onBlur={() => setFocusedField((prev) => (prev === 'email' ? null : prev))}
-          style={[styles.input, focusedField === 'email' && styles.inputFocused]}
-        />
-        <TextInput
-          value={password}
-          onChangeText={setPassword}
-          placeholder="Password"
-          secureTextEntry
-          onFocus={() => setFocusedField('password')}
-          onBlur={() => setFocusedField((prev) => (prev === 'password' ? null : prev))}
-          style={[styles.input, focusedField === 'password' && styles.inputFocused]}
-        />
+          <TextInput
+            value={email}
+            onChangeText={handleEmailChange}
+            placeholder="Email"
+            autoCapitalize="none"
+            keyboardType="email-address"
+            onFocus={() => setFocusedField('email')}
+            onBlur={() => setFocusedField((prev) => (prev === 'email' ? null : prev))}
+            style={[styles.input, focusedField === 'email' && styles.inputFocused]}
+          />
+          <TextInput
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Password"
+            secureTextEntry
+            onFocus={() => setFocusedField('password')}
+            onBlur={() => setFocusedField((prev) => (prev === 'password' ? null : prev))}
+            style={[styles.input, focusedField === 'password' && styles.inputFocused]}
+          />
 
-        {signInError ? <ThemedText style={styles.signInError}>{signInError}</ThemedText> : null}
+          {signInError ? <ThemedText style={styles.signInError}>{signInError}</ThemedText> : null}
 
-        <View style={styles.authControls}>
-          <Pressable
-            style={({ hovered, pressed }) => [
-              commonStyles.playButton,
-              styles.authActionButton,
-              styles.authPrimaryButton,
-              (hovered || pressed) && styles.authPrimaryHover,
-              pressed && styles.buttonPressed,
-            ]}
-            disabled={isAuthPending}
-            onPress={handleEmailAction}>
-            <ThemedText type="subtitle" style={[styles.buttonLabel, styles.authPrimaryLabel]}>
-              {isSignInMode ? 'Sign In' : 'Create Account'}
-            </ThemedText>
-          </Pressable>
-
-          <View style={styles.orRow}>
-            <View style={styles.orLine} />
-            <ThemedText style={styles.orText}>OR</ThemedText>
-            <View style={styles.orLine} />
-          </View>
-
-          <Pressable
-            style={({ hovered, pressed }) => [
-              commonStyles.playButton,
-              styles.authActionButton,
-              styles.googleButton,
-              (hovered || pressed) && styles.googleButtonHover,
-              pressed && styles.buttonPressed,
-            ]}
-            disabled={isAuthPending || (Platform.OS !== 'web' && !request)}
-            onPress={handleGoogleSignIn}>
-            <View style={styles.googleButtonContent}>
-              <Image source={{ uri: GOOGLE_LOGO_URI }} style={styles.googleLogo} contentFit="contain" />
-              <ThemedText type="subtitle" style={styles.googleButtonLabel}>Sign in with Google</ThemedText>
-            </View>
-          </Pressable>
-
-          <Link href="/doggydex" asChild>
-            <Pressable style={({ hovered, pressed }) => [styles.switchLink, hovered && styles.switchLinkHover, pressed && styles.switchLinkPressed]}>
-              {({ hovered, pressed }) => (
-                <ThemedText style={[styles.switchLinkText, hovered && styles.switchLinkTextHover, pressed && styles.switchLinkTextPressed]}>← Back</ThemedText>
-              )}
+          <View style={styles.authControls}>
+            <Pressable
+              style={({ hovered, pressed }) => [
+                commonStyles.playButton,
+                styles.authActionButton,
+                styles.authPrimaryButton,
+                (hovered || pressed) && styles.authPrimaryHover,
+                pressed && styles.buttonPressed,
+              ]}
+              disabled={isAuthPending}
+              onPress={handleEmailAction}>
+              <ThemedText type="subtitle" style={[styles.buttonLabel, styles.authPrimaryLabel]}>
+                {isSignInMode ? 'Sign In' : 'Create Account'}
+              </ThemedText>
             </Pressable>
-          </Link>
-        </View>
+
+            <View style={styles.orRow}>
+              <View style={styles.orLine} />
+              <ThemedText style={styles.orText}>OR</ThemedText>
+              <View style={styles.orLine} />
+            </View>
+
+            <Pressable
+              style={({ hovered, pressed }) => [
+                commonStyles.playButton,
+                styles.authActionButton,
+                styles.googleButton,
+                (hovered || pressed) && styles.googleButtonHover,
+                pressed && styles.buttonPressed,
+              ]}
+              disabled={isAuthPending || (Platform.OS !== 'web' && !request)}
+              onPress={handleGoogleSignIn}>
+              <View style={styles.googleButtonContent}>
+                <Image source={{ uri: GOOGLE_LOGO_URI }} style={styles.googleLogo} contentFit="contain" />
+                <ThemedText type="subtitle" style={styles.googleButtonLabel}>Sign in with Google</ThemedText>
+              </View>
+            </Pressable>
+
+            <Link href="/doggydex" asChild>
+              <Pressable style={({ hovered, pressed }) => [styles.switchLink, hovered && styles.switchLinkHover, pressed && styles.switchLinkPressed]}>
+                {({ hovered, pressed }) => (
+                  <ThemedText style={[styles.switchLinkText, hovered && styles.switchLinkTextHover, pressed && styles.switchLinkTextPressed]}>← Back</ThemedText>
+                )}
+              </Pressable>
+            </Link>
+          </View>
+        </FrostedGlassCard>
       </View>
     </ThemedView>
   );

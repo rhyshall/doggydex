@@ -1,9 +1,45 @@
 import { Platform, StyleSheet } from 'react-native';
-import { DOGGYDEX_ORANGE } from '../constants/theme';
+import { DOGGYDEX_CORAL_RED, DOGGYDEX_ORANGE } from '../constants/theme';
 
-        export const quizStyles = StyleSheet.create({
+export const quizStyles = StyleSheet.create({
+    footer: {
+      width: '100%',
+      textAlign: 'center',
+      paddingVertical: 12,
+      fontSize: 14,
+      color: '#888',
+      backgroundColor: 'rgba(255,255,255,0.48)',
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      zIndex: 9999,
+      letterSpacing: 0.2,
+    },
+  dimmedCard: {
+    opacity: 0.45,
+    // filter is not supported in React Native StyleSheet
+    // transition is not supported in React Native StyleSheet
+  },
+  timerPill: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    marginTop: 0,
+    marginBottom: 0,
+    shadowColor: DOGGYDEX_ORANGE,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    // border removed
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 120,
+  },
           breedPillLeft: {
-            backgroundColor: 'rgba(255,255,255,0.65)',
+            backgroundColor: 'rgba(255,255,255,0.72)',
             borderTopLeftRadius: 8,
             borderBottomLeftRadius: 8,
             borderTopRightRadius: 0,
@@ -15,13 +51,13 @@ import { DOGGYDEX_ORANGE } from '../constants/theme';
             fontWeight: '400', // Less bold
             display: 'inline-block',
             borderWidth: 2,
-            borderColor: '#FF8C66',
+          
             textShadowColor: '#FF8C66',
             textShadowOffset: { width: 0, height: 0 },
             textShadowRadius: 2,
           },
           breedPillRight: {
-            backgroundColor: 'rgba(255,255,255,0.65)',
+            backgroundColor: 'rgba(255,255,255,0.72)',
             borderRadius: 24,
             paddingVertical: 6,
             paddingHorizontal: 8,
@@ -58,7 +94,7 @@ import { DOGGYDEX_ORANGE } from '../constants/theme';
           textAlign: 'center',
           color: '#FF9F1C',
           marginTop: 8,
-          marginBottom: 4,
+          marginBottom: 0,
         },
       gradientOverlay: {
         position: 'absolute',
@@ -66,26 +102,25 @@ import { DOGGYDEX_ORANGE } from '../constants/theme';
         left: 0,
         right: 0,
         bottom: 0,
-        zIndex: 0,
+        paddingTop: 48,
         pointerEvents: 'none',
       },
     scoreHeartsRow: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: 120,
+      gap: 104,
+      marginBottom: 24,
     },
   scoreHeartsContainer: {
-    position: 'absolute',
-    top: 8,
-    left: 'auto',
-    right: 'auto',
-    backgroundColor: 'rgba(255,255,255,0.35)',
-    borderRadius: 40,
+    // Removed absolute positioning, now part of flex layout
+    backgroundColor: 'rgba(255,255,255,0.48)',
+    borderRadius: 14,
     paddingVertical: 12,
     paddingHorizontal: 16,
     marginTop: 0,
-    marginBottom: 8,
+    marginBottom: 0,
+    paddingBottom: 0,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#fff',
@@ -93,30 +128,40 @@ import { DOGGYDEX_ORANGE } from '../constants/theme';
     shadowOpacity: 0.18,
     shadowRadius: 18,
     elevation: 6,
-    width: 360,
+    width: 440,
+    maxWidth: '90%',
     alignSelf: 'center',
   },
   heartsRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 4,
+    marginTop: 0,
   },
   heartIcon: (active) => ({
-    fontSize: 24,
+    fontSize: 20,
+    fontWeight: '400',
     marginHorizontal: 4,
-    color: active ? '#FF4F4F' : '#D3D3D3',
+    color: active ? DOGGYDEX_CORAL_RED : '#D3D3D3',
     textShadowColor: 'rgba(0,0,0,0.12)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
+    WebkitTextStroke: '0.5px black', // For web
+    textStroke: '0.5px black', // For some browsers
   }),
   container: {
     flex: 1,
     backgroundColor: 'transparent',
-    paddingHorizontal: 14,
-    paddingTop: 14,
+    paddingHorizontal: 22, // Increased from 2 to 32 for more border padding
+    paddingTop: 32,
     paddingBottom: 12,
-    gap: 10,
+    gap: 0,
+    ...(Platform.OS === 'web'
+      ? {
+          backdropFilter: 'blur(2.5px) brightness(0.82)',
+          WebkitBackdropFilter: 'blur(2.5px) brightness(0.82)',
+        }
+      : {}),
   },
   header: {
     flexDirection: 'row',
@@ -124,7 +169,7 @@ import { DOGGYDEX_ORANGE } from '../constants/theme';
     alignItems: 'center',
     gap: 8,
     marginTop: 'auto',
-    marginBottom: 28,
+    paddingBottom: 20,
   },
   title: {
     lineHeight: 30,
@@ -136,34 +181,39 @@ import { DOGGYDEX_ORANGE } from '../constants/theme';
     opacity: 0.92,
   },
   prompt: {
-    fontSize: 20,
+    fontSize: 18,
     lineHeight: 28,
     textAlign: 'center',
     color: '#FF9F1C',
-    marginTop: -48, // Raised breed text even higher
+    marginTop: 0, 
     marginBottom: 0,
+    paddingTop: 50,
+    paddingBottom: 16
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 16,
+    gap: 22,
     justifyContent: 'center',
     alignSelf: 'center',
     width: '100%',
-    maxWidth: 480,
-    marginTop: 20,
-    marginBottom: 12
+    maxWidth: 600,
+    paddingTop: 6,
+    paddingBottom: 14
+    // Removed opacity and transform to avoid conflict with dogGridStyle animation
   },
   card: {
-    width: '48%',
-    maxWidth: 230,
+    width: '45%',
+    maxWidth: 270,
     aspectRatio: 1,
-    borderRadius: 14,
+    borderRadius: 16,
     overflow: 'hidden',
     justifyContent: 'flex-end',
-    borderWidth: 1,
-    borderColor: DOGGYDEX_ORANGE, // Doggydex orange global constant
+    borderWidth: 1.5,
+    borderColor: '#f0a84b',
     position: 'relative',
+    boxShadow: '0 10px 25px rgba(0,0,0,0.20), inset 0 2px 4px rgba(255,255,255,0.35)',
+    transition: 'transform 0.15s ease, box-shadow 0.15s ease, border-width 0.15s ease',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.18,
@@ -171,12 +221,27 @@ import { DOGGYDEX_ORANGE } from '../constants/theme';
     elevation: 8,
   },
   cardHover: {
+    transform: [{ scale: 1.04 }],
+    boxShadow: '0 16px 35px rgba(0,0,0,0.25)',
     borderWidth: 3,
-    borderColor: DOGGYDEX_ORANGE, // Doggydex orange global constant
+    borderColor: '#f0a84b',
   },
+      cardPressed: {
+        transform: [{ scale: 0.96 }],
+      },
     wrongReveal: {
       borderWidth: 3,
       borderColor: 'red',
+    },
+    wrongBlur: {
+      borderWidth: 3,
+      borderColor: 'red',
+      ...(Platform.OS === 'web'
+        ? {
+            filter: 'blur(2.5px) brightness(0.82)',
+            WebkitFilter: 'blur(2.5px) brightness(0.82)',
+          }
+        : {}),
     },
   image: {
     ...StyleSheet.absoluteFillObject,
@@ -193,8 +258,16 @@ import { DOGGYDEX_ORANGE } from '../constants/theme';
     color: '#FFFFFF',
   },
   correctReveal: {
-    borderWidth: 3,
-    borderColor: 'green',
+    borderWidth: 5,
+    borderColor: DOGGYDEX_ORANGE, // Doggydex orange
+    shadowColor: DOGGYDEX_ORANGE,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.7,
+    shadowRadius: 12,
+    elevation: 8, // For Android
+    transition: 'transform 0.35s cubic-bezier(0.4,1,0.6,1)',
+    transform: [{ scale: 1.15 }],
+    zIndex: 2,
   },
   controls: {
     gap: 8,
@@ -266,11 +339,14 @@ import { DOGGYDEX_ORANGE } from '../constants/theme';
   },
   switchLink: {
     alignSelf: 'flex-start',
-    marginTop: 8,
-    borderRadius: 10,
-    paddingHorizontal: 8,
+    marginTop: 16,
+    marginLeft: 10,
+    borderRadius: 9,
+    paddingHorizontal: 10,
     paddingVertical: 6,
-    backgroundColor: 'rgba(255,255,255,0.32)',
+    backgroundColor: 'rgba(255,255,255,0.48)', // Match header/dog images background
+    minHeight: 32,
+    minWidth: 95,
   },
   bottomBackWrap: {
     marginTop: 'auto',
@@ -285,22 +361,29 @@ import { DOGGYDEX_ORANGE } from '../constants/theme';
     transform: [{ scale: 0.99 }],
   },
   switchLinkText: {
-    fontSize: 16,
-    lineHeight: 22,
+    fontSize: 15,
+    lineHeight: 20,
     fontWeight: '500',
+    paddingTop: 10,
     color: '#4A2A1F',
     letterSpacing: 0.2,
+    opacity: 0.80,
     ...(Platform.OS === 'web'
       ? {
-          transitionProperty: 'color, transform',
-          transitionDuration: '0.2s, 0.15s',
-          transitionTimingFunction: 'ease, ease',
+          transitionProperty: 'color, transform, opacity',
+          transitionDuration: '0.2s, 0.15s, 0.2s',
+          transitionTimingFunction: 'ease, ease, ease',
         }
       : null),
   },
   switchLinkTextHover: {
-    color: '#6B3E2E',
+    color: '#cc6a44', // Darker shade of DOGGYDEX_CORAL_RED
     textDecorationLine: 'underline',
+    opacity: 1,
+    fontWeight: '700',
+    textShadowColor: 'rgba(0,0,0,0.10)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   switchLinkTextPressed: {
     color: '#3A2018',

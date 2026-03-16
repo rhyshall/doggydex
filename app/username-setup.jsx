@@ -9,7 +9,6 @@ import {
     USERNAME_TAKEN_ERROR_CODE,
 } from '@/lib/user-store';
 import { commonStyles } from '@/styles/common';
-import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { onAuthStateChanged, updateProfile } from 'firebase/auth';
 import { useEffect, useState } from 'react';
@@ -171,13 +170,7 @@ export default function UsernameSetupScreen() {
   return (
     <ThemedView style={styles.container}>
       <View style={styles.gateContainer}>
-        <View style={styles.titleWrap}>
-          <View style={styles.titleBalanceSpacer} />
-          <ThemedText type="title" style={styles.titleText}>DoggyDex</ThemedText>
-          <View style={styles.titlePawCluster}>
-            <Image source={require('../assets/images/paw-favicon.png')} style={styles.titlePawIcon} contentFit="contain" />
-          </View>
-        </View>
+        <DoggyDexHeader style={{ marginBottom: 0 }} />
 
         <ThemedText style={styles.gateText}>Pick a username to complete your DoggyDex profile.</ThemedText>
 

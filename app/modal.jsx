@@ -7,7 +7,11 @@ import { ThemedView } from '@/components/themed-view';
 export default function ModalScreen() {
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title">This is a modal</ThemedText>
+      <View style={styles.titleWrap}>
+        <View style={styles.titleBalanceSpacer} />
+        <DoggyDexHeader style={{ marginBottom: 0 }} />
+      </View>
+      <ThemedText type="title" style={{ marginTop: 18 }}>This is a modal</ThemedText>
       <Link href="/" dismissTo style={styles.link}>
         <ThemedText type="link">Go to home screen</ThemedText>
       </Link>
@@ -25,5 +29,25 @@ const styles = StyleSheet.create({
   link: {
     marginTop: 15,
     paddingVertical: 15,
+  },
+  titleWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    marginBottom: 8,
+  },
+  titleBalanceSpacer: {
+    width: 42,
+  },
+  titleText: {
+    lineHeight: 30,
+    flexShrink: 1,
+    color: '#FF9F1C',
+    fontSize: 28,
+    fontWeight: '700',
+  },
+  titlePawCluster: {
+    marginLeft: 2,
   },
 });

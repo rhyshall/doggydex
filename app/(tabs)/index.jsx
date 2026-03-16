@@ -1,3 +1,5 @@
+import { DoggyDexHeader } from '@/components/doggydex-header';
+import { FrostedGlassCard } from '@/components/frosted-glass-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { auth } from '@/lib/firebase-services';
@@ -83,7 +85,7 @@ export default function HomeScreen() {
 
   return (
     <ThemedView style={homeStyles.screen}>
-      <View style={[commonStyles.container, homeStyles.container]}>
+      <View style={[commonStyles.container, homeStyles.container, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}> 
         <View style={homeStyles.authCorner}>
           {user ? (
             <View style={homeStyles.authRow}>
@@ -121,53 +123,49 @@ export default function HomeScreen() {
             contentFit="cover"
           />
         </View>
-        <View style={homeStyles.content}>
-          <View style={homeStyles.titleWrap}>
-            <View style={homeStyles.titleBalanceSpacer} />
-            <ThemedText type="title" style={homeStyles.title}>DoggyDex</ThemedText>
-            <View style={homeStyles.titlePawCluster}>
-              <Image source={require('../../assets/images/paw-favicon.png')} style={homeStyles.titlePawIcon} contentFit="contain" />
+        <FrostedGlassCard style={{ width: '100%', maxWidth: 540, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={homeStyles.content}>
+            <DoggyDexHeader style={{ marginBottom: 0 }} />
+            <ThemedText style={homeStyles.subtitle}>Guess breeds, unlock coats, build your collection!</ThemedText>
+
+            <View style={homeStyles.chooserCards}>
+              <Pressable
+                style={({ hovered, pressed }) => [
+                  homeStyles.chooserCard,
+                  (hovered || pressed) && homeStyles.chooserCardHover,
+                  pressed && homeStyles.buttonPressed,
+                ]}
+                onPress={() => router.push('/quiz')}>
+                {({ hovered, pressed }) => (
+                  <>
+                    <ThemedText style={homeStyles.chooserIcon}>🎯</ThemedText>
+                    <View style={homeStyles.chooserCardTextWrap}>
+                      <ThemedText style={[homeStyles.chooserCardTitle, (hovered || pressed) && homeStyles.chooserCardTitleHover]}>Play Quiz</ThemedText>
+                      <ThemedText style={homeStyles.chooserCardBody}>Guess correct breeds to unlock new coats</ThemedText>
+                    </View>
+                  </>
+                )}
+              </Pressable>
+              <Pressable
+                style={({ hovered, pressed }) => [
+                  homeStyles.chooserCard,
+                  (hovered || pressed) && homeStyles.chooserCardHover,
+                  pressed && homeStyles.buttonPressed,
+                ]}
+                onPress={() => router.push('/doggydex')}>
+                {({ hovered, pressed }) => (
+                  <>
+                    <ThemedText style={homeStyles.chooserIcon}>📘</ThemedText>
+                    <View style={homeStyles.chooserCardTextWrap}>
+                      <ThemedText style={[homeStyles.chooserCardTitle, (hovered || pressed) && homeStyles.chooserCardTitleHover]}>View DoggyDex</ThemedText>
+                      <ThemedText style={homeStyles.chooserCardBody}>View your coat collection for each breed</ThemedText>
+                    </View>
+                  </>
+                )}
+              </Pressable>
             </View>
           </View>
-          <ThemedText style={homeStyles.subtitle}>Guess breeds, unlock coats, build your collection!</ThemedText>
-
-          <View style={homeStyles.chooserCards}>
-            <Pressable
-              style={({ hovered, pressed }) => [
-                homeStyles.chooserCard,
-                (hovered || pressed) && homeStyles.chooserCardHover,
-                pressed && homeStyles.buttonPressed,
-              ]}
-              onPress={() => router.push('/quiz')}>
-              {({ hovered, pressed }) => (
-                <>
-                  <ThemedText style={homeStyles.chooserIcon}>🎯</ThemedText>
-                  <View style={homeStyles.chooserCardTextWrap}>
-                    <ThemedText style={[homeStyles.chooserCardTitle, (hovered || pressed) && homeStyles.chooserCardTitleHover]}>Play Quiz</ThemedText>
-                    <ThemedText style={homeStyles.chooserCardBody}>Guess correct breeds to unlock new coats</ThemedText>
-                  </View>
-                </>
-              )}
-            </Pressable>
-            <Pressable
-              style={({ hovered, pressed }) => [
-                homeStyles.chooserCard,
-                (hovered || pressed) && homeStyles.chooserCardHover,
-                pressed && homeStyles.buttonPressed,
-              ]}
-              onPress={() => router.push('/doggydex')}>
-              {({ hovered, pressed }) => (
-                <>
-                  <ThemedText style={homeStyles.chooserIcon}>📘</ThemedText>
-                  <View style={homeStyles.chooserCardTextWrap}>
-                    <ThemedText style={[homeStyles.chooserCardTitle, (hovered || pressed) && homeStyles.chooserCardTitleHover]}>View DoggyDex</ThemedText>
-                    <ThemedText style={homeStyles.chooserCardBody}>View your coat collection for each breed</ThemedText>
-                  </View>
-                </>
-              )}
-            </Pressable>
-          </View>
-        </View>
+        </FrostedGlassCard>
       </View>
     </ThemedView>
   );

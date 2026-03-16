@@ -1,13 +1,61 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 export const homeStyles = StyleSheet.create({
+  headerMargin: {
+    marginBottom: 28,
+  },
+  chooserContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    minHeight: 400,
+  },
+  chooserGlassCard: {
+    backgroundColor: 'rgba(255,255,255,0.85)',
+    borderRadius: 20,
+    padding: 28,
+    paddingTop: 44, // increased top padding for more breathing room
+    shadowColor: '#000',
+    shadowOpacity: 0.10, // reduced opacity for softer effect
+    shadowRadius: 32, // increased radius for softer shadow
+    shadowOffset: { width: 0, height: 8 },
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 440,
+    maxWidth: '95%',
+    ...(Platform.OS === 'web'
+      ? {
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+        }
+      : {}),
+  },
+  chooserContentBox: {
+    backgroundColor: 'rgba(243,244,246,0.97)',
+    borderRadius: 22,
+    paddingVertical: 40,
+    paddingHorizontal: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.16,
+    shadowRadius: 32,
+    elevation: 16,
+    borderWidth: 1.5,
+    borderColor: '#E0E1E4',
+    width: 440,
+    maxWidth: '95%',
+    alignSelf: 'center',
+  },
   screen: {
     flex: 1,
     backgroundColor: 'transparent',
   },
   container: {
     flex: 1,
-    paddingTop: 0, // No padding, content at top
+    paddingTop: 0,
     paddingHorizontal: 8,
     position: 'relative',
     overflow: 'hidden',
@@ -115,7 +163,7 @@ export const homeStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
-    marginTop: -32, // Negative margin to raise title higher
+    marginTop: -32,
   },
   titleBalanceSpacer: {
     width: 42,
@@ -133,13 +181,13 @@ export const homeStyles = StyleSheet.create({
     lineHeight: 30,
     flexShrink: 1,
     color: '#FF9F1C',
-    marginBottom: 24, // Added space below title
+    marginBottom: 24,
   },
   subtitle: {
     fontSize: 17,
     lineHeight: 24,
-    marginTop: -16, // Negative margin to raise subtitle higher
-    marginBottom: 16, // Reduced margin for less space above buttons
+    marginTop: -16,
+    marginBottom: 16,
     textAlign: 'center',
     paddingHorizontal: 14,
     paddingVertical: 6,
@@ -154,11 +202,14 @@ export const homeStyles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 1,
   },
-  chooserCards: {
-    width: '100%',
-    maxWidth: 420,
-    gap: 12,
-    marginTop: 32, // Added space above Play Quiz button
+  chooserSubtitle: {
+    fontSize: 18,
+    color: '#6B7280',
+    marginBottom: 32,
+    marginTop: 8,
+    textAlign: 'center',
+    fontWeight: '500',
+    opacity: 0.75, // reduced opacity for less emphasis
   },
   chooserCard: {
     flexDirection: 'row',
@@ -175,18 +226,32 @@ export const homeStyles = StyleSheet.create({
     shadowOpacity: 0,
     shadowRadius: 0,
     elevation: 0,
+    transitionProperty: 'transform, box-shadow',
+    transitionDuration: '120ms',
+    transitionTimingFunction: 'ease-in-out',
   },
-  chooserCardHover: {
-    borderColor: '#FF8C66',
+  chooserGlassCard: {
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    borderRadius: 20,
+    padding: 32,
+    paddingTop: 56, // increased for more vertical space
+    paddingBottom: 44, // increased for more vertical space
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 2,
-  },
-  chooserIcon: {
-    fontSize: 28,
-    lineHeight: 34,
+    shadowOpacity: 0.18,
+    shadowRadius: 24,
+    shadowOffset: { width: 0, height: 10 },
+    borderWidth: 1.5,
+    borderColor: '#e5e7eb',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 440,
+    maxWidth: '95%',
+    ...(Platform.OS === 'web'
+      ? {
+          backdropFilter: 'blur(18px)',
+          WebkitBackdropFilter: 'blur(18px)',
+        }
+      : {}),
   },
   chooserCardTextWrap: {
     flex: 1,
@@ -201,12 +266,19 @@ export const homeStyles = StyleSheet.create({
   chooserCardTitleHover: {
     color: '#FF9F1C',
   },
+    chooserCardHover: {
+      borderColor: '#FF8C66',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.13,
+      shadowRadius: 18,
+      elevation: 6,
+      // transform will be handled inline in Pressable style
+    },
   chooserCardBody: {
     fontSize: 14,
     lineHeight: 20,
     color: '#6B7280',
   },
-  buttonPressed: {
-    transform: [{ scale: 0.98 }],
-  },
+  buttonPressed: {},
 });

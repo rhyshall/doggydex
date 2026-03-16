@@ -1,8 +1,9 @@
+import { AppBackground } from '@/components/app-background';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { ImageBackground, StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -39,13 +40,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? darkTheme : lightTheme}>
-      <View style={styles.container}>
-        <ImageBackground
-          source={require('../img/background.png')}
-          style={styles.background}
-          imageStyle={styles.backgroundImage}
-          resizeMode="cover"
-        />
+      <AppBackground style={styles.container}>
         <Stack screenOptions={{ contentStyle: { backgroundColor: 'transparent' } }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="doggydex" options={{ headerShown: false }} />
@@ -62,7 +57,7 @@ export default function RootLayout() {
             }}
           />
         </Stack>
-      </View>
+      </AppBackground>
       <StatusBar style="auto" />
     </ThemeProvider>
   );
