@@ -28,10 +28,7 @@ export const quizStyles = StyleSheet.create({
     right: 16,
     marginTop: 0,
     marginBottom: 0,
-    shadowColor: DOGGYDEX_ORANGE,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.18,
-    shadowRadius: 8,
+    boxShadow: `0 2px 8px 0 ${DOGGYDEX_ORANGE}33`,
     // border removed
     flexDirection: 'row',
     alignItems: 'center',
@@ -52,9 +49,7 @@ export const quizStyles = StyleSheet.create({
             display: 'inline-block',
             borderWidth: 2,
           
-            textShadowColor: '#FF8C66',
-            textShadowOffset: { width: 0, height: 0 },
-            textShadowRadius: 2,
+            textShadow: '0 0 2px #FF8C66',
           },
           breedPillRight: {
             backgroundColor: 'rgba(255,255,255,0.72)',
@@ -69,16 +64,11 @@ export const quizStyles = StyleSheet.create({
             flexDirection: 'row',
             borderWidth: 2,
             borderColor: '#FF8C66', // Doggydex orange border
-            textShadowColor: '#FF8C66',
-            textShadowOffset: { width: 0, height: 0 },
-            textShadowRadius: 4,
+            textShadow: '0 0 4px #FF8C66',
             marginLeft: 24,
             marginTop: 12,
             marginBottom: 8,
-            shadowColor: '#FF8C66',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.15,
-            shadowRadius: 4,
+            boxShadow: '0 2px 4px 0 #FF8C6622',
           },
         promptSmall: {
           fontSize: 16,
@@ -114,7 +104,7 @@ export const quizStyles = StyleSheet.create({
     },
   scoreHeartsContainer: {
     // Removed absolute positioning, now part of flex layout
-    backgroundColor: 'rgba(255,255,255,0.48)',
+    backgroundColor: 'rgba(255,255,255,0.85)',
     borderRadius: 14,
     paddingVertical: 12,
     paddingHorizontal: 16,
@@ -123,10 +113,7 @@ export const quizStyles = StyleSheet.create({
     paddingBottom: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#fff',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.18,
-    shadowRadius: 18,
+    boxShadow: '0 6px 18px 0 #fff3',
     elevation: 6,
     width: 440,
     maxWidth: '90%',
@@ -143,9 +130,7 @@ export const quizStyles = StyleSheet.create({
     fontWeight: '400',
     marginHorizontal: 4,
     color: active ? DOGGYDEX_CORAL_RED : '#D3D3D3',
-    textShadowColor: 'rgba(0,0,0,0.12)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
+    textShadow: '0 1px 2px rgba(0,0,0,0.12)',
     WebkitTextStroke: '0.5px black', // For web
     textStroke: '0.5px black', // For some browsers
   }),
@@ -187,8 +172,8 @@ export const quizStyles = StyleSheet.create({
     color: '#FF9F1C',
     marginTop: 0, 
     marginBottom: 0,
-    paddingTop: 50,
-    paddingBottom: 16
+    paddingTop: 44,
+    paddingBottom: 0
   },
   grid: {
     flexDirection: 'row',
@@ -203,7 +188,7 @@ export const quizStyles = StyleSheet.create({
     // Removed opacity and transform to avoid conflict with dogGridStyle animation
   },
   card: {
-    width: '45%',
+    width: '44%',
     maxWidth: 270,
     aspectRatio: 1,
     borderRadius: 16,
@@ -259,8 +244,8 @@ export const quizStyles = StyleSheet.create({
   },
   correctReveal: {
     borderWidth: 5,
-    borderColor: DOGGYDEX_ORANGE, // Doggydex orange
-    shadowColor: DOGGYDEX_ORANGE,
+    borderColor: '#22C55E', // Green 500 (Tailwind: emerald-500)
+    shadowColor: '#22C55E',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.7,
     shadowRadius: 12,
@@ -364,7 +349,7 @@ export const quizStyles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 20,
     fontWeight: '500',
-    paddingTop: 10,
+    paddingTop: 3,
     color: '#4A2A1F',
     letterSpacing: 0.2,
     opacity: 0.80,

@@ -11,21 +11,38 @@ export function FrostedGlassCard({ style, children }) {
       <View
         style={[
           {
-            backgroundColor: 'rgba(255,255,255,0.82)',
-            borderRadius: 20,
+            backgroundColor: 'rgba(255,255,255,0.70)',
+            borderRadius: 26,
             padding: 32,
-            boxShadow: '0 8px 32px 0 rgba(31,38,135,0.18)',
+            boxShadow: '0 10px 32px 0 #0004',
+            shadowColor: '#000',
+            shadowOpacity: 0.25,
+            shadowRadius: 10,
+            elevation: 8,
             backdropFilter: 'blur(18px)',
             WebkitBackdropFilter: 'blur(18px)',
-            border: '1.5px solid #e5e7eb',
-            // alignItems and justifyContent removed to allow child margins to work
             width: 440,
             maxWidth: '95%',
+            position: 'relative',
+            overflow: 'hidden',
           },
           style,
         ]}
       >
-        {children}
+        <div
+          style={{
+            pointerEvents: 'none',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'linear-gradient(to bottom, rgba(255,255,255,0.18) 0%, rgba(200,200,200,0.10) 60%, rgba(180,180,180,0.18) 100%)',
+            zIndex: 1,
+            borderRadius: 26,
+          }}
+        />
+        <div style={{ position: 'relative', zIndex: 2 }}>{children}</div>
       </View>
     );
   } else {
@@ -35,23 +52,43 @@ export function FrostedGlassCard({ style, children }) {
         tint="light"
         style={[
           {
-            backgroundColor: 'rgba(255,255,255,0.72)',
+            backgroundColor: 'rgba(255,255,255,0.45)',
             borderRadius: 20,
             padding: 32,
-            shadowColor: '#000',
-            shadowOpacity: 0.10, // reduced opacity for softer effect
-            shadowRadius: 32, // increased radius for softer shadow
-            shadowOffset: { width: 0, height: 10 },
-            borderWidth: 1.5,
-            borderColor: '#e5e7eb',
-            // alignItems and justifyContent removed to allow child margins to work
+            boxShadow: '0 10px 32px 0 #0002',
             width: 440,
             maxWidth: '95%',
+            position: 'relative',
+            overflow: 'hidden',
           },
           style,
         ]}
       >
-        {children}
+        <View
+          pointerEvents="none"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            borderRadius: 20,
+            zIndex: 1,
+            backgroundColor: 'transparent',
+          }}
+        >
+          {/* Simulate a vertical gradient using a semi-transparent overlay */}
+          <View
+            style={{
+              flex: 1,
+              width: '100%',
+              height: '100%',
+              backgroundColor: 'transparent',
+              // Use a vertical gradient via expo-linear-gradient if available, else fallback
+            }}
+          />
+        </View>
+        <View style={{ position: 'relative', zIndex: 2 }}>{children}</View>
       </BlurView>
     );
   }

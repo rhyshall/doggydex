@@ -1,44 +1,27 @@
-import { ThemedText } from '@/components/themed-text';
 import { Image } from 'expo-image';
 import { StyleSheet, View } from 'react-native';
 
 export function DoggyDexHeader({ style }) {
   return (
-    <View style={[styles.titleWrap, style]}>
-      <View style={styles.titleBalanceSpacer} />
-      <ThemedText type="title" style={styles.titleText}>DoggyDex</ThemedText>
-      <View style={styles.titlePawCluster}>
-        <Image source={require('../assets/images/paw-favicon.png')} style={styles.titlePawIcon} contentFit="contain" />
-      </View>
+    <View style={[styles.logoWrap, style]}>
+      <Image source={require('../img/doggydex.png')} style={styles.logoImage} contentFit="contain" />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleText: {
-    fontSize: 42, // was 38
-    fontWeight: '900',
-    lineHeight: 48, // was 44
-    flexShrink: 1,
-    color: '#FF9F1C',
-    letterSpacing: 0.5,
-  },
-  titleWrap: {
+  logoWrap: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 4,
+    width: '100%',
+    marginBottom: 0,
+    marginTop: -32,
   },
-  titleBalanceSpacer: {
-    width: 42,
-  },
-  titlePawCluster: {
-    marginLeft: 2,
-  },
-  titlePawIcon: {
-    width: 40,
-    height: 40,
-    marginTop: -2,
-    transform: [{ translateY: -4 }],
+  logoImage: {
+    width: 486, // 10% smaller than 540
+    height: 162, // 10% smaller than 180
+    resizeMode: 'contain',
+    borderRadius: 24,
   },
 });

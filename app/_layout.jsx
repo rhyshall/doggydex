@@ -3,7 +3,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -13,11 +13,19 @@ export const unstable_settings = {
   anchor: '(tabs)',
 };
 
+function forFade({ current }) {
+  return {
+    cardStyle: {
+      opacity: current.progress,
+    },
+  };
+}
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   useEffect(() => {
-    initializeFirebaseAnalytics().catch(() => null);
+    initializeFirebaseAnalytics().catch(() => {});
   }, []);
 
   const lightTheme = {
@@ -41,10 +49,11 @@ export default function RootLayout() {
       <AppBackground style={styles.container}>
         <Stack screenOptions={{ contentStyle: { backgroundColor: 'transparent' } }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="doggydex" options={{ headerShown: false }} />
+          <Stack.Screen name="doggydex" options={{ headerShown: false, animation: 'fade' }} />
+          <Stack.Screen name="login" options={{ headerShown: false, animation: 'fade' }} />
+          <Stack.Screen name="signup" options={{ headerShown: false, animation: 'fade' }} />
+          <Stack.Screen name="oauthredirect" options={{ headerShown: false, animation: 'none' }} />
           <Stack.Screen name="quiz" options={{ headerShown: false }} />
-          <Stack.Screen name="login" options={{ headerShown: false }} />
-          <Stack.Screen name="signup" options={{ headerShown: false }} />
           <Stack.Screen name="username-setup" options={{ headerShown: false }} />
           <Stack.Screen
             name="modal"
@@ -55,9 +64,6 @@ export default function RootLayout() {
             }}
           />
         </Stack>
-        <View style={quizStyles.footer}>
-          <ThemedText>© Rhys Hall</ThemedText>
-        </View>
       </AppBackground>
       <StatusBar style="auto" />
     </ThemeProvider>

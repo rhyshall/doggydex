@@ -1,0 +1,132 @@
+Afghan Hound
+Airedale Terrier
+Akita
+Akita (American)
+Alaskan Malamute
+American Eskimo Dog
+American Staffordshire Terrier
+American Water Spaniel
+Australian Cattle Dog
+Australian Shepherd
+Australian Terrier
+Barbet
+Basenji
+Basset Fauve de Bretagne
+Basset Hound
+Beagle
+Bearded Collie
+Belgian Malinois
+Belgian Tervuren
+Bernese Mountain Dog
+Bichon Frise
+Bloodhound
+Bolognese
+Border Collie
+Border Terrier
+Borzoi
+Boston Terrier
+Boxer
+Briard
+Brittany
+Brussels Griffon
+Bull Terrier
+Bulldog
+Bullmastiff
+Cairn Terrier
+Cane Corso
+Cardigan Welsh Corgi
+Cavalier King Charles Spaniel
+Chesapeake Bay Retriever
+Chihuahua
+Chinese Crested
+Chinese Shar-Pei
+Chow Chow
+Clumber Spaniel
+Cocker Spaniel
+Cocker Spaniel (American)
+Collie
+Coton de Tulear
+Dachshund
+Dalmatian
+Dandie Dinmont Terrier
+Doberman Pinscher
+Dogo Argentino
+Dogue de Bordeaux
+English Cocker Spaniel
+English Setter
+English Springer Spaniel
+Finnish Spitz
+Flat-Coated Retriever
+French Bulldog
+German Pinscher
+German Shepherd
+German Shorthaired Pointer
+German Wirehaired Pointer
+Glen of Imaal Terrier
+Golden Retriever
+Great Dane
+Great Pyrenees
+Greyhound
+Havanese
+Irish Setter
+Irish Terrier
+Irish Water Spaniel
+Irish Wolfhound
+Italian Greyhound
+Jack Russell Terrier
+Japanese Chin
+Japanese Spitz
+Keeshond
+Kerry Blue Terrier
+Kooikerhondje
+Labrador Retriever
+Lhasa Apso
+Lowchen
+Maltese
+Mastiff
+Miniature American Shepherd
+Miniature Pinscher
+Miniature Schnauzer
+Newfoundland
+Norfolk Terrier
+Norwegian Elkhound
+Norwich Terrier
+Old English Sheepdog
+Otterhound
+Papillon
+Pekingese
+Pembroke Welsh Corgi
+Pointer (German Shorthaired)
+Pomeranian
+Poodle
+Portuguese Water Dog
+Pug
+Puli
+Rhodesian Ridgeback
+Rottweiler
+Saint Bernard
+Saluki
+Samoyed
+Schapendoes
+Scottish Deerhound
+Scottish Terrier
+Sealyham Terrier
+Shetland Sheepdog
+Shiba Inu
+Shih Tzu
+Siberian Husky
+Soft Coated Wheaten Terrier
+Spanish Water Dog
+Spinone
+Spinone Italiano
+Saint Bernard
+Staffordshire Bull Terrier
+Sussex Spaniel
+Tibetan Spaniel
+Toy Poodle
+Vizsla
+Weimaraner
+West Highland White Terrier
+Whippet
+Wire Fox Terrier
+Yorkshire Terrier

@@ -5,8 +5,9 @@ import { ThemedView } from '@/components/themed-view';
 import { auth } from '@/lib/firebase-services';
 import { getUserProfileUsername, hasUsername, upsertUserProfile } from '@/lib/user-store';
 import { commonStyles } from '@/styles/common';
+import * as AuthSession from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
-import { Image } from 'expo-image';
+import Constants from 'expo-constants';
 import { Link, useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import {
@@ -19,13 +20,23 @@ import {
 } from 'firebase/auth';
 import { useCallback, useEffect, useState } from 'react';
 import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import GoogleIcon from './google-icon';
 
 const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_WEB_CLIENT_ID || process.env.WEB_CLIENT_ID;
 const GOOGLE_IOS_CLIENT_ID = process.env.EXPO_PUBLIC_IOS_CLIENT_ID || process.env.IOS_CLIENT_ID;
 const GOOGLE_ANDROID_CLIENT_ID = process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID || process.env.ANDROID_CLIENT_ID;
 const GOOGLE_EXPO_CLIENT_ID = process.env.EXPO_PUBLIC_EXPO_CLIENT_ID || process.env.EXPO_CLIENT_ID;
-const GOOGLE_LOGO_URI = 'https://developers.google.com/identity/images/g-logo.png';
+const IS_EXPO_GO = Constants.appOwnership === 'expo';
+const GOOGLE_ANDROID_REVERSE_CLIENT_ID = GOOGLE_ANDROID_CLIENT_ID
+  ? `com.googleusercontent.apps.${GOOGLE_ANDROID_CLIENT_ID.replace('.apps.googleusercontent.com', '')}`
+  : null;
+const GOOGLE_ANDROID_REDIRECT_URI = AuthSession.makeRedirectUri({
+  native: GOOGLE_ANDROID_REVERSE_CLIENT_ID ? `${GOOGLE_ANDROID_REVERSE_CLIENT_ID}:/login` : undefined,
+});
+const PAW_SHIELD_ICON = require('../img/paw-shield.jpg');
 const PAW_FOCUS_COLOR = '#FF8C66';
+const AUTH_INPUT_TEXT_COLOR = '#1F2937';
+const AUTH_INPUT_PLACEHOLDER_COLOR = '#6B7280';
 const AUTH_GATE_DEBUG_BUFFER_KEY = '__AUTH_GATE_DEBUG_LOGS__';
 const APP_FONT_FAMILY = Platform.select({
   web: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
@@ -67,15 +78,13 @@ export default function AuthGateScreen({ mode }) {
   const [password, setPassword] = useState('');
   const [focusedField, setFocusedField] = useState(null);
 
-  const [request, , promptAsync] = Google.useAuthRequest({
+  const [request, response, promptAsync] = Google.useAuthRequest({
     webClientId: GOOGLE_WEB_CLIENT_ID,
     iosClientId: GOOGLE_IOS_CLIENT_ID,
     androidClientId: GOOGLE_ANDROID_CLIENT_ID,
-    expoClientId: GOOGLE_EXPO_CLIENT_ID,
+    expoClientId: IS_EXPO_GO ? GOOGLE_EXPO_CLIENT_ID : undefined,
+    redirectUri: Platform.OS === 'android' ? GOOGLE_ANDROID_REDIRECT_URI : undefined,
     selectAccount: true,
-    extraParams: {
-      prompt: 'select_account',
-    },
   });
 
   const getPostAuthRoute = useCallback(async (user) => {
@@ -134,6 +143,66 @@ export default function AuthGateScreen({ mode }) {
     };
   }, [getPostAuthRoute, router]);
 
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function finishGoogleAuth() {
+      if (Platform.OS === 'web' || !response) {
+        return;
+      }
+
+      appendAuthGateDebugLog('googleAuthResponse', {
+        type: response.type,
+        hasAuthentication: !!response.authentication,
+        hasParams: !!response.params,
+        hasIdToken: !!(response.authentication?.idToken || response.params?.id_token),
+        hasAccessToken: !!(response.authentication?.accessToken || response.params?.access_token),
+      });
+
+      if (response.type !== 'success') {
+        if (response.type !== 'dismiss' && response.type !== 'cancel') {
+          setSignInError('Sign-in was canceled. Please try again.');
+        }
+        setIsAuthPending(false);
+        return;
+      }
+
+      const authResult = response.authentication ?? null;
+      const idToken = authResult?.idToken ?? response.params?.id_token ?? null;
+      const accessToken = authResult?.accessToken ?? response.params?.access_token ?? null;
+
+      if (!idToken && !accessToken) {
+        setSignInError('Google sign-in token was not returned. Please try again.');
+        setIsAuthPending(false);
+        return;
+      }
+
+      try {
+        const credential = GoogleAuthProvider.credential(idToken, accessToken);
+        const credentialSignInResult = await signInWithCredential(auth, credential);
+
+        if (!isCancelled) {
+          await routeSignedInUser(credentialSignInResult.user);
+        }
+      } catch (error) {
+        console.warn('Failed to sign in with Google', error);
+        if (!isCancelled) {
+          setSignInError('Could not sign in with Google. Please try again.');
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsAuthPending(false);
+        }
+      }
+    }
+
+    finishGoogleAuth();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [response, routeSignedInUser]);
+
   function getEmailAuthErrorMessage(error, context = 'signIn') {
     const code = error?.code;
 
@@ -160,6 +229,17 @@ export default function AuthGateScreen({ mode }) {
     setSignInError(null);
     setIsAuthPending(true);
 
+    appendAuthGateDebugLog('googleAuthRequestConfig', {
+      platform: Platform.OS,
+      hasRequest: !!request,
+      redirectUri: request?.redirectUri,
+      authUrl: request?.url,
+      hasAndroidClientId: !!GOOGLE_ANDROID_CLIENT_ID,
+      hasExpoClientId: !!GOOGLE_EXPO_CLIENT_ID,
+      hasWebClientId: !!GOOGLE_WEB_CLIENT_ID,
+      hasIosClientId: !!GOOGLE_IOS_CLIENT_ID,
+    });
+
     try {
       if (Platform.OS === 'web') {
         const provider = new GoogleAuthProvider();
@@ -168,28 +248,14 @@ export default function AuthGateScreen({ mode }) {
         return;
       }
 
-      const result = await promptAsync();
-
-      if (!result || result.type !== 'success' || !result.authentication) {
-        setSignInError('Sign-in was canceled. Please try again.');
-        return;
-      }
-
-      const { idToken, accessToken } = result.authentication;
-
-      if (!idToken && !accessToken) {
-        setSignInError('Google sign-in token was not returned. Please try again.');
-        return;
-      }
-
-      const credential = GoogleAuthProvider.credential(idToken ?? null, accessToken ?? null);
-      const credentialSignInResult = await signInWithCredential(auth, credential);
-      await routeSignedInUser(credentialSignInResult.user);
+      await promptAsync();
     } catch (error) {
       console.warn('Failed to sign in with Google', error);
       setSignInError('Could not sign in with Google. Please try again.');
     } finally {
-      setIsAuthPending(false);
+      if (Platform.OS === 'web') {
+        setIsAuthPending(false);
+      }
     }
   }
 
@@ -291,82 +357,109 @@ export default function AuthGateScreen({ mode }) {
   }
 
   return (
-    <ThemedView style={styles.container}>
-      <View style={styles.gateContainer}>
-        <FrostedGlassCard style={{ width: '100%', maxWidth: 460, alignItems: 'center', justifyContent: 'center' }}>
-          <DoggyDexHeader style={{ marginBottom: 0 }} />
-          <ThemedText style={styles.gateText}>Guess breeds, unlock coats, build your collection!</ThemedText>
+    <ThemedView style={{ flex: 1, backgroundColor: 'transparent', justifyContent: 'center', alignItems: 'center' }}>
+      <FrostedGlassCard style={[
+        styles.chooserGlassCard,
+        { borderWidth: 0, marginTop: -100 }
+      ]}>
 
-          <TextInput
-            value={email}
-            onChangeText={handleEmailChange}
-            placeholder="Email"
-            autoCapitalize="none"
-            keyboardType="email-address"
-            onFocus={() => setFocusedField('email')}
-            onBlur={() => setFocusedField((prev) => (prev === 'email' ? null : prev))}
-            style={[styles.input, focusedField === 'email' && styles.inputFocused]}
-          />
-          <TextInput
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Password"
-            secureTextEntry
-            onFocus={() => setFocusedField('password')}
-            onBlur={() => setFocusedField((prev) => (prev === 'password' ? null : prev))}
-            style={[styles.input, focusedField === 'password' && styles.inputFocused]}
-          />
+        <View style={{ width: '100%' }}>
+          <DoggyDexHeader style={{ marginBottom: 18 }} />
+        </View>
+        <View style={require('@/styles/homeStyles').homeStyles.chooserSubtitleWrap}>
+          <ThemedText style={[
+            require('@/styles/homeStyles').homeStyles.chooserSubtitle,
+            { color: '#222426' }
+          ]}>
+            Guess breeds, unlock coats,{"\n"}build your collection!
+          </ThemedText>
+        </View>
 
-          {signInError ? <ThemedText style={styles.signInError}>{signInError}</ThemedText> : null}
-
-          <View style={styles.authControls}>
-            <Pressable
-              style={({ hovered, pressed }) => [
-                commonStyles.playButton,
-                styles.authActionButton,
-                styles.authPrimaryButton,
-                (hovered || pressed) && styles.authPrimaryHover,
-                pressed && styles.buttonPressed,
+          <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center', display: 'flex' }}>
+            <TextInput
+              value={email}
+              onChangeText={handleEmailChange}
+              placeholder="Email"
+              placeholderTextColor={AUTH_INPUT_PLACEHOLDER_COLOR}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              onFocus={() => setFocusedField('email')}
+              onBlur={() => setFocusedField((prev) => (prev === 'email' ? null : prev))}
+              style={[
+                styles.input,
+                focusedField === 'email' && styles.inputFocused,
+                { textAlign: 'center', marginBottom: 4 }
               ]}
-              disabled={isAuthPending}
-              onPress={handleEmailAction}>
-              <ThemedText type="subtitle" style={[styles.buttonLabel, styles.authPrimaryLabel]}>
-                {isSignInMode ? 'Sign In' : 'Create Account'}
-              </ThemedText>
-            </Pressable>
-
-            <View style={styles.orRow}>
-              <View style={styles.orLine} />
-              <ThemedText style={styles.orText}>OR</ThemedText>
-              <View style={styles.orLine} />
-            </View>
-
-            <Pressable
-              style={({ hovered, pressed }) => [
-                commonStyles.playButton,
-                styles.authActionButton,
-                styles.googleButton,
-                (hovered || pressed) && styles.googleButtonHover,
-                pressed && styles.buttonPressed,
+            />
+      <TextInput
+        value={password}
+        onChangeText={setPassword}
+        placeholder="Password"
+        placeholderTextColor={AUTH_INPUT_PLACEHOLDER_COLOR}
+        secureTextEntry
+        onFocus={() => setFocusedField('password')}
+        onBlur={() => setFocusedField((prev) => (prev === 'password' ? null : prev))}
+              style={[
+                styles.input,
+                focusedField === 'password' && styles.inputFocused,
+                { textAlign: 'center', marginBottom: 12 }
               ]}
-              disabled={isAuthPending || (Platform.OS !== 'web' && !request)}
-              onPress={handleGoogleSignIn}>
-              <View style={styles.googleButtonContent}>
-                <Image source={{ uri: GOOGLE_LOGO_URI }} style={styles.googleLogo} contentFit="contain" />
-                <ThemedText type="subtitle" style={styles.googleButtonLabel}>Sign in with Google</ThemedText>
+      />
+
+            {signInError ? <ThemedText style={styles.signInError}>{signInError}</ThemedText> : null}
+
+            <View style={[styles.authControls, { alignItems: 'center', width: '100%' }]}> 
+        <Pressable
+        style={({ hovered, pressed }) => [
+          commonStyles.playButton,
+          styles.authActionButton,
+          styles.authPrimaryButton,
+          (hovered || pressed) && styles.authPrimaryHover,
+          pressed && styles.buttonPressed,
+          { marginBottom: 14 }
+        ]}
+        disabled={isAuthPending}
+        onPress={handleEmailAction}>
+        <ThemedText type="subtitle" style={[styles.buttonLabel, styles.authPrimaryLabel]}>
+          {isSignInMode ? 'Sign In' : 'Create Account'}
+        </ThemedText>
+        </Pressable>
+
+              <View style={styles.orRow}>
+                <View style={styles.orLine} />
+                <ThemedText style={styles.orText}>OR</ThemedText>
+                <View style={styles.orLine} />
               </View>
-            </Pressable>
 
-            <Link href="/doggydex" asChild>
-              <Pressable style={({ hovered, pressed }) => [styles.switchLink, hovered && styles.switchLinkHover, pressed && styles.switchLinkPressed]}>
-                {({ hovered, pressed }) => (
-                  <ThemedText style={[styles.switchLinkText, hovered && styles.switchLinkTextHover, pressed && styles.switchLinkTextPressed]}>← Back</ThemedText>
-                )}
-              </Pressable>
-            </Link>
+        <Pressable
+        style={({ hovered, pressed }) => [
+          commonStyles.playButton,
+          styles.authActionButton,
+          styles.googleButton,
+          (hovered || pressed) && styles.googleButtonHover,
+          pressed && styles.buttonPressed,
+          { marginTop: 14 }
+        ]}
+        disabled={isAuthPending || (Platform.OS !== 'web' && !request)}
+        onPress={handleGoogleSignIn}>
+        <View style={styles.googleButtonContent}>
+                  <GoogleIcon size={28} style={styles.googleLogo} />
+          <ThemedText type="subtitle" style={styles.googleButtonLabel}>Sign in with Google</ThemedText>
+        </View>
+        </Pressable>
+
+              <View style={{ width: '100%', marginTop: 32 }}>
+                <Link href="/doggydex" asChild>
+                  <Pressable style={({ hovered, pressed }) => [styles.switchLink, hovered && styles.switchLinkHover, pressed && styles.switchLinkPressed]}>
+                    {({ hovered, pressed }) => (
+                      <ThemedText style={[styles.switchLinkText, hovered && styles.switchLinkTextHover, pressed && styles.switchLinkTextPressed]}>← Back</ThemedText>
+                    )}
+                  </Pressable>
+                </Link>
+              </View>
+            </View>
           </View>
         </FrostedGlassCard>
-      </View>
     </ThemedView>
   );
 }
@@ -420,8 +513,8 @@ const styles = StyleSheet.create({
     transform: [{ translateY: -4 }],
   },
   gateText: {
-    fontSize: 17,
-    lineHeight: 24,
+    fontSize: 15,
+    lineHeight: 20,
     marginTop: 16,
     marginBottom: 22,
     textAlign: 'center',
@@ -432,10 +525,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.45)',
     backgroundColor: 'rgba(255,255,255,0.18)',
     color: '#2F3742',
-    shadowColor: '#ffffff',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
+    boxShadow: '0 2px 6px 0 #ffffff22',
     elevation: 1,
   },
   authControls: {
@@ -456,10 +546,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF9F1C',
     borderWidth: 1,
     borderColor: '#E68A00',
-    shadowColor: '#1E3A8A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
+    boxShadow: '0 2px 6px 0 #1E3A8A33',
     elevation: 2,
   },
   authPrimaryHover: {
@@ -479,7 +566,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
+    gap: 20,
   },
   googleLogo: {
     width: 18,
@@ -498,18 +585,19 @@ const styles = StyleSheet.create({
   },
   orLine: {
     flex: 1,
-    height: 1,
+    height: 2,
     backgroundColor: '#B6BDC4',
   },
   orText: {
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 13,
+    lineHeight: 18,
     fontWeight: '700',
     letterSpacing: 0.3,
     color: '#687076',
   },
   input: {
     fontFamily: APP_FONT_FAMILY,
+    color: AUTH_INPUT_TEXT_COLOR,
     width: '100%',
     maxWidth: 340,
     marginTop: 10,
@@ -518,7 +606,7 @@ const styles = StyleSheet.create({
     borderColor: '#687076',
     backgroundColor: '#fff',
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 16,
     fontSize: 14,
     lineHeight: 20,
     ...(Platform.OS === 'web'
@@ -548,10 +636,10 @@ const styles = StyleSheet.create({
   },
   authPrimaryLabel: {
     color: '#FFFFFF',
-    fontSize: Platform.select({ web: 18, default: 16 }),
-    lineHeight: Platform.select({ web: 24, default: 22 }),
+    fontSize: Platform.select({ web: 22, default: 20 }),
+    lineHeight: Platform.select({ web: 28, default: 26 }),
     letterSpacing: 0.75,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   signInError: {
     fontSize: 13,
@@ -585,9 +673,9 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.99 }],
   },
   switchLinkText: {
-    fontSize: 16,
-    lineHeight: 22,
-    fontWeight: '500',
+    fontSize: 17,
+    lineHeight: 24,
+    fontWeight: '600',
     color: '#4A2A1F',
     letterSpacing: 0.2,
     ...(Platform.OS === 'web'

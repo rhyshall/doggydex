@@ -3,14 +3,15 @@ import { FrostedGlassCard } from '@/components/frosted-glass-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { auth } from '@/lib/firebase-services';
-import { loadUserProgress, saveUserProgress } from '@/lib/progress-store';
+// import { loadUserProgress, saveUserProgress } from '@/lib/progress-store';
 import { mapVariantsWithStorageUris, toColorKey } from '@/lib/storage-coat-variants';
 import { getUserProfileUsername, hasUsername, upsertUserProfile } from '@/lib/user-store';
+import { homeStyles } from '@/styles/homeStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Image, Platform, Pressable, StyleSheet, View } from 'react-native';
 import dogBreedsData from '../data/dog-breeds.json';
 
 const BREED_BADGES_KEY = 'breedBadges';
@@ -219,44 +220,45 @@ export default function DoggyDexScreen() {
     return (
       <ThemedView style={styles.container}>
         <View style={styles.chooserContainer}>
-          <FrostedGlassCard>
-            <DoggyDexHeader style={{ marginBottom: 28 }} />
-            <ThemedText style={[styles.chooserSubtitle, { marginBottom: 28 }]}>Guess breeds, unlock coats, build your collection!</ThemedText>
-            <View style={[styles.chooserCards, { marginTop: 8 }]}>
+          <View style={styles.chooserBgOverlay} pointerEvents="none" />
+          <FrostedGlassCard style={[styles.chooserGlassCard, { borderWidth: 0, marginTop: -100 }]}> 
+            <DoggyDexHeader style={{ marginBottom: 18 }} />
+            <View style={homeStyles.chooserSubtitleWrap}>
+              <ThemedText style={[homeStyles.chooserSubtitle, { color: '#222426' }]}>Guess breeds, unlock coats,{"\n"}build your collection!</ThemedText>
+            </View>
+            <View style={styles.chooserCards}>
               <Pressable
                 style={({ hovered, pressed }) => [
                   styles.chooserCard,
-                  (hovered || pressed) && [
-                    styles.chooserCardHover,
-                    { transform: [{ scale: 1.035 }] },
-                  ],
+                  { backgroundColor: '#FFF9F3' }, // even lighter orange tint
+                  (hovered || pressed) && [styles.chooserCardHover, { transform: [{ scale: 1.035 }] }],
                   pressed && styles.buttonPressed,
                 ]}
                 onPress={() => router.push('/signup')}>
                 {({ hovered, pressed }) => (
                   <>
-                    <ThemedText style={styles.chooserIcon}>🆕</ThemedText>
+                    <Image
+                      source={require('../img/dogtag_icon.png')}
+                      style={{ width: 60, height: 60, marginRight: 12 }}
+                      resizeMode="cover"
+                    />
                     <View style={styles.chooserCardTextWrap}>
-                      <ThemedText style={[styles.chooserCardTitle, (hovered || pressed) && styles.chooserCardTitleHover]}>Create an Account</ThemedText>
-                      <ThemedText style={styles.chooserCardBody}>Save progress and unlock breeds</ThemedText>
+                      <ThemedText style={[styles.chooserCardTitle, (hovered || pressed) && styles.chooserCardTitleHover]}>Create Account</ThemedText>
+                      <ThemedText style={styles.chooserCardBody}>Start your collection</ThemedText>
                     </View>
                   </>
                 )}
               </Pressable>
-
               <Pressable
                 style={({ hovered, pressed }) => [
                   styles.chooserCard,
-                  (hovered || pressed) && [
-                    styles.chooserCardHover,
-                    { transform: [{ scale: 1.035 }] },
-                  ],
+                  (hovered || pressed) && [styles.chooserCardHover, { transform: [{ scale: 1.035 }] }],
                   pressed && styles.buttonPressed,
                 ]}
                 onPress={() => router.push('/login')}>
                 {({ hovered, pressed }) => (
                   <>
-                    <ThemedText style={styles.chooserIcon}>🔑</ThemedText>
+                    <Image source={require('../img/padlock_icon.png')} style={{ width: 60, height: 60, marginRight: 12 }} resizeMode="cover" />
                     <View style={styles.chooserCardTextWrap}>
                       <ThemedText style={[styles.chooserCardTitle, (hovered || pressed) && styles.chooserCardTitleHover]}>Sign in</ThemedText>
                       <ThemedText style={styles.chooserCardBody}>Continue your journey</ThemedText>
@@ -272,59 +274,57 @@ export default function DoggyDexScreen() {
   }
 
   return (
-    <ThemedView style={styles.container}>
-      <View style={[styles.chooserContainer, { flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 400 }]}> 
-        <FrostedGlassCard style={styles.chooserGlassCard}>
-          <View style={{ width: '100%', marginBottom: 36 }}>
-            <DoggyDexHeader />
-          </View>
-          <View style={{ width: '100%', marginBottom: 36 }}>
-            <ThemedText style={styles.chooserSubtitle}>Guess breeds, unlock coats, build your collection!</ThemedText>
-          </View>
-          <View style={{ width: '100%', marginBottom: 0 }}>
-            <Pressable
-              style={({ hovered, pressed }) => [
-                styles.chooserCard,
-                (hovered || pressed) && [
-                  styles.chooserCardHover,
-                  { transform: [{ scale: 1.035 }] },
-                ],
-                pressed && styles.buttonPressed,
-              ]}
-              onPress={() => router.push('/quiz')}>
-              {({ hovered, pressed }) => (
-                <>
-                  <ThemedText style={styles.chooserIcon}>🎯</ThemedText>
-                  <View style={styles.chooserCardTextWrap}>
-                    <ThemedText style={[styles.chooserCardTitle, (hovered || pressed) && styles.chooserCardTitleHover]}>Play Quiz</ThemedText>
-                    <ThemedText style={styles.chooserCardBody}>Guess correct breeds to unlock new coats</ThemedText>
-                  </View>
-                </>
-              )}
-            </Pressable>
-            <Pressable
-              style={({ hovered, pressed }) => [
-                styles.chooserCard,
-                (hovered || pressed) && [
-                  styles.chooserCardHover,
-                  { transform: [{ scale: 1.035 }] },
-                ],
-                pressed && styles.buttonPressed,
-              ]}
-              onPress={() => router.push('/doggydex')}>
-              {({ hovered, pressed }) => (
-                <>
-                  <ThemedText style={styles.chooserIcon}>📘</ThemedText>
-                  <View style={styles.chooserCardTextWrap}>
-                    <ThemedText style={[styles.chooserCardTitle, (hovered || pressed) && styles.chooserCardTitleHover]}>View DoggyDex</ThemedText>
-                    <ThemedText style={styles.chooserCardBody}>View your coat collection for each breed</ThemedText>
-                  </View>
-                </>
-              )}
-            </Pressable>
-          </View>
-        </FrostedGlassCard>
-      </View>
+    <ThemedView style={{ flex: 1, backgroundColor: 'transparent' }}>
+      <FrostedGlassCard style={[styles.chooserGlassCard, { marginTop: -100 }]}>
+        <View style={{ width: '100%', marginBottom: 16 }}>
+          <DoggyDexHeader />
+        </View>
+        <View style={homeStyles.chooserSubtitleWrap}>
+          <ThemedText style={[homeStyles.chooserSubtitle, {color: '#222426'}]}>Guess breeds, unlock coats,{"\n"}build your collection!</ThemedText>
+        </View>
+        <View style={{ width: '100%', marginBottom: 0 }}>
+          <Pressable
+            style={({ hovered, pressed }) => [
+              styles.chooserCard,
+              (hovered || pressed) && [
+                styles.chooserCardHover,
+                { transform: [{ scale: 1.035 }] },
+              ],
+              pressed && styles.buttonPressed,
+            ]}
+            onPress={() => router.push('/quiz')}>
+            {({ hovered, pressed }) => (
+              <>
+                <ThemedText style={styles.chooserIcon}>🎯</ThemedText>
+                <View style={styles.chooserCardTextWrap}>
+                  <ThemedText style={[styles.chooserCardTitle, (hovered || pressed) && styles.chooserCardTitleHover]}>Play Quiz</ThemedText>
+                  <ThemedText style={styles.chooserCardBody}>Guess correct breeds to unlock new coats</ThemedText>
+                </View>
+              </>
+            )}
+          </Pressable>
+          <Pressable
+            style={({ hovered, pressed }) => [
+              styles.chooserCard,
+              (hovered || pressed) && [
+                styles.chooserCardHover,
+                { transform: [{ scale: 1.05 }] },
+              ],
+              pressed && styles.buttonPressed,
+            ]}
+            onPress={() => router.push('/doggydex')}>
+            {({ hovered, pressed }) => (
+              <>
+                <ThemedText style={styles.chooserIcon}>📘</ThemedText>
+                <View style={styles.chooserCardTextWrap}>
+                  <ThemedText style={[styles.chooserCardTitle, (hovered || pressed) && styles.chooserCardTitleHover]}>View DoggyDex</ThemedText>
+                  <ThemedText style={styles.chooserCardBody}>View your coat collection for each breed</ThemedText>
+                </View>
+              </>
+            )}
+          </Pressable>
+        </View>
+      </FrostedGlassCard>
     </ThemedView>
   );
 }
@@ -509,11 +509,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     backgroundColor: 'rgba(255,255,255,0.32)',
   },
-  bottomBackWrap: {
-    marginTop: 'auto',
-    alignSelf: 'center',
-    marginBottom: 40,
-  },
+  // bottomBackWrap removed for mobile full-screen experience
   switchLinkHover: {
     backgroundColor: 'rgba(255,255,255,0.42)',
     transform: [{ translateX: -2 }],
@@ -574,20 +570,18 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.45)',
     backgroundColor: 'rgba(255,255,255,0.18)',
     color: '#2F3742',
-    shadowColor: '#ffffff',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
+    boxShadow: '0 2px 6px 0 #ffffff22',
     elevation: 1,
   },
   chooserCards: {
     width: '100%',
     maxWidth: 420,
-    gap: 12,
+    gap: 22,
   },
   chooserCard: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center', // Center content vertically
     gap: 16,
     paddingVertical: 18,
     paddingHorizontal: 18,
@@ -595,18 +589,12 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
     borderRadius: 14,
     backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0,
-    shadowRadius: 0,
+    boxShadow: 'none',
     elevation: 0,
   },
   chooserCardHover: {
     borderColor: PAW_FOCUS_COLOR,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
+    boxShadow: '0 4px 10px 0 #0002',
     elevation: 2,
   },
   chooserIcon: {
@@ -616,6 +604,9 @@ const styles = StyleSheet.create({
   chooserCardTextWrap: {
     flex: 1,
     gap: 2,
+    justifyContent: 'center', // Center text vertically
+    flexDirection: 'column',
+    height: 72, // Match icon height for vertical centering
   },
   chooserCardTitle: {
     fontSize: 18,
@@ -660,10 +651,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF9F1C',
     borderWidth: 1,
     borderColor: '#E68A00',
-    shadowColor: '#1E3A8A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
+    boxShadow: '0 2px 6px 0 #1E3A8A33',
     elevation: 2,
   },
   authPrimaryHover: {

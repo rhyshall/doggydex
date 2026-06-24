@@ -45,6 +45,51 @@
       ]
     },
     {
+      "breed": "Blue Picardy Spaniel",
+      "coatColors": [
+        "Blue",
+        "Blue & Black",
+        "Gray (Blue Roan)"
+      ],
+      "size": "Medium/Large",
+      "weightRange": "45-60 lbs",
+      "heightRange": "22-24 inches",
+      "energyLevel": "High",
+      "temperament": [
+        "Gentle",
+        "Loyal",
+        "Intelligent",
+        "Calm"
+      ],
+      "trainability": 4,
+      "funFact": "Blue Picardy Spaniels are known for their unique blue-gray roan coat and excellent hunting abilities in wet terrain.",
+      "historicalPurpose": "Hunting and retrieving game birds",
+      "originCountry": "France",
+      "popularityRank": 120,
+      "categoryTags": [
+        "Sporting"
+      ],
+      "thumbnail": "blue_picardy_spaniel_thumb.jpg",
+      "coatCount": 3,
+      "coats": [
+        {
+          "coat_id": 600,
+          "coat_name": "blue_picardy_spaniel__blue",
+          "color_name": "Blue"
+        },
+        {
+          "coat_id": 601,
+          "coat_name": "blue_picardy_spaniel__blue_black",
+          "color_name": "Blue & Black"
+        },
+        {
+          "coat_id": 602,
+          "coat_name": "blue_picardy_spaniel__gray",
+          "color_name": "Gray (Blue Roan)"
+        }
+      ]
+    },
+    {
       "breed": "French Bulldog",
       "coatColors": [
         "Brindle",
@@ -93,6 +138,61 @@
           "color_name": "Cream"
         }
       ]
+    },
+    {
+      "breed_id": "jack_russell_terrier",
+      "breed_name": "Jack Russell Terrier",
+      "category_tags": ["Terrier", "Working"],
+      "coat_count": 3,
+      "coats": ["White & Tan",
+                "White & Black",
+                "White, Black & Tan"],
+      "energy_level": "Very High",
+      "fun_fact": "Jack Russell Terriers were bred to hunt foxes and can jump up to 5 times their height.",
+      "height_max_inches": 15,
+      "height_min_inches": 10,
+      "historical_purpose": "Fox hunting",
+      "id": 151,
+      "origin_country": "England",
+      "popularity_rank": 45,
+      "size_category": "Small",
+      "thumbnail": "jack_russell_terrier_thumb.jpg",
+      "tier": 2,
+      "trainability": 4,
+      "updated_at": "2026-03-22T22:00:00Z",
+      "weight_max_lbs": 17,
+      "weight_min_lbs": 13
+    },
+    {
+      "breed_id": "greyhound",
+      "breed_name": "Greyhound",
+      "category_tags": ["Hound", "Sighthound"],
+      "coat_count": 10,
+      "coats": ["Black",
+                "White",
+                "Fawn",
+                "Brindle",
+                "Blue",
+                "Red",
+                "Black & White",
+                "Fawn & White",
+                "Brindle & White",
+                "Blue & White"],
+      "energy_level": "Medium",
+      "fun_fact": "Greyhounds are the fastest dog breed and can reach speeds up to 45 mph.",
+      "height_max_inches": 30,
+      "height_min_inches": 27,
+      "historical_purpose": "Hunting and coursing game",
+      "id": 152,
+      "origin_country": "Egypt",
+      "popularity_rank": 72,
+      "size_category": "Large",
+      "thumbnail": "greyhound_thumb.jpg",
+      "tier": 1,
+      "trainability": 3,
+      "updated_at": "2026-03-22T22:00:00Z",
+      "weight_max_lbs": 70,
+      "weight_min_lbs": 60
     },
     {
       "breed": "Golden Retriever",

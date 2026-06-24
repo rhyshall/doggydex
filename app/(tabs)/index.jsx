@@ -2,7 +2,7 @@ import { DoggyDexHeader } from '@/components/doggydex-header';
 import { FrostedGlassCard } from '@/components/frosted-glass-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { auth } from '@/lib/firebase-services';
+import { auth, db } from '@/lib/firebase-services';
 import { getUserProfileUsername, hasUsername, upsertUserProfile } from '@/lib/user-store';
 import { commonStyles } from '@/styles/common';
 import { homeStyles } from '@/styles/homeStyles';
@@ -10,7 +10,10 @@ import { Image } from 'expo-image';
 import { Redirect, useRouter } from 'expo-router';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useEffect, useState } from 'react';
-import { Pressable, View } from 'react-native';
+
+// Firestore imports needed for unlock fetch logic
+import { doc, collection as firestoreCollection, getDoc, getDocs, query, where } from 'firebase/firestore';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 const LABRADOR_BACKGROUND_IMAGES = {
   yellow: 'https://images.dog.ceo/breeds/labrador/n02099712_5640.jpg',
@@ -18,10 +21,14 @@ const LABRADOR_BACKGROUND_IMAGES = {
   chocolate: 'https://images.dog.ceo/breeds/labrador/n02099712_4467.jpg',
 };
 
+// Import fetchAndStoreUnlockCoats if not already imported
+// import { fetchAndStoreUnlockCoats } from '../quiz'; // If needed, adjust import path
+
 export default function HomeScreen() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
+  const [userUnlocks, setUserUnlocks] = useState([]);
 
   useEffect(() => {
     let isActive = true;
@@ -52,6 +59,38 @@ export default function HomeScreen() {
       } catch (usernameCheckError) {
         console.warn('Failed to check username requirement', usernameCheckError);
         router.replace('/username-setup');
+      }
+
+      // Fetch unlocks for user on home screen
+      try {
+        if (firebaseUser) {
+          // Inline fetchAndStoreUnlockCoats logic (copy from quiz.js)
+          const userRef = doc(db, 'users', firebaseUser.uid);
+          const userSnap = await getDoc(userRef);
+          let userIdNum = userSnap.data()?.user_id;
+          if (userIdNum !== undefined && userIdNum !== null) {
+            const unlockCoatsRef = firestoreCollection(db, 'unlock_coats');
+            const queries = [
+              query(unlockCoatsRef, where('user_id', '==', userIdNum)),
+              query(unlockCoatsRef, where('user_id', '==', String(userIdNum)))
+            ];
+            let allUnlocks = [];
+            for (const q of queries) {
+              const unlockSnap = await getDocs(q);
+              const unlocks = unlockSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+              if (unlocks.length > 0) allUnlocks = allUnlocks.concat(unlocks);
+            }
+            setUserUnlocks(allUnlocks);
+            console.log('[HOME] User unlock_coats (all):', allUnlocks);
+          } else {
+            setUserUnlocks([]);
+          }
+        } else {
+          setUserUnlocks([]);
+        }
+      } catch (e) {
+        setUserUnlocks([]);
+        console.warn('[HOME] DEBUG fetchAndStoreUnlockCoats error:', e);
       }
     });
 
@@ -123,12 +162,13 @@ export default function HomeScreen() {
             contentFit="cover"
           />
         </View>
-        <FrostedGlassCard style={{ width: '100%', maxWidth: 540, alignItems: 'center', justifyContent: 'center' }}>
-          <View style={homeStyles.content}>
-            <DoggyDexHeader style={{ marginBottom: 0 }} />
-            <ThemedText style={homeStyles.subtitle}>Guess breeds, unlock coats, build your collection!</ThemedText>
-
-            <View style={homeStyles.chooserCards}>
+        <FrostedGlassCard style={styles.homeCard}>
+          <View style={styles.homeCardContent}>
+            <DoggyDexHeader style={styles.homeHeader} />
+            <ThemedText style={styles.homeSubtitle}>
+              The ultimate dog breed quiz & collection game
+            </ThemedText>
+            <View style={styles.homeActions}>
               <Pressable
                 style={({ hovered, pressed }) => [
                   homeStyles.chooserCard,
@@ -170,3 +210,33 @@ export default function HomeScreen() {
     </ThemedView>
   );
 }
+
+const styles = StyleSheet.create({
+  homeCard: {
+    width: '100%',
+    maxWidth: 460,
+    paddingVertical: 22,
+    paddingHorizontal: 16,
+  },
+  homeCardContent: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  homeHeader: {
+    marginBottom: 18,
+  },
+  homeSubtitle: {
+    fontSize: 16,
+    lineHeight: 22,
+    textAlign: 'center',
+    color: 'rgba(0,0,0,0.72)',
+    marginBottom: 18,
+    paddingHorizontal: 6,
+  },
+  homeActions: {
+    width: '100%',
+    maxWidth: 420,
+    gap: 12,
+  },
+});

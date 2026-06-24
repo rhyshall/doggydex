@@ -1,3 +1,17 @@
+    match /unlock_coats/{docId} {
+      allow read: if isSignedIn()
+                  && resource.data.user_id == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.id;
+
+      allow create: if isSignedIn()
+                    && request.resource.data.user_id == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.id;
+
+      allow update: if isSignedIn()
+                    && resource.data.user_id == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.id
+                    && request.resource.data.user_id == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.id;
+
+      allow delete: if isSignedIn()
+                    && resource.data.user_id == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.id;
+    }
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {

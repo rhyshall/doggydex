@@ -1,35 +1,96 @@
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export const homeStyles = StyleSheet.create({
-  headerMargin: {
-    marginBottom: 28,
+  chooserSubtitleWrap: {
+    marginTop: 4,
+    marginBottom: 8, // further reduced for less space between tagline and buttons
+    paddingHorizontal: 0,
+    alignItems: 'center',
+    width: '100%',
   },
   chooserContainer: {
-    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
     width: '100%',
-    minHeight: 400,
+    maxWidth: 520,
+    alignSelf: 'center',
+    marginTop: 0, // raise card to top
+    marginBottom: 'auto',
   },
-  chooserGlassCard: {
-    backgroundColor: 'rgba(255,255,255,0.85)',
-    borderRadius: 20,
-    padding: 28,
-    paddingTop: 44, // increased top padding for more breathing room
-    shadowColor: '#000',
-    shadowOpacity: 0.10, // reduced opacity for softer effect
-    shadowRadius: 32, // increased radius for softer shadow
-    shadowOffset: { width: 0, height: 8 },
+  chooserPageBackground: {
+    backgroundColor: 'rgba(255,255,255,0.10)',
+  },
+  chooserSubtitle: {
+    fontSize: 25,
+    lineHeight: 34,
+    fontWeight: '700',
+    marginTop: 22,
+    marginBottom: 32,
+    textAlign: 'center',
+    color: '#232323', // slightly lighter than pure black
+    textShadowColor: 'rgba(0,0,0,0.28)',
+    textShadowOffset: { width: 0, height: 3 },
+    textShadowRadius: 6,
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    borderRadius: 0,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    elevation: 0,
+  },
+  chooserCards: {
+    width: '100%',
+    maxWidth: 420,
+    gap: 12,
+  },
+  chooserCard: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    width: 440,
-    maxWidth: '95%',
-    ...(Platform.OS === 'web'
-      ? {
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-        }
-      : {}),
+    gap: 16,
+    paddingVertical: 15,
+    paddingHorizontal: 18,
+    borderWidth: 0,
+    borderColor: 'transparent',
+    borderRadius: 14,
+    backgroundColor: '#fff',
+    boxShadow: '0 2px 12px 0 #f3f4f688',
+    elevation: 1,
+  },
+  chooserCardHover: {
+    borderColor: '#FF8C66',
+    boxShadow: '0 4px 10px 0 #0002',
+    elevation: 2,
+  },
+  chooserIcon: {
+    fontSize: 28,
+    lineHeight: 34,
+  },
+  chooserCardTextWrap: {
+    flex: 1,
+    gap: 2,
+  },
+  chooserCardTitle: {
+    fontSize: 20,
+    lineHeight: 26,
+    fontWeight: '700',
+    color: '#1F2937',
+  },
+  chooserCardTitleHover: {
+    color: '#FF9F1C',
+  },
+  chooserCardBody: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#6B7280',
+  },
+  buttonPressed: {
+    transform: [{ scale: 0.97 }],
+    elevation: 4,
+    shadowColor: '#FF9F1C',
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    borderColor: '#FFEDD5',
+    borderWidth: 1.5,
+    backgroundColor: '#fff8f2',
   },
   chooserContentBox: {
     backgroundColor: 'rgba(243,244,246,0.97)',
@@ -38,16 +99,16 @@ export const homeStyles = StyleSheet.create({
     paddingHorizontal: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.16,
-    shadowRadius: 32,
+    boxShadow: '0 12px 32px 0 #0003',
     elevation: 16,
     borderWidth: 1.5,
     borderColor: '#E0E1E4',
     width: 440,
     maxWidth: '95%',
     alignSelf: 'center',
+    transitionProperty: 'background, box-shadow, border-color, border-radius',
+    transitionDuration: '180ms',
+    transitionTimingFunction: 'ease-in-out',
   },
   screen: {
     flex: 1,
@@ -128,24 +189,24 @@ export const homeStyles = StyleSheet.create({
   },
   bgDogImage: {
     position: 'absolute',
-    width: 180,
-    height: 180,
-    borderRadius: 18,
-    opacity: 0.09,
+    width: 200,
+    height: 200,
+    borderRadius: 20,
+    opacity: 0.045,
   },
   bgDogYellow: {
-    top: 52,
-    left: -38,
+    top: 60,
+    left: -24,
     transform: [{ rotate: '-10deg' }],
   },
   bgDogBlack: {
-    top: 190,
-    right: -34,
+    top: 180,
+    right: -20,
     transform: [{ rotate: '8deg' }],
   },
   bgDogChocolate: {
-    bottom: 26,
-    left: 22,
+    bottom: 34,
+    left: 38,
     transform: [{ rotate: '-6deg' }],
   },
   content: {
@@ -157,6 +218,13 @@ export const homeStyles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 12,
     zIndex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    marginTop: 32, // position card higher on screen
+    paddingVertical: 18,
+    paddingHorizontal: 0,
+    width: '100%',
+    maxWidth: 420,
   },
   titleWrap: {
     flexDirection: 'row',
@@ -181,26 +249,24 @@ export const homeStyles = StyleSheet.create({
     lineHeight: 30,
     flexShrink: 1,
     color: '#FF9F1C',
-    marginBottom: 24,
+    marginBottom: 10, // tighter spacing below title
+    marginTop: 0,
+    textAlign: 'center',
   },
   subtitle: {
-    fontSize: 17,
-    lineHeight: 24,
-    marginTop: -16,
-    marginBottom: 16,
+    fontSize: 19,
+    fontWeight: '500',
+    color: 'rgba(0,0,0,0.7)',
     textAlign: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.45)',
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    color: '#2F3742',
-    shadowColor: '#ffffff',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    elevation: 1,
+    marginTop: 8,
+    marginBottom: 14,
+    backgroundColor: 'transparent',
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+    borderRadius: 0,
+    borderWidth: 0,
+    elevation: 0,
+    shadowOpacity: 0,
   },
   chooserSubtitle: {
     fontSize: 18,
@@ -230,55 +296,4 @@ export const homeStyles = StyleSheet.create({
     transitionDuration: '120ms',
     transitionTimingFunction: 'ease-in-out',
   },
-  chooserGlassCard: {
-    backgroundColor: 'rgba(255,255,255,0.92)',
-    borderRadius: 20,
-    padding: 32,
-    paddingTop: 56, // increased for more vertical space
-    paddingBottom: 44, // increased for more vertical space
-    shadowColor: '#000',
-    shadowOpacity: 0.18,
-    shadowRadius: 24,
-    shadowOffset: { width: 0, height: 10 },
-    borderWidth: 1.5,
-    borderColor: '#e5e7eb',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 440,
-    maxWidth: '95%',
-    ...(Platform.OS === 'web'
-      ? {
-          backdropFilter: 'blur(18px)',
-          WebkitBackdropFilter: 'blur(18px)',
-        }
-      : {}),
-  },
-  chooserCardTextWrap: {
-    flex: 1,
-    gap: 2,
-  },
-  chooserCardTitle: {
-    fontSize: 18,
-    lineHeight: 24,
-    fontWeight: '700',
-    color: '#1F2937',
-  },
-  chooserCardTitleHover: {
-    color: '#FF9F1C',
-  },
-    chooserCardHover: {
-      borderColor: '#FF8C66',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.13,
-      shadowRadius: 18,
-      elevation: 6,
-      // transform will be handled inline in Pressable style
-    },
-  chooserCardBody: {
-    fontSize: 14,
-    lineHeight: 20,
-    color: '#6B7280',
-  },
-  buttonPressed: {},
 });

@@ -211,6 +211,51 @@ async function main() {
     });
   }
 
+    const db = admin.firestore();
+
+    async function uploadAllCoats() {
+      // Load dog-breeds.json
+      const breedsJsonPath = path.join(__dirname, '../data/dog-breeds.json');
+      const breedsData = JSON.parse(fs.readFileSync(breedsJsonPath, 'utf8'));
+      const breedsArr = breedsData.breeds || [];
+
+      // Get current max coat_id in Firestore
+      const coatsRef = db.collection('coats');
+      const snapshot = await coatsRef.get();
+      let maxCoatId = 0;
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        if (typeof data.coat_id === 'number' && data.coat_id > maxCoatId) {
+          maxCoatId = data.coat_id;
+        }
+      });
+      let nextCoatId = maxCoatId + 1;
+
+      // For each breed, upload all coats
+      for (const breed of breedsArr) {
+        const breed_id = breed.breed_id || breed.breed;
+        if (!breed_id || !Array.isArray(breed.coats)) continue;
+        for (const coat of breed.coats) {
+          // Compose coat_name and img_filename if not present
+          const coat_name = coat.coat_name || `${breed_id}__${coat.color_name ? coat.color_name.toLowerCase().replace(/\s+/g, '_') : ''}`;
+          const img_filename = coat.img_filename || `${coat_name}.jpg`;
+          const docData = {
+            breed_id,
+            coat_id: nextCoatId++,
+            coat_name,
+            color_name: coat.color_name || '',
+            image_exists: true,
+            img_filename,
+            updated_at: admin.firestore.FieldValue.serverTimestamp(),
+          };
+          await coatsRef.doc(coat_name).set(docData);
+          console.log(`Uploaded coat: ${coat_name} (coat_id: ${docData.coat_id})`);
+        }
+      }
+      console.log('All coats uploaded.');
+    }
+
+    uploadAllCoats().catch(console.error);
   const db = admin.firestore();
 
   // Keep numeric coat IDs stable across repeat seeding runs.

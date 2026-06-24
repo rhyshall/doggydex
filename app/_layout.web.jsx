@@ -19,7 +19,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   useEffect(() => {
-    initializeFirebaseAnalytics().catch(() => null);
+    initializeFirebaseAnalytics().catch(() => {});
   }, []);
 
   const lightTheme = {

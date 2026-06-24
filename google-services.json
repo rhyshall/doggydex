@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "754250921036",
+    "project_id": "doggydex-f83a1",
+    "storage_bucket": "doggydex-f83a1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:754250921036:android:b61c744607c0b9ba3cf0e9",
+        "android_client_info": {
+          "package_name": "com.rhys_hall.dogquiz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "754250921036-8itvk3f4dg83vcoi2o3t1j4dld07ma08.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rhys_hall.dogquiz",
+            "certificate_hash": "5e868d467bd368e395f2c1bc044f1de4c77d49ae"
+          }
+        },
+        {
+          "client_id": "754250921036-magfplsto8r5c4oerv2flcr84dgfj1o8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhKZCthc0KnISKsEZQXxoYFTu1ydd5SLA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "754250921036-magfplsto8r5c4oerv2flcr84dgfj1o8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

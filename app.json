@@ -6,9 +6,8 @@
     "description": "Guess breeds, unlock coats, build your DoggyDex",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "dogquiz",
+    "scheme": "com.googleusercontent.apps.754250921036-8itvk3f4dg83vcoi2o3t1j4dld07ma08",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
@@ -19,8 +18,8 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.rhys_hall.dogquiz"
     },
     "web": {
       "output": "static",
@@ -44,6 +43,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e11cffd5-b99d-4471-bb52-8bc133c53eac"
+      }
     }
   }
 }
