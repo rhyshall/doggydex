@@ -3,6 +3,7 @@ import { FrostedGlassCard } from '@/components/frosted-glass-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { auth } from '@/lib/firebase-services';
+import { getLocalImgAsset } from '@/lib/local-image-assets';
 // import { loadUserProgress, saveUserProgress } from '@/lib/progress-store';
 import { mapVariantsWithStorageUris, toColorKey } from '@/lib/storage-coat-variants';
 import { getUserProfileUsername, hasUsername, upsertUserProfile } from '@/lib/user-store';
@@ -24,14 +25,14 @@ const APP_FONT_FAMILY = Platform.select({
 });
 
 const ALL_DOGS = [
-  { id: 'labrador-yellow', breed: 'Labrador Retriever', coat: 'Yellow', uri: 'https://images.dog.ceo/breeds/labrador/n02099712_5640.jpg' },
-  { id: 'labrador-black', breed: 'Labrador Retriever', coat: 'Black', uri: 'https://images.dog.ceo/breeds/labrador/n02099712_1978.jpg' },
-  { id: 'pug-fawn', breed: 'Pug', coat: 'Fawn', uri: 'https://images.dog.ceo/breeds/pug/n02110958_15761.jpg' },
-  { id: 'pug-black', breed: 'Pug', coat: 'Black', uri: 'https://images.dog.ceo/breeds/pug/n02110958_8270.jpg' },
-  { id: 'germanshepherd-tan', breed: 'German Shepherd', coat: 'Tan & Black', uri: 'https://images.dog.ceo/breeds/germanshepherd/n02106662_5705.jpg' },
-  { id: 'germanshepherd-sable', breed: 'German Shepherd', coat: 'Sable', uri: 'https://images.dog.ceo/breeds/germanshepherd/n02106662_2169.jpg' },
-  { id: 'golden-light', breed: 'Golden Retriever', coat: 'Light Golden', uri: 'https://images.dog.ceo/breeds/retriever/golden/n02099601_3004.jpg' },
-  { id: 'golden-dark', breed: 'Golden Retriever', coat: 'Dark Golden', uri: 'https://images.dog.ceo/breeds/retriever/golden/n02099601_5159.jpg' },
+  { id: 'labrador-yellow', breed: 'Labrador Retriever', coat: 'Yellow', uri: getLocalImgAsset('labrador_retriever_yellow.jpg') },
+  { id: 'labrador-black', breed: 'Labrador Retriever', coat: 'Black', uri: getLocalImgAsset('labrador_retriever_black.jpg') },
+  { id: 'pug-fawn', breed: 'Pug', coat: 'Fawn', uri: getLocalImgAsset('pug_fawn.jpg') },
+  { id: 'pug-black', breed: 'Pug', coat: 'Black', uri: getLocalImgAsset('pug_black.jpg') },
+  { id: 'germanshepherd-tan', breed: 'German Shepherd', coat: 'Tan & Black', uri: getLocalImgAsset('german_shepherd_black_tan.jpg') },
+  { id: 'germanshepherd-sable', breed: 'German Shepherd', coat: 'Sable', uri: getLocalImgAsset('german_shepherd_sable.jpg') },
+  { id: 'golden-light', breed: 'Golden Retriever', coat: 'Light Golden', uri: getLocalImgAsset('golden_retriever_light_golden.jpg') },
+  { id: 'golden-dark', breed: 'Golden Retriever', coat: 'Dark Golden', uri: getLocalImgAsset('golden_retriever_dark_golden.jpg') },
 ];
 
 const BREED_SECTIONS = dogBreedsData.breeds.map((breedData) => ({

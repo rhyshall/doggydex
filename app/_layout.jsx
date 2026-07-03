@@ -48,12 +48,12 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? darkTheme : lightTheme}>
       <AppBackground style={styles.container}>
         <Stack screenOptions={{ contentStyle: { backgroundColor: 'transparent' } }}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false, animation: 'fade' }} />
           <Stack.Screen name="doggydex" options={{ headerShown: false, animation: 'fade' }} />
           <Stack.Screen name="login" options={{ headerShown: false, animation: 'fade' }} />
           <Stack.Screen name="signup" options={{ headerShown: false, animation: 'fade' }} />
           <Stack.Screen name="oauthredirect" options={{ headerShown: false, animation: 'none' }} />
-          <Stack.Screen name="quiz" options={{ headerShown: false }} />
+          <Stack.Screen name="quiz" options={{ headerShown: false, animation: 'fade' }} />
           <Stack.Screen name="username-setup" options={{ headerShown: false }} />
           <Stack.Screen
             name="modal"

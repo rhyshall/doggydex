@@ -3,7 +3,6 @@ import { FrostedGlassCard } from '@/components/frosted-glass-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { auth } from '@/lib/firebase-services';
-import { getUserProfileUsername, hasUsername, upsertUserProfile } from '@/lib/user-store';
 import { commonStyles } from '@/styles/common';
 import * as AuthSession from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
@@ -19,7 +18,7 @@ import {
     signInWithPopup,
 } from 'firebase/auth';
 import { useCallback, useEffect, useState } from 'react';
-import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import GoogleIcon from './google-icon';
 
 const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_WEB_CLIENT_ID || process.env.WEB_CLIENT_ID;
@@ -62,7 +61,6 @@ function appendAuthGateDebugLog(event, payload) {
 
   existing.push(entry);
   globalThis[AUTH_GATE_DEBUG_BUFFER_KEY] = existing.slice(-50);
-  console.log('[AuthGate][debug]', JSON.stringify(entry));
 }
 
 WebBrowser.maybeCompleteAuthSession();
@@ -72,6 +70,7 @@ export default function AuthGateScreen({ mode }) {
   const isSignInMode = mode === 'signin';
 
   const [checkedAuth, setCheckedAuth] = useState(false);
+  const [isRoutingAuthenticatedUser, setIsRoutingAuthenticatedUser] = useState(false);
   const [isAuthPending, setIsAuthPending] = useState(false);
   const [signInError, setSignInError] = useState(null);
   const [email, setEmail] = useState('');
@@ -87,53 +86,27 @@ export default function AuthGateScreen({ mode }) {
     selectAccount: true,
   });
 
-  const getPostAuthRoute = useCallback(async (user) => {
-    if (!user?.uid) {
-      return '/';
-    }
-
-    try {
-      await upsertUserProfile(user);
-    } catch (profileError) {
-      console.warn('Failed to sync user profile', profileError);
-    }
-
-    try {
-      const storedUsername = await getUserProfileUsername(user.uid);
-      if (!hasUsername(storedUsername)) {
-        return '/username-setup';
-      }
-    } catch (usernameCheckError) {
-      console.warn('Failed to check username requirement', usernameCheckError);
-      return '/username-setup';
-    }
-
-    return '/';
-  }, []);
-
-  const routeSignedInUser = useCallback(async (user) => {
-    const destination = await getPostAuthRoute(user);
-    router.replace(destination);
-  }, [getPostAuthRoute, router]);
+  const routeSignedInUser = useCallback(() => {
+    setIsRoutingAuthenticatedUser(true);
+    router.replace('/');
+  }, [router]);
 
   useEffect(() => {
     let isActive = true;
 
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!isActive) {
         return;
       }
 
       if (user) {
-        const destination = await getPostAuthRoute(user);
-
-        if (isActive) {
-          router.replace(destination);
-        }
+        setIsRoutingAuthenticatedUser(true);
+        router.replace('/');
 
         return;
       }
 
+      setIsRoutingAuthenticatedUser(false);
       setCheckedAuth(true);
     });
 
@@ -141,7 +114,7 @@ export default function AuthGateScreen({ mode }) {
       isActive = false;
       unsubscribe();
     };
-  }, [getPostAuthRoute, router]);
+  }, [router]);
 
   useEffect(() => {
     let isCancelled = false;
@@ -182,7 +155,7 @@ export default function AuthGateScreen({ mode }) {
         const credentialSignInResult = await signInWithCredential(auth, credential);
 
         if (!isCancelled) {
-          await routeSignedInUser(credentialSignInResult.user);
+          routeSignedInUser();
         }
       } catch (error) {
         console.warn('Failed to sign in with Google', error);
@@ -244,7 +217,7 @@ export default function AuthGateScreen({ mode }) {
       if (Platform.OS === 'web') {
         const provider = new GoogleAuthProvider();
         const popupSignInResult = await signInWithPopup(auth, provider);
-        await routeSignedInUser(popupSignInResult.user);
+        routeSignedInUser();
         return;
       }
 
@@ -288,7 +261,7 @@ export default function AuthGateScreen({ mode }) {
 
     try {
       const emailSignInResult = await signInWithEmailAndPassword(auth, normalizedEmail, password);
-      await routeSignedInUser(emailSignInResult.user);
+      routeSignedInUser();
     } catch (signInError) {
       appendAuthGateDebugLog('emailSignInError', {
         email: normalizedEmail,
@@ -325,7 +298,7 @@ export default function AuthGateScreen({ mode }) {
 
     try {
       const createAccountResult = await createUserWithEmailAndPassword(auth, normalizedEmail, normalizedPassword);
-      await routeSignedInUser(createAccountResult.user);
+      routeSignedInUser();
     } catch (createError) {
       setSignInError(getEmailAuthErrorMessage(createError, 'create'));
     } finally {
@@ -342,11 +315,14 @@ export default function AuthGateScreen({ mode }) {
     await handleEmailCreateAccount();
   }
 
-  if (!checkedAuth) {
+  if (!checkedAuth || isRoutingAuthenticatedUser || isAuthPending) {
     return (
       <ThemedView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <ThemedText style={styles.loadingText}>Checking sign-in...</ThemedText>
+          <ActivityIndicator size="large" color="#FFFFFF" style={styles.loadingSpinner} />
+          <ThemedText style={styles.loadingText}>
+            {isRoutingAuthenticatedUser || isAuthPending ? 'Signing you in...' : 'Checking sign-in...'}
+          </ThemedText>
         </View>
       </ThemedView>
     );
@@ -476,10 +452,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  loadingSpinner: {
+    marginBottom: 14,
+  },
   loadingText: {
-    fontSize: 14,
-    lineHeight: 20,
-    opacity: 0.85,
+    fontSize: 22,
+    lineHeight: 28,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    opacity: 0.92,
+    textAlign: 'center',
   },
   gateContainer: {
     flex: 1,

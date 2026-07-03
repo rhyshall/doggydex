@@ -1,6 +1,9 @@
 body {
   margin: 0;
   min-height: 100vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
   background: radial-gradient(
     circle at 50% 35%,
     #f8fafb 0%,

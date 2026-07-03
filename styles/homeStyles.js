@@ -123,9 +123,9 @@ export const homeStyles = StyleSheet.create({
   },
   authCorner: {
     position: 'absolute',
-    top: 10,
     left: 10,
     zIndex: 3,
+    elevation: 12,
   },
   authRow: {
     flexDirection: 'row',

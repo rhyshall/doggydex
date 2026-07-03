@@ -1,9 +1,11 @@
+import { DoggyDexHeader } from '@/components/doggydex-header';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { auth } from '@/lib/firebase-services';
 import {
     getUserProfileUsername,
     hasUsername,
+    isUsernameAvailable,
     setUserProfileUsername,
     upsertUserProfile,
     USERNAME_TAKEN_ERROR_CODE,
@@ -15,6 +17,8 @@ import { useEffect, useState } from 'react';
 import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 const PAW_FOCUS_COLOR = '#FF8C66';
+const USERNAME_MIN_LENGTH = 3;
+const USERNAME_MAX_LENGTH = 20;
 const APP_FONT_FAMILY = Platform.select({
   web: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
   ios: 'System',
@@ -27,7 +31,7 @@ function normalizeUsername(value) {
 }
 
 function sanitizeUsernameInput(value) {
-  return value.replace(/\s+/g, '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24);
+  return value.replace(/\s+/g, '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, USERNAME_MAX_LENGTH);
 }
 
 function getUsernameSaveErrorMessage(saveError) {
@@ -68,6 +72,8 @@ export default function UsernameSetupScreen() {
   const [focusedField, setFocusedField] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [usernameAvailability, setUsernameAvailability] = useState('idle');
+  const [hasReachedMinLengthOnce, setHasReachedMinLengthOnce] = useState(false);
 
   useEffect(() => {
     let isActive = true;
@@ -109,9 +115,63 @@ export default function UsernameSetupScreen() {
   }, [router]);
 
   function handleUsernameChange(value) {
+    const sanitizedUsername = sanitizeUsernameInput(value);
+
     setErrorMessage(null);
-    setUsername(sanitizeUsernameInput(value));
+    setUsername(sanitizedUsername);
+
+    if (!hasReachedMinLengthOnce && sanitizedUsername.length >= USERNAME_MIN_LENGTH) {
+      setHasReachedMinLengthOnce(true);
+    }
   }
+
+  const normalizedUsername = normalizeUsername(username);
+  const isValidUsername =
+    hasUsername(normalizedUsername) && normalizedUsername.length >= USERNAME_MIN_LENGTH;
+
+  useEffect(() => {
+    if (!checkedAuth) {
+      return undefined;
+    }
+
+    if (!isValidUsername) {
+      setUsernameAvailability('idle');
+      return undefined;
+    }
+
+    let isActive = true;
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        const available = await isUsernameAvailable(normalizedUsername, auth.currentUser?.uid ?? null);
+
+        if (!isActive) {
+          return;
+        }
+
+        if (available === true) {
+          setUsernameAvailability('available');
+          return;
+        }
+
+        if (available === false) {
+          setUsernameAvailability('taken');
+          return;
+        }
+      } catch (availabilityError) {
+        if (!isActive) {
+          return;
+        }
+
+        console.warn('Failed to check username availability', availabilityError);
+      }
+    }, 250);
+
+    return () => {
+      isActive = false;
+      clearTimeout(timeoutId);
+    };
+  }, [checkedAuth, isValidUsername, normalizedUsername]);
 
   async function handleSaveUsername() {
     setErrorMessage(null);
@@ -130,8 +190,8 @@ export default function UsernameSetupScreen() {
       return;
     }
 
-    if (normalizedUsername.length < 3) {
-      setErrorMessage('Username must be at least 3 characters long');
+    if (normalizedUsername.length < USERNAME_MIN_LENGTH) {
+      setErrorMessage(`Username must be at least ${USERNAME_MIN_LENGTH} characters long`);
       return;
     }
 
@@ -167,17 +227,22 @@ export default function UsernameSetupScreen() {
     );
   }
 
+  const canContinue = !isSaving && isValidUsername && usernameAvailability === 'available';
+
   return (
     <ThemedView style={styles.container}>
+      <View pointerEvents="none" style={styles.screenOverlay} />
       <View style={styles.gateContainer}>
         <DoggyDexHeader style={{ marginBottom: 0 }} />
 
-        <ThemedText style={styles.gateText}>Pick a username to complete your DoggyDex profile.</ThemedText>
+        <ThemedText style={styles.gateText}>Create your username</ThemedText>
+        <ThemedText style={styles.subtitleText}>This is how other players will see you.</ThemedText>
 
         <TextInput
           value={username}
           onChangeText={handleUsernameChange}
           placeholder="Username"
+          placeholderTextColor="#7C8791"
           autoCapitalize="none"
           autoCorrect={false}
           editable={!isSaving}
@@ -185,6 +250,24 @@ export default function UsernameSetupScreen() {
           onBlur={() => setFocusedField((prev) => (prev === 'username' ? null : prev))}
           style={[styles.input, focusedField === 'username' && styles.inputFocused]}
         />
+
+        {!isValidUsername && hasReachedMinLengthOnce ? (
+          <ThemedText style={[styles.usernameStatusText, styles.usernameStatusWarning]}>
+            ⚠️ 3–20 characters
+          </ThemedText>
+        ) : null}
+
+        {isValidUsername && usernameAvailability === 'available' ? (
+          <ThemedText style={[styles.usernameStatusText, styles.usernameStatusAvailable]}>
+            ✅ Username available
+          </ThemedText>
+        ) : null}
+
+        {isValidUsername && usernameAvailability === 'taken' ? (
+          <ThemedText style={[styles.usernameStatusText, styles.usernameStatusTaken]}>
+            ❌ Username already taken
+          </ThemedText>
+        ) : null}
 
         {errorMessage ? <ThemedText style={styles.errorText}>{errorMessage}</ThemedText> : null}
 
@@ -194,10 +277,11 @@ export default function UsernameSetupScreen() {
               commonStyles.playButton,
               styles.actionButton,
               styles.primaryButton,
-              (hovered || pressed) && styles.primaryButtonHover,
-              pressed && styles.buttonPressed,
+              !canContinue && styles.primaryButtonDisabled,
+              canContinue && (hovered || pressed) && styles.primaryButtonHover,
+              canContinue && pressed && styles.buttonPressed,
             ]}
-            disabled={isSaving}
+            disabled={!canContinue}
             onPress={handleSaveUsername}>
             <ThemedText type="subtitle" style={[styles.buttonLabel, styles.primaryButtonLabel]}>
               {isSaving ? 'Saving...' : 'Continue'}
@@ -226,10 +310,15 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     opacity: 0.85,
   },
+  screenOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+  },
   gateContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    transform: [{ translateY: -60 }],
     width: '100%',
     maxWidth: 460,
     alignSelf: 'center',
@@ -258,22 +347,36 @@ const styles = StyleSheet.create({
     transform: [{ translateY: -4 }],
   },
   gateText: {
-    fontSize: 17,
-    lineHeight: 24,
-    marginTop: 16,
-    marginBottom: 22,
+    fontFamily: APP_FONT_FAMILY,
+    fontSize: 30,
+    lineHeight: 36,
+    fontWeight: '800',
+    letterSpacing: 0.25,
+    marginTop: 28,
+    marginBottom: 8,
     textAlign: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.45)',
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    color: '#2F3742',
-    boxShadow: '0 2px 6px 0 #ffffff22',
-    elevation: 1,
+    color: '#F28A1E',
+    textShadowColor: 'rgba(47,34,20,0.32)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+    paddingHorizontal: 12,
     width: '100%',
     maxWidth: 340,
+  },
+  subtitleText: {
+    fontFamily: APP_FONT_FAMILY,
+    width: '100%',
+    maxWidth: 340,
+    marginBottom: 16,
+    color: '#F8F2E8',
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: '600',
+    letterSpacing: 0.15,
+    textAlign: 'center',
+    textShadowColor: 'rgba(43, 31, 18, 0.35)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   input: {
     fontFamily: APP_FONT_FAMILY,
@@ -287,6 +390,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     fontSize: 16,
     lineHeight: 22,
+    textShadowColor: 'rgba(28, 20, 12, 0.24)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 1.5,
     ...(Platform.OS === 'web'
       ? {
           outlineStyle: 'none',
@@ -304,8 +410,26 @@ const styles = StyleSheet.create({
         }
       : null),
   },
+  usernameStatusText: {
+    width: '100%',
+    maxWidth: 340,
+    marginTop: 8,
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: '700',
+    textAlign: 'left',
+  },
+  usernameStatusAvailable: {
+    color: '#16C56D',
+  },
+  usernameStatusTaken: {
+    color: '#FF6B6E',
+  },
+  usernameStatusWarning: {
+    color: '#FF4D4F',
+  },
   actions: {
-    marginTop: 14,
+    marginTop: 24,
     gap: 10,
     alignItems: 'stretch',
     width: '100%',
@@ -324,6 +448,9 @@ const styles = StyleSheet.create({
     borderColor: '#E68A00',
     boxShadow: '0 2px 6px 0 #1E3A8A33',
     elevation: 2,
+  },
+  primaryButtonDisabled: {
+    opacity: 0.5,
   },
   primaryButtonHover: {
     backgroundColor: '#E58E19',
