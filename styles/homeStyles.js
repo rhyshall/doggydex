@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { DoggyDexTheme } from '../constants/theme';
 
 export const homeStyles = StyleSheet.create({
   chooserSubtitleWrap: {
@@ -72,15 +73,15 @@ export const homeStyles = StyleSheet.create({
     fontSize: 20,
     lineHeight: 26,
     fontWeight: '700',
-    color: '#1F2937',
+    color: DoggyDexTheme.colors.text,
   },
   chooserCardTitleHover: {
-    color: '#FF9F1C',
+    color: DoggyDexTheme.colors.primary,
   },
   chooserCardBody: {
     fontSize: 14,
     lineHeight: 20,
-    color: '#6B7280',
+    color: DoggyDexTheme.colors.textSecondary,
   },
   buttonPressed: {
     transform: [{ scale: 0.97 }],
@@ -284,14 +285,14 @@ export const homeStyles = StyleSheet.create({
     paddingVertical: 18,
     paddingHorizontal: 18,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 14,
-    backgroundColor: '#FFFFFF',
+    borderColor: DoggyDexTheme.colors.border,
+    borderRadius: DoggyDexTheme.radii.medium,
+    backgroundColor: DoggyDexTheme.colors.surface,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0,
     shadowRadius: 0,
-    elevation: 0,
+    ...DoggyDexTheme.shadow,
     transitionProperty: 'transform, box-shadow',
     transitionDuration: '120ms',
     transitionTimingFunction: 'ease-in-out',

@@ -1,4 +1,5 @@
 import { auth } from '@/lib/firebase-services';
+import { SplashTransition } from '@/components/splash-transition';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect } from 'react';
 
@@ -23,5 +24,5 @@ export default function OAuthRedirect() {
     return unsubscribe;
   }, [router]);
 
-  return null;
+  return <SplashTransition />;
 }

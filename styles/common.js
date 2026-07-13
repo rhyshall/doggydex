@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { DoggyDexTheme } from '../constants/theme';
 
 export const commonStyles = StyleSheet.create({
   container: {
@@ -8,8 +9,9 @@ export const commonStyles = StyleSheet.create({
   playButton: {
     paddingVertical: 14,
     paddingHorizontal: 24,
-    borderRadius: 12,
-    backgroundColor: '#FF8A8A',
+    borderRadius: DoggyDexTheme.radii.medium,
+    backgroundColor: DoggyDexTheme.colors.primary,
+    ...DoggyDexTheme.shadow,
   },
   nextButton: {
     marginTop: 8,

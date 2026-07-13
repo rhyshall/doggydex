@@ -84,6 +84,17 @@ For Google sign-in on Expo/native flows, also set:
 
 Quiz progress sync is tracked in Firestore by Firebase Auth `uid`.
 
+## Player progression
+
+DoggyDex keeps trainer progression separate from collection progression:
+
+- `users/{uid}.totalXP` drives level and trainer rank.
+- `users/{uid}/breedProgress/{breedId}` stores discovery state, correct-answer count,
+  unlocked coat IDs, and discovery timestamps for each breed.
+- Correct answers award 10 XP, with bonuses for daily quiz completion, ten-answer
+  streaks, new breeds, and newly unlocked coats.
+- Coat milestones are reached at 1, 3, 7, 15, and 30 correct identifications of a breed.
+
 ## Firestore rules and indexes
 
 This repo includes:
@@ -104,7 +115,7 @@ firebase deploy --only firestore:rules,firestore:indexes
 ### Security model
 
 - `users/{uid}` and `userProgress/{uid}` are user-private (owner-only read/write).
-- `user_coats` and `user_breed_badges` are user-private by `user_id == request.auth.uid`.
+- `user_coats`, `user_breed_badges`, and `unlock_coats` are user-private by `user_id == request.auth.uid`.
 - `breeds`, `coats`, and `_meta` are read-only from clients.
 
 User profile upserts now use `_meta/user_id_counter` in a transaction to assign ascending numeric

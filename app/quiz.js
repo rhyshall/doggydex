@@ -1,23 +1,26 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { DOGGYDEX_CORAL_RED } from '@/constants/theme';
+import { SplashTransition } from '@/components/splash-transition';
+import { LifePawIcon } from '@/components/game-icon';
+import { DOGGYDEX_CORAL_RED, DoggyDexTheme } from '@/constants/theme';
 import { auth, db } from '@/lib/firebase-services';
 import { getLocalImgAsset } from '@/lib/local-image-assets';
+import { awardDailyQuizCompletion, getLevelProgress, recordCorrectAnswer } from '@/lib/progression-store';
 // import { loadUserProgress, saveUserProgress } from '@/lib/progress-store';
 import { indexVariantsByBreed } from '@/lib/storage-coat-variants';
 import { quizStyles } from '@/styles/quizStyles';
 import { MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BlurView } from 'expo-blur';
+import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 
 
 import { onAuthStateChanged } from 'firebase/auth';
-import { addDoc, doc, collection as firestoreCollection, getDoc, getDocs, query, serverTimestamp, setDoc, where } from 'firebase/firestore';
+import { doc, collection as firestoreCollection, getDoc, getDocs, setDoc } from 'firebase/firestore';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Platform, Pressable, Animated as RNAnimated, Easing as RNEasing, View } from 'react-native';
-import Animated, { Easing as ReanimatedEasing, runOnJS, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
+import { AccessibilityInfo, FlatList, Platform, Pressable, Animated as RNAnimated, Easing as RNEasing, View } from 'react-native';
+import Animated, { Easing as ReanimatedEasing, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import breedTiers from '../data/dog-breeds-tiers.json';
 
 function shuffle(arr) {
@@ -29,9 +32,10 @@ function shuffle(arr) {
   return a;
 }
 
-const BREED_BADGES_KEY = 'breedBadges';
 const MIN_BREEDS_PER_QUESTION = 4;
-
+const QUESTION_TRANSITION_DISTANCE = 58;
+const QUESTION_TRANSITION_DURATION = 240;
+const QUESTION_TRANSITION_EASING = ReanimatedEasing.inOut(ReanimatedEasing.cubic);
 function weightedPick(items, weightFn) {
   if (!items.length) return null;
   const weights = items.map((item) => Math.max(0, weightFn(item)));
@@ -74,10 +78,603 @@ function toTitleCaseFromId(value) {
     .join(' ');
 }
 
+async function preloadQuizImageSource(source) {
+  if (!source) return;
+  return Image.loadAsync(source);
+}
+
+async function preloadQuestionImages(question) {
+  if (!Array.isArray(question?.choices)) {
+    return question;
+  }
+
+  const choices = await Promise.all(
+    question.choices.map(async (choice) => {
+      try {
+        const preloadedSource = await preloadQuizImageSource(choice.uri);
+        return preloadedSource ? { ...choice, preloadedSource } : choice;
+      } catch (error) {
+        console.warn('Failed to preload quiz image', error);
+        return choice;
+      }
+    })
+  );
+
+  return { ...question, choices };
+}
+
+function getQuizImageSource(choice) {
+  const source = choice?.preloadedSource || choice?.uri;
+  return typeof source === 'string' ? { uri: source } : source;
+}
+
+function formatCoatLabel(value) {
+  const label = String(value || '').trim();
+  if (!label) return 'New coat';
+  return label.replace(/\s+coat$/i, '');
+}
+
+function getUnlockRewardType(reward) {
+  if (reward?.rewardKind === 'coat' || reward?.rewardKind === 'breed') {
+    return reward.rewardKind;
+  }
+
+  if (reward?.isNewBreed) return 'breed';
+  return Array.isArray(reward?.newlyUnlockedCoats) && reward.newlyUnlockedCoats.length > 0
+    ? 'coat'
+    : null;
+}
+
+function UnlockRewardFeedback({ reward, opacity, translateY, scale }) {
+  const rewardType = getUnlockRewardType(reward);
+  if (!rewardType) return null;
+
+  const isBreedUnlock = rewardType === 'breed';
+  const breedName = reward.breedName || reward.breed || 'New breed';
+  const coatName = reward.newlyUnlockedCoatLabels?.[0] || reward.coatName || reward.newlyUnlockedCoats?.[0];
+
+  return (
+    <RNAnimated.View
+      pointerEvents="none"
+      style={[
+        isBreedUnlock ? quizStyles.breedMilestoneWrap : quizStyles.unlockToastWrap,
+        {
+          opacity,
+          transform: [{ translateY }, { scale }],
+        },
+      ]}
+    >
+      {isBreedUnlock ? (
+        <View style={quizStyles.breedMilestoneCard}>
+          <View style={quizStyles.breedMilestoneSparkleLeft}>
+            <MaterialIcons name="auto-awesome" size={18} color="#F4D35E" />
+          </View>
+          <View style={quizStyles.breedMilestoneImageWrap}>
+            {reward.breedImageSource ? (
+              <Image source={reward.breedImageSource} style={quizStyles.breedMilestoneImage} contentFit="cover" />
+            ) : (
+              <MaterialIcons name="pets" size={38} color="#FFFFFF" />
+            )}
+          </View>
+          <View style={quizStyles.breedMilestoneCopy}>
+            <ThemedText style={quizStyles.breedMilestoneTitle}>New Breed Unlocked!</ThemedText>
+            <ThemedText
+              style={quizStyles.breedMilestoneBreed}
+              numberOfLines={2}
+              adjustsFontSizeToFit
+              minimumFontScale={0.78}
+            >
+              {breedName}
+            </ThemedText>
+          </View>
+          <View style={quizStyles.breedMilestoneSparkleRight}>
+            <MaterialIcons name="auto-awesome" size={15} color="#FFE08A" />
+          </View>
+        </View>
+      ) : (
+        <View style={quizStyles.unlockToastCard}>
+          <View style={quizStyles.unlockToastIconWrap}>
+            <MaterialIcons name="pets" size={20} color="#FFFFFF" />
+            <MaterialIcons name="auto-awesome" size={13} color="#FFE08A" style={quizStyles.unlockToastSparkle} />
+          </View>
+          <View style={quizStyles.unlockToastCopy}>
+            <ThemedText style={quizStyles.unlockToastTitle}>New Coat Unlocked!</ThemedText>
+            <ThemedText
+              style={quizStyles.unlockToastBreed}
+              numberOfLines={3}
+              adjustsFontSizeToFit
+              minimumFontScale={0.72}
+            >
+              {breedName} — {formatCoatLabel(coatName)}
+            </ThemedText>
+          </View>
+        </View>
+      )}
+    </RNAnimated.View>
+  );
+}
+
+const GAME_OVER_REWARD_EASING = RNEasing.bezier(0.22, 1, 0.36, 1);
+const GAME_OVER_REWARD_TIMING = Object.freeze({
+  xp: 920,
+  levelPause: 220,
+  unlockStagger: 150,
+  unlockSettle: 360,
+});
+
+const GAME_OVER_UNLOCK_PREVIEW_LIMIT = 3;
+const GAME_OVER_UNLOCK_ROW_HEIGHT = 64;
+const GAME_OVER_UNLOCK_MAX_HEIGHT = 224;
+
+function GameOverRewardFlow({
+  visible,
+  score,
+  totalXp,
+  xpStartTotal,
+  xpEndTotal,
+  events,
+  skipSignal,
+  onFinished,
+}) {
+  const [showUnlocks, setShowUnlocks] = useState(false);
+  const [imagesReady, setImagesReady] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
+  const [displayedTotalXp, setDisplayedTotalXp] = useState(Math.max(0, xpStartTotal || 0));
+  const [levelUpLevel, setLevelUpLevel] = useState(null);
+  const rewardOpacity = useRef(new RNAnimated.Value(0)).current;
+  const rewardTranslateY = useRef(new RNAnimated.Value(16)).current;
+  const rewardScale = useRef(new RNAnimated.Value(0.97)).current;
+  const xpFill = useRef(new RNAnimated.Value(getLevelProgress(xpStartTotal).percentage)).current;
+  const listHeight = useRef(new RNAnimated.Value(GAME_OVER_UNLOCK_PREVIEW_LIMIT * GAME_OVER_UNLOCK_ROW_HEIGHT)).current;
+  const levelUpOpacity = useRef(new RNAnimated.Value(0)).current;
+  const chipAnims = useRef(Array.from({ length: 4 }, () => new RNAnimated.Value(0))).current;
+  const unlockAnims = useRef(Array.from({ length: GAME_OVER_UNLOCK_PREVIEW_LIMIT }, () => new RNAnimated.Value(0))).current;
+  const onFinishedRef = useRef(onFinished);
+  const xpAnimationRef = useRef(null);
+  const xpListenerIdRef = useRef(null);
+  const rewardTimersRef = useRef([]);
+
+  useEffect(() => {
+    onFinishedRef.current = onFinished;
+  }, [onFinished]);
+
+  const unlockEvents = useMemo(() => (
+    (Array.isArray(events) ? events.filter((event) => event.type === 'breed' || event.type === 'coat') : [])
+      .sort((left, right) => Number(right.type === 'breed') - Number(left.type === 'breed'))
+  ), [events]);
+  const coatCount = unlockEvents.filter((event) => event.type === 'coat').length;
+  const breedCount = unlockEvents.filter((event) => event.type === 'breed').length;
+  const totalUnlockCount = unlockEvents.length;
+  const displayedProgress = getLevelProgress(displayedTotalXp);
+  const startTotal = Math.max(0, Number(xpStartTotal) || 0);
+  const endTotal = Math.max(startTotal, Number(xpEndTotal) || startTotal);
+  const earnedXp = Math.max(0, Number(totalXp) || endTotal - startTotal);
+  const previewEvents = unlockEvents.slice(0, GAME_OVER_UNLOCK_PREVIEW_LIMIT);
+  const moreCount = Math.max(0, totalUnlockCount - GAME_OVER_UNLOCK_PREVIEW_LIMIT);
+  const runMessage = totalUnlockCount >= 9 || score >= 20
+    ? 'Amazing Run!'
+    : totalUnlockCount >= 4 || score >= 12
+      ? 'Great Run!'
+      : score >= 5 || totalXp >= 30
+        ? 'Nice Run!'
+        : 'Keep Going!';
+
+  useEffect(() => {
+    if (!visible || !skipSignal) return;
+    rewardTimersRef.current.forEach((timerId) => clearTimeout(timerId));
+    rewardTimersRef.current = [];
+    xpAnimationRef.current?.stopAnimation();
+    if (xpAnimationRef.current && xpListenerIdRef.current != null) {
+      xpAnimationRef.current.removeListener(xpListenerIdRef.current);
+    }
+    xpAnimationRef.current = null;
+    xpListenerIdRef.current = null;
+    setDisplayedTotalXp(endTotal);
+    xpFill.setValue(getLevelProgress(endTotal).percentage);
+    setShowUnlocks(true);
+    rewardOpacity.setValue(1);
+    rewardTranslateY.setValue(0);
+    rewardScale.setValue(1);
+    chipAnims.forEach((value) => value.setValue(1));
+    unlockAnims.forEach((value) => value.setValue(1));
+    onFinishedRef.current?.();
+  }, [chipAnims, endTotal, rewardOpacity, rewardScale, rewardTranslateY, skipSignal, unlockAnims, visible, xpFill]);
+
+  useEffect(() => {
+    let isMounted = true;
+    AccessibilityInfo.isReduceMotionEnabled().then((enabled) => {
+      if (isMounted) setReduceMotion(Boolean(enabled));
+    });
+    const subscription = AccessibilityInfo.addEventListener?.('reduceMotionChanged', setReduceMotion);
+    return () => {
+      isMounted = false;
+      subscription?.remove?.();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!visible) {
+      setShowUnlocks(false);
+      setIsExpanded(false);
+      setImagesReady(false);
+      setDisplayedTotalXp(startTotal);
+      setLevelUpLevel(null);
+      rewardOpacity.setValue(0);
+      rewardTranslateY.setValue(16);
+      rewardScale.setValue(0.97);
+      xpFill.setValue(getLevelProgress(startTotal).percentage);
+      listHeight.setValue(Math.min(unlockEvents.length, GAME_OVER_UNLOCK_PREVIEW_LIMIT) * GAME_OVER_UNLOCK_ROW_HEIGHT);
+      levelUpOpacity.setValue(0);
+      chipAnims.forEach((value) => value.setValue(0));
+      unlockAnims.forEach((value) => value.setValue(0));
+      return undefined;
+    }
+
+    let isCancelled = false;
+    const timers = [];
+    listHeight.setValue(Math.min(unlockEvents.length, GAME_OVER_UNLOCK_PREVIEW_LIMIT) * GAME_OVER_UNLOCK_ROW_HEIGHT);
+    const sources = unlockEvents.map((event) => event.imageSource).filter(Boolean);
+    Promise.all(sources.map((source) => Image.loadAsync(source).catch(() => null))).then(() => {
+      if (!isCancelled) setImagesReady(true);
+    });
+
+    const xpAnimation = new RNAnimated.Value(startTotal);
+    xpAnimationRef.current = xpAnimation;
+    let lastRenderedXp = startTotal;
+    const xpListenerId = xpAnimation.addListener(({ value }) => {
+      if (isCancelled) return;
+      const nextTotal = Math.min(endTotal, Math.max(startTotal, Math.floor(value + 0.0001)));
+      if (nextTotal === lastRenderedXp) return;
+      lastRenderedXp = nextTotal;
+      const nextProgress = getLevelProgress(nextTotal);
+      setDisplayedTotalXp(nextTotal);
+      xpFill.setValue(nextProgress.percentage);
+    });
+    xpListenerIdRef.current = xpListenerId;
+
+    const revealUnlocks = () => {
+      if (isCancelled) return;
+      setShowUnlocks(true);
+      rewardOpacity.setValue(0);
+      rewardTranslateY.setValue(16);
+      rewardScale.setValue(0.97);
+      RNAnimated.parallel([
+        RNAnimated.timing(rewardOpacity, {
+          toValue: 1,
+          duration: 260,
+          easing: GAME_OVER_REWARD_EASING,
+          useNativeDriver: true,
+        }),
+        RNAnimated.timing(rewardTranslateY, {
+          toValue: 0,
+          duration: 300,
+          easing: GAME_OVER_REWARD_EASING,
+          useNativeDriver: true,
+        }),
+        RNAnimated.spring(rewardScale, {
+          toValue: 1,
+          friction: 8,
+          tension: 110,
+          useNativeDriver: true,
+        }),
+      ]).start();
+      chipAnims.forEach((value, index) => {
+        RNAnimated.timing(value, {
+          toValue: 1,
+          duration: reduceMotion ? 80 : 180,
+          delay: reduceMotion ? 0 : index * 75,
+          easing: GAME_OVER_REWARD_EASING,
+          useNativeDriver: true,
+        }).start();
+      });
+      unlockAnims.forEach((value, index) => {
+        RNAnimated.sequence([
+          RNAnimated.delay(reduceMotion ? 0 : 180 + index * GAME_OVER_REWARD_TIMING.unlockStagger),
+          RNAnimated.spring(value, {
+            toValue: 1,
+            friction: 6,
+            tension: 125,
+            useNativeDriver: true,
+          }),
+        ]).start();
+      });
+      if (Platform.OS !== 'web') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+
+      const visibleUnlockCount = Math.min(totalUnlockCount, GAME_OVER_UNLOCK_PREVIEW_LIMIT);
+      const finishDelay = reduceMotion
+        ? 180
+        : 180 + Math.max(0, visibleUnlockCount - 1) * GAME_OVER_REWARD_TIMING.unlockStagger + GAME_OVER_REWARD_TIMING.unlockSettle;
+      timers.push(setTimeout(() => {
+        if (!isCancelled) onFinishedRef.current?.();
+      }, finishDelay));
+    };
+
+    const showLevelUp = (level) => {
+      setLevelUpLevel(level);
+      if (Platform.OS !== 'web') Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+      levelUpOpacity.stopAnimation();
+      levelUpOpacity.setValue(1);
+      RNAnimated.timing(levelUpOpacity, {
+        toValue: 0,
+        duration: reduceMotion ? 100 : 700,
+        delay: reduceMotion ? 0 : 420,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const levelBoundaries = [];
+    let boundaryCursor = startTotal;
+    while (getLevelProgress(boundaryCursor).nextLevelTotalXP <= endTotal) {
+      const boundary = getLevelProgress(boundaryCursor).nextLevelTotalXP;
+      levelBoundaries.push(boundary);
+      boundaryCursor = boundary;
+    }
+    const animationDistance = Math.max(1, endTotal - startTotal);
+    const segmentTargets = [...levelBoundaries, endTotal];
+
+    const animateSegment = (index, fromTotal) => {
+      if (isCancelled) return;
+      if (index >= segmentTargets.length || fromTotal >= endTotal) {
+        setDisplayedTotalXp(endTotal);
+        xpFill.setValue(getLevelProgress(endTotal).percentage);
+        revealUnlocks();
+        return;
+      }
+
+      const rawTarget = segmentTargets[index];
+      const crossesLevel = levelBoundaries.includes(rawTarget);
+      const animationTarget = crossesLevel ? rawTarget - 0.001 : rawTarget;
+      const segmentDistance = Math.max(0, rawTarget - fromTotal);
+      const segmentDuration = reduceMotion
+        ? 80
+        : Math.max(180, Math.round(GAME_OVER_REWARD_TIMING.xp * (segmentDistance / animationDistance)));
+
+      xpAnimation.setValue(fromTotal);
+      const animation = RNAnimated.timing(xpAnimation, {
+        toValue: animationTarget,
+        duration: segmentDuration,
+        easing: GAME_OVER_REWARD_EASING,
+        useNativeDriver: false,
+      });
+      animation.start(({ finished }) => {
+        if (!finished || isCancelled) return;
+        if (!crossesLevel) {
+          setDisplayedTotalXp(endTotal);
+          xpFill.setValue(getLevelProgress(endTotal).percentage);
+          revealUnlocks();
+          return;
+        }
+
+        xpFill.setValue(100);
+        const nextLevel = getLevelProgress(rawTarget).level;
+        showLevelUp(nextLevel);
+        const pauseTimer = setTimeout(() => {
+          if (isCancelled) return;
+          setDisplayedTotalXp(rawTarget);
+          xpFill.setValue(0);
+          animateSegment(index + 1, rawTarget);
+        }, reduceMotion ? 40 : GAME_OVER_REWARD_TIMING.levelPause);
+        timers.push(pauseTimer);
+      });
+    };
+
+    if (endTotal <= startTotal) {
+      const noXpTimer = setTimeout(revealUnlocks, reduceMotion ? 60 : 180);
+      timers.push(noXpTimer);
+    } else {
+      animateSegment(0, startTotal);
+    }
+    rewardTimersRef.current = timers;
+
+    return () => {
+      isCancelled = true;
+      xpAnimation.stopAnimation();
+      xpAnimation.removeListener(xpListenerId);
+      timers.forEach((timerId) => clearTimeout(timerId));
+      if (xpAnimationRef.current === xpAnimation) xpAnimationRef.current = null;
+      if (xpListenerIdRef.current === xpListenerId) xpListenerIdRef.current = null;
+      if (rewardTimersRef.current === timers) rewardTimersRef.current = [];
+    };
+  }, [
+    rewardOpacity,
+    rewardScale,
+    rewardTranslateY,
+    endTotal,
+    levelUpOpacity,
+    listHeight,
+    chipAnims,
+    reduceMotion,
+    startTotal,
+    totalUnlockCount,
+    unlockEvents,
+    unlockAnims,
+    visible,
+    xpFill,
+  ]);
+
+  if (!visible) return null;
+
+  const renderUnlockTile = ({ item: event, index }) => {
+    const isBreed = event.type === 'breed';
+    const entryAnim = unlockAnims[index] || rewardOpacity;
+    const tier = Number(breedTiers[event.breedId]) || 1;
+    const rarityColor = ['#E8A447', '#6FAE78', '#5B8DEF', '#9B6AD6', '#D39B2A'][Math.min(4, Math.max(0, tier - 1))];
+    return (
+    <RNAnimated.View
+      style={[
+        quizStyles.gameOverUnlockTile,
+        isBreed ? quizStyles.gameOverBreedUnlockTile : quizStyles.gameOverCoatUnlockTile,
+        { borderLeftWidth: 3, borderLeftColor: rarityColor },
+        {
+          opacity: entryAnim,
+          transform: [
+            { translateY: entryAnim.interpolate({ inputRange: [0, 1], outputRange: [8, 0] }) },
+            { scale: entryAnim.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1], extrapolate: 'extend' }) },
+          ],
+        },
+      ]}
+    >
+      <View style={[quizStyles.gameOverUnlockImageWrap, isBreed && quizStyles.gameOverBreedImageWrap]}>
+        {event.imageSource ? (
+          <Image source={event.imageSource} style={quizStyles.gameOverUnlockImage} contentFit="cover" />
+        ) : (
+          <MaterialIcons name={event.type === 'level' ? 'military-tech' : 'pets'} size={24} color="#FFFFFF" />
+        )}
+      </View>
+      <View style={quizStyles.gameOverUnlockCopy}>
+        <ThemedText style={[quizStyles.gameOverUnlockTitle, isBreed && quizStyles.gameOverBreedUnlockTitle]}>
+          {isBreed ? 'New Breed Discovered!' : 'New Coat Unlocked!'}
+        </ThemedText>
+        <ThemedText numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.72} style={quizStyles.gameOverUnlockName}>
+          {event.name}
+        </ThemedText>
+      </View>
+      {isBreed ? (
+        <View pointerEvents="none" style={quizStyles.gameOverBreedSparkles}>
+          <MaterialIcons name="auto-awesome" size={14} color={DoggyDexTheme.colors.gold} />
+        </View>
+      ) : null}
+    </RNAnimated.View>
+    );
+  };
+
+  const renderRewardChips = () => {
+    const chips = [
+      earnedXp > 0 ? { icon: 'stars', text: `+${earnedXp} XP` } : null,
+      score > 0 ? { icon: 'check-circle', text: `${score} correct ${score === 1 ? 'answer' : 'answers'}` } : null,
+      breedCount > 0 ? { icon: 'pets', text: `${breedCount} ${breedCount === 1 ? 'Breed' : 'Breeds'} Discovered` } : null,
+      coatCount > 0 ? { icon: 'palette', text: `${coatCount} ${coatCount === 1 ? 'Coat' : 'Coats'} Unlocked` } : null,
+    ].filter(Boolean);
+    return (
+    <View style={quizStyles.gameOverRewardChips}>
+      {chips.map((chip, index) => (
+        <RNAnimated.View
+          key={chip.text}
+          style={[
+            quizStyles.gameOverRewardChip,
+            {
+              opacity: chipAnims[index],
+              transform: [{ scale: chipAnims[index].interpolate({ inputRange: [0, 1], outputRange: [0.96, 1] }) }],
+            },
+          ]}
+        >
+          <MaterialIcons name={chip.icon} size={14} color={DoggyDexTheme.colors.primary} />
+          <ThemedText style={quizStyles.gameOverRewardChipText}>{chip.text}</ThemedText>
+        </RNAnimated.View>
+      ))}
+    </View>
+    );
+  };
+
+  const collapsedHeight = Math.min(totalUnlockCount, GAME_OVER_UNLOCK_PREVIEW_LIMIT) * GAME_OVER_UNLOCK_ROW_HEIGHT;
+  const expandedHeight = Math.min(totalUnlockCount * GAME_OVER_UNLOCK_ROW_HEIGHT, GAME_OVER_UNLOCK_MAX_HEIGHT);
+
+  const toggleExpanded = () => {
+    const nextExpanded = !isExpanded;
+    setIsExpanded(nextExpanded);
+    RNAnimated.timing(listHeight, {
+      toValue: nextExpanded ? expandedHeight : collapsedHeight,
+      duration: reduceMotion ? 80 : 240,
+      easing: GAME_OVER_REWARD_EASING,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const xpWidth = xpFill.interpolate({
+    inputRange: [0, 100],
+    outputRange: ['0%', '100%'],
+  });
+
+  return (
+    <View style={quizStyles.gameOverRewardFlow}>
+      <View style={quizStyles.gameOverXpMini}>
+        <View style={quizStyles.gameOverXpHeader}>
+          <ThemedText style={quizStyles.gameOverLevelPill}>Trainer Level {displayedProgress.level}</ThemedText>
+          {levelUpLevel ? (
+            <RNAnimated.View style={{ opacity: levelUpOpacity }}>
+              <ThemedText accessibilityLiveRegion="assertive" style={quizStyles.gameOverLevelUp}>Level Up! Level {levelUpLevel}</ThemedText>
+            </RNAnimated.View>
+          ) : null}
+        </View>
+        <View style={quizStyles.gameOverXpMetaRow}>
+          <ThemedText style={quizStyles.gameOverMiniLabel}>Trainer Progress</ThemedText>
+          <View style={quizStyles.gameOverXpTotals}>
+            <ThemedText style={quizStyles.gameOverXpTotal}>{displayedTotalXp} XP total</ThemedText>
+            <ThemedText style={quizStyles.gameOverXpValue}>+{Math.max(0, displayedTotalXp - startTotal)} XP</ThemedText>
+          </View>
+        </View>
+        <View style={quizStyles.gameOverXpTrack}>
+          <RNAnimated.View style={[quizStyles.gameOverXpFill, { width: xpWidth }]} />
+        </View>
+        <ThemedText style={quizStyles.gameOverXpSub}>
+          {displayedProgress.currentLevelXP} / {displayedProgress.xpForNextLevel} XP
+        </ThemedText>
+      </View>
+
+      {showUnlocks ? (
+        totalUnlockCount <= 0 ? (
+          <RNAnimated.View
+            style={[
+              quizStyles.gameOverRewardEmpty,
+              { opacity: rewardOpacity, transform: [{ translateY: rewardTranslateY }, { scale: rewardScale }] },
+            ]}
+          >
+            <MaterialIcons name="stars" size={20} color={DoggyDexTheme.colors.gold} />
+            <ThemedText style={quizStyles.gameOverRewardEmptyText}>Great run! Keep training to unlock more.</ThemedText>
+          </RNAnimated.View>
+        ) : (
+          <RNAnimated.View
+            style={[
+              quizStyles.gameOverSummaryCard,
+              { opacity: rewardOpacity, transform: [{ translateY: rewardTranslateY }, { scale: rewardScale }] },
+            ]}
+          >
+            <ThemedText style={quizStyles.gameOverSummaryTitle}>{runMessage}</ThemedText>
+            {renderRewardChips()}
+            <RNAnimated.View style={[quizStyles.gameOverUnlockViewport, { height: listHeight }]}>
+              <FlatList
+                data={isExpanded ? unlockEvents : previewEvents}
+                renderItem={renderUnlockTile}
+                keyExtractor={(item, index) => String(item.id || `${item.type}-${index}`)}
+                ItemSeparatorComponent={() => <View style={quizStyles.gameOverUnlockSeparator} />}
+                scrollEnabled={isExpanded && totalUnlockCount > GAME_OVER_UNLOCK_PREVIEW_LIMIT}
+                nestedScrollEnabled={false}
+                showsVerticalScrollIndicator={isExpanded}
+                persistentScrollbar={isExpanded}
+                initialNumToRender={GAME_OVER_UNLOCK_PREVIEW_LIMIT}
+                maxToRenderPerBatch={6}
+                windowSize={5}
+                removeClippedSubviews={Platform.OS === 'android'}
+              />
+            </RNAnimated.View>
+            {moreCount > 0 ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={isExpanded ? 'Show fewer unlocks' : `Show ${moreCount} more unlocks`}
+                onPress={toggleExpanded}
+                style={({ pressed }) => [quizStyles.gameOverMoreButton, pressed && quizStyles.gameOverMoreButtonPressed]}
+              >
+                <ThemedText style={quizStyles.gameOverMoreText}>
+                  {isExpanded ? 'Show less' : `Show ${moreCount} more`}
+                </ThemedText>
+                <MaterialIcons name={isExpanded ? 'expand-less' : 'expand-more'} size={17} color={DoggyDexTheme.colors.primary} />
+              </Pressable>
+            ) : null}
+          </RNAnimated.View>
+        )
+      ) : null}
+
+      {!imagesReady && unlockEvents.length > 0 ? (
+        <ThemedText style={quizStyles.gameOverPreloadText}>Preparing reward images...</ThemedText>
+      ) : null}
+    </View>
+  );
+}
+
 export default function QuizScreen() {
   const router = useRouter();
   const [timerPaused, setTimerPaused] = useState(false);
-  const [userUnlocks, setUserUnlocks] = useState([]);
   // Track auth state as a single object
   const [authState, setAuthState] = useState({ checked: false, user: null });
     // For fading in score, best streak, and high score after score
@@ -87,19 +684,40 @@ export default function QuizScreen() {
     // Score scale animation
     const scoreScale = useRef(new RNAnimated.Value(0.7)).current;
     const highScoreOpacity = useRef(new RNAnimated.Value(0)).current;
+    const highScoreScale = useRef(new RNAnimated.Value(0.94)).current;
     const buttonsOpacity = useRef(new RNAnimated.Value(0)).current;
+    const modalOpacity = useRef(new RNAnimated.Value(0)).current;
+    const modalTranslateY = useRef(new RNAnimated.Value(14)).current;
+    const gameOverSequenceTimeoutsRef = useRef([]);
+    const gameOverScoreCounterRef = useRef(null);
+    const gameOverScoreListenerRef = useRef(null);
+    const [displayedFinalScore, setDisplayedFinalScore] = useState(0);
       // Track best streak
       const [bestStreak, setBestStreak] = useState(0);
       const [currentStreak, setCurrentStreak] = useState(0);
     // High score state
     const [highScore, setHighScore] = useState(null);
     const [isNewHighScore, setIsNewHighScore] = useState(false);
+    const [sessionXpEarned, setSessionXpEarned] = useState(0);
+    const [sessionXpRange, setSessionXpRange] = useState({ startTotalXP: 0, endTotalXP: 0 });
+    const [sessionRewardEvents, setSessionRewardEvents] = useState([]);
+    const [gameOverRewardVisible, setGameOverRewardVisible] = useState(false);
+    const [gameOverActionsReady, setGameOverActionsReady] = useState(false);
+    const [gameOverSkipSignal, setGameOverSkipSignal] = useState(0);
+    const [gameOverReduceMotion, setGameOverReduceMotion] = useState(false);
     // Game over modal state
     const [showGameOver, setShowGameOver] = useState(false);
     // Out of Lives modal scale animation
     const modalScale = useRef(new RNAnimated.Value(0.92)).current;
+    useEffect(() => {
+      AccessibilityInfo.isReduceMotionEnabled().then(setGameOverReduceMotion);
+      const subscription = AccessibilityInfo.addEventListener?.('reduceMotionChanged', setGameOverReduceMotion);
+      return () => subscription?.remove?.();
+    }, []);
     // Ensure storageVariantMap is defined before any use
     const [storageVariantMap, setStorageVariantMap] = useState({});
+    const [decoyVariants, setDecoyVariants] = useState([]);
+    const [catalogCoatIdsByBreed, setCatalogCoatIdsByBreed] = useState({});
     // Inject shake keyframes for web (only once)
     useEffect(() => {
       if (typeof window !== 'undefined' && typeof document !== 'undefined') {
@@ -119,15 +737,14 @@ export default function QuizScreen() {
   // Animation state for dog grid slide transition
   const [transitioning, setTransitioning] = useState(false);
   const [pendingNext, setPendingNext] = useState(false);
+  const skipNextCardEntranceRef = useRef(false);
   const gridSlideX = useSharedValue(0); // 0=center, -80=slide left, +80=slide right
   const gridOpacity = useSharedValue(1);
   const gridAnimating = useRef(false);
 
   // Animated style for the dog card grid
   const dogGridStyle = useAnimatedStyle(() => {
-    // As gridOpacity goes from 1 to 0, scale from 1 to 0.82 (more dramatic)
-    const scale = 1 - 0.18 * (1 - gridOpacity.value);
-    // For web, add blur as it fades out
+    const scale = 1 - 0.04 * (1 - gridOpacity.value);
     const style = {
       transform: [
         { translateX: gridSlideX.value },
@@ -152,7 +769,7 @@ export default function QuizScreen() {
     // For orange pulse
     const DOGGYDEX_ORANGE = '#FF9F1C';
     const DOGGYDEX_ORANGE_DARK = '#e07c00';
-    const [scorePulse, setScorePulse] = useState(false);
+    const scorePulseAnim = useRef(new RNAnimated.Value(0)).current;
     const plusOneAnimRef = useRef({});
 
 
@@ -162,11 +779,20 @@ export default function QuizScreen() {
   const [showTimesUp, setShowTimesUp] = useState(false);
   const timesUpAnim = useRef(new RNAnimated.Value(0)).current;
   const [wrongAnimatedCardId, setWrongAnimatedCardId] = useState(null);
+  const [wrongToast, setWrongToast] = useState(null);
   const wrongShakeX = useRef(new RNAnimated.Value(0)).current;
   const wrongBorderOpacity = useRef(new RNAnimated.Value(0)).current;
+  const quizEntranceOpacity = useRef(new RNAnimated.Value(0)).current;
+  const quizEntranceTranslateY = useRef(new RNAnimated.Value(18)).current;
+  const cardEntranceAnims = useRef(
+    Array.from({ length: MIN_BREEDS_PER_QUESTION }, () => ({
+      opacity: new RNAnimated.Value(0),
+      translateY: new RNAnimated.Value(14),
+    }))
+  ).current;
 
     // Ensure questionIndex is defined before any use
-    const [questionIndex, setQuestionIndex] = useState(0);
+  const [questionIndex, setQuestionIndex] = useState(0);
 
     // Ensure storageVariantMap is defined before any use
     // Duplicate declaration removed
@@ -179,6 +805,10 @@ export default function QuizScreen() {
       }, 1000);
       return () => clearInterval(interval);
     }, [timer, timerPaused]);
+
+    useEffect(() => {
+      if (timer === 0) setCurrentStreak(0);
+    }, [timer]);
 
     // ...existing code...
     // ...existing code...
@@ -202,7 +832,7 @@ export default function QuizScreen() {
       return { ...pickedVariant, uri: chosenUri };
     }, [storageVariantMap]);
 
-    const { choices, targetIndex } = useMemo(() => {
+    const buildQuestion = useCallback(({ commitRecent = false } = {}) => {
       // Generate quiz choices and pick a target
       const breedKeys = Object.keys(storageVariantMap).filter(Boolean);
       if (breedKeys.length < MIN_BREEDS_PER_QUESTION) {
@@ -224,8 +854,9 @@ export default function QuizScreen() {
       const targetIdx = Math.floor(Math.random() * pickedBreeds.length);
       const targetBreed = pickedBreeds[targetIdx];
 
-      // Generate choices with images
-      const choices = pickedBreeds.map((breed, i) => {
+      // Generate the target and normal distractors first. Decoy-only images are
+      // merged into the distractor pool below and can never become the target.
+      const normalChoices = pickedBreeds.map((breed, i) => {
         const variant = pickRandomCoatForBreed(breed);
         if (!variant) return null;
         return {
@@ -237,20 +868,59 @@ export default function QuizScreen() {
       }).filter(Boolean);
 
       // If any choice is missing, skip this question
-      if (choices.length < MIN_BREEDS_PER_QUESTION) {
+      if (normalChoices.length < MIN_BREEDS_PER_QUESTION) {
         return { choices: [], targetIndex: -1 };
       }
 
+      const targetChoice = normalChoices[targetIdx];
+      const distractorPool = [
+        ...normalChoices.filter((_, index) => index !== targetIdx),
+        ...decoyVariants,
+      ];
+      const selectedDistractors = shuffle(distractorPool).slice(0, MIN_BREEDS_PER_QUESTION - 1);
+      let distractorIndex = 0;
+      const choices = Array.from({ length: MIN_BREEDS_PER_QUESTION }, (_, index) => {
+        if (index === targetIdx) return targetChoice;
+        const distractor = selectedDistractors[distractorIndex];
+        distractorIndex += 1;
+        return distractor;
+      });
+
       // Update recent breeds
-      if (targetBreed) {
+      if (commitRecent && targetBreed) {
         recentBreedsRef.current = [
           ...recentBreedsRef.current.slice(-9),
           targetBreed,
         ];
       }
 
-      return { choices, targetIndex: targetIdx };
-    }, [questionIndex, pickRandomCoatForBreed, storageVariantMap]) || { choices: [], targetIndex: -1 };
+      return { choices, targetIndex: targetIdx, targetBreed };
+    }, [decoyVariants, pickRandomCoatForBreed, storageVariantMap]);
+
+    const [activeQuestion, setActiveQuestion] = useState({ choices: [], targetIndex: -1 });
+    const preparedNextQuestionRef = useRef(null);
+
+    useEffect(() => {
+      if (activeQuestion.choices.length || Object.keys(storageVariantMap).length < MIN_BREEDS_PER_QUESTION) {
+        return;
+      }
+
+      setActiveQuestion(buildQuestion({ commitRecent: true }));
+    }, [activeQuestion.choices.length, buildQuestion, storageVariantMap]);
+
+    const { choices, targetIndex } = activeQuestion || { choices: [], targetIndex: -1 };
+
+    const prepareNextQuestion = useCallback(async () => {
+      const nextQuestion = buildQuestion({ commitRecent: true });
+      if (!nextQuestion.choices.length) {
+        preparedNextQuestionRef.current = nextQuestion;
+        return nextQuestion;
+      }
+
+      const preloadedQuestion = await preloadQuestionImages(nextQuestion);
+      preparedNextQuestionRef.current = preloadedQuestion;
+      return preloadedQuestion;
+    }, [buildQuestion]);
 
     // When timer hits 0, only show Time's Up feedback and handle heart/lives logic (no photo blurring)
     useEffect(() => {
@@ -315,29 +985,6 @@ export default function QuizScreen() {
     }, [timer, choices, targetIndex]);
   // (moved above)
   const [score, setScore] = useState(0);
-  // Store the breed tier for the current question's correct answer
-  const [currentBreedTier, setCurrentBreedTier] = useState(1);
-
-  // Efficiently load the tier for the correct breed when a new question is loaded
-  useEffect(() => {
-    if (!choices || !Array.isArray(choices) || choices.length === 0 || typeof targetIndex !== 'number' || targetIndex < 0) {
-      setCurrentBreedTier(1);
-      return;
-    }
-    // Get the correct breed id for the current question
-    const correctChoice = choices[targetIndex];
-    let breedId = null;
-    if (correctChoice && (correctChoice.breedId || correctChoice.breed_id)) {
-      breedId = correctChoice.breedId || correctChoice.breed_id;
-    } else if (correctChoice && correctChoice.breed) {
-      breedId = correctChoice.breed;
-    }
-    let tier = 1;
-    if (breedId && breedTiers[breedId]) {
-      tier = breedTiers[breedId];
-    }
-    setCurrentBreedTier(tier);
-  }, [questionIndex, choices, targetIndex]);
   // Track selected correct card, and wrong guesses
   const [selected, setSelected] = useState(null); // selected correct card
   const [wrongGuesses, setWrongGuesses] = useState([]); // array of dog ids guessed wrong
@@ -347,7 +994,7 @@ export default function QuizScreen() {
     setWrongGuesses([]);
     setFailedImageIds({});
     // Log userUnlocks state after every question
-  }, [questionIndex, userUnlocks]);
+  }, [questionIndex]);
 
   // Update streaks on answer
   useEffect(() => {
@@ -370,14 +1017,19 @@ export default function QuizScreen() {
       setBestStreak(0);
     }
   }, [showGameOver]);
-  const [collection, setCollection] = useState([]);
-  const [badges, setBadges] = useState([]);
   const [newUnlock, setNewUnlock] = useState(null);
   const [newCoatActuallyUnlocked, setNewCoatActuallyUnlocked] = useState(false);
   // Remove unlock banner state
   // const [showNewCoatUnlocked, setShowNewCoatUnlocked] = useState(false);
   // Remove global reward animation state
-  const [newBadge, setNewBadge] = useState(null);
+  const [progressionReward, setProgressionReward] = useState(null);
+  const progressionRewardTimeoutRef = useRef(null);
+  const progressionRewardDelayRef = useRef(null);
+  const progressionRewardSequenceTimeoutsRef = useRef([]);
+  const quizFeedbackTimeoutsRef = useRef([]);
+  const unlockToastOpacity = useRef(new RNAnimated.Value(0)).current;
+  const unlockToastTranslateY = useRef(new RNAnimated.Value(24)).current;
+  const unlockToastScale = useRef(new RNAnimated.Value(0.95)).current;
   const [localQuizSyncNotice, setLocalQuizSyncNotice] = useState(null);
   const [localQuizNotice, setLocalQuizNotice] = useState(null);
   const [isLocalQuizLoading, setIsLocalQuizLoading] = useState(true);
@@ -386,8 +1038,223 @@ export default function QuizScreen() {
   const [lives, setLives] = useState(3);
   const [heartPulse, setHeartPulse] = useState(null); // index of heart to pulse
   const [heartPulseColor, setHeartPulseColor] = useState(null); // color for pulsing heart
+  const heartShakeX = useRef(new RNAnimated.Value(0)).current;
   const [failedImageIds, setFailedImageIds] = useState({});
   const lastTargetImageUriRef = useRef(null);
+  const dailyQuizBonusHandledRef = useRef(false);
+
+  useEffect(() => {
+    if (heartPulse == null) {
+      heartShakeX.setValue(0);
+      return undefined;
+    }
+
+    heartShakeX.stopAnimation();
+    heartShakeX.setValue(0);
+    RNAnimated.sequence([
+      RNAnimated.timing(heartShakeX, { toValue: -5, duration: 28, useNativeDriver: true }),
+      RNAnimated.timing(heartShakeX, { toValue: 6, duration: 32, useNativeDriver: true }),
+      RNAnimated.timing(heartShakeX, { toValue: -4, duration: 28, useNativeDriver: true }),
+      RNAnimated.timing(heartShakeX, { toValue: 4, duration: 28, useNativeDriver: true }),
+      RNAnimated.timing(heartShakeX, { toValue: 0, duration: 34, useNativeDriver: true }),
+    ]).start();
+
+    return () => {
+      heartShakeX.stopAnimation();
+      heartShakeX.setValue(0);
+    };
+  }, [heartPulse, heartShakeX]);
+
+  const addSessionProgressReward = useCallback((reward, rewardEvents = []) => {
+    const xpAwarded = Math.max(0, Number(reward?.xpAwarded) || 0);
+    const endTotalXP = Math.max(0, Number(reward?.totalXP) || 0);
+    const startTotalXP = Math.max(0, endTotalXP - xpAwarded);
+
+    setSessionXpEarned((earned) => earned + xpAwarded);
+    setSessionXpRange((range) => ({
+      startTotalXP: range.endTotalXP > 0 || range.startTotalXP > 0
+        ? range.startTotalXP
+        : startTotalXP,
+      endTotalXP: Math.max(range.endTotalXP || 0, endTotalXP),
+    }));
+
+    if (rewardEvents.length) {
+      setSessionRewardEvents((currentEvents) => [...currentEvents, ...rewardEvents]);
+    }
+  }, []);
+
+  const finishGameOverRewardFlow = useCallback(() => {
+    setGameOverActionsReady((isReady) => {
+      if (isReady) return isReady;
+      RNAnimated.timing(buttonsOpacity, {
+        toValue: 1,
+        duration: gameOverReduceMotion ? 100 : 320,
+        easing: GAME_OVER_REWARD_EASING,
+        useNativeDriver: true,
+      }).start();
+      return true;
+    });
+  }, [buttonsOpacity, gameOverReduceMotion]);
+
+  const completeGameOverReveal = useCallback(() => {
+    if (!showGameOver || gameOverActionsReady) return;
+    gameOverSequenceTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
+    gameOverSequenceTimeoutsRef.current = [];
+    gameOverScoreCounterRef.current?.stopAnimation();
+    if (gameOverScoreCounterRef.current && gameOverScoreListenerRef.current != null) {
+      gameOverScoreCounterRef.current.removeListener(gameOverScoreListenerRef.current);
+    }
+    gameOverScoreCounterRef.current = null;
+    gameOverScoreListenerRef.current = null;
+    scoreOpacity.setValue(1);
+    scoreScale.setValue(1);
+    bestStreakOpacity.setValue(1);
+    highScoreOpacity.setValue(1);
+    highScoreScale.setValue(1);
+    buttonsOpacity.setValue(1);
+    setDisplayedFinalScore(score);
+    setShowHighScore(true);
+    setGameOverRewardVisible(true);
+    setGameOverActionsReady(true);
+    setGameOverSkipSignal((value) => value + 1);
+  }, [bestStreakOpacity, buttonsOpacity, gameOverActionsReady, highScoreOpacity, highScoreScale, score, scoreOpacity, scoreScale, showGameOver]);
+
+  const viewDoggyDexRewards = useCallback(() => {
+    const highlights = sessionRewardEvents
+      .filter((event) => event.type === 'breed' || event.type === 'coat')
+      .slice(-32)
+      .map((event) => ({
+        type: event.type,
+        breedId: event.breedId,
+        coatId: event.coatId,
+      }));
+
+    router.push({
+      pathname: '/doggydex',
+      params: {
+        rewardHighlights: JSON.stringify(highlights),
+      },
+    });
+  }, [router, sessionRewardEvents]);
+
+  const showProgressionReward = useCallback((reward, duration, delay = 280) => {
+    if (progressionRewardTimeoutRef.current) {
+      clearTimeout(progressionRewardTimeoutRef.current);
+      progressionRewardTimeoutRef.current = null;
+    }
+    if (progressionRewardDelayRef.current) {
+      clearTimeout(progressionRewardDelayRef.current);
+      progressionRewardDelayRef.current = null;
+    }
+    progressionRewardSequenceTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
+    progressionRewardSequenceTimeoutsRef.current = [];
+
+    const hasNewCoat = Array.isArray(reward?.newlyUnlockedCoats) && reward.newlyUnlockedCoats.length > 0;
+    const rewardSequence = [
+      ...(reward?.isNewBreed ? [{ ...reward, rewardKind: 'breed' }] : []),
+      ...(hasNewCoat ? [{ ...reward, rewardKind: 'coat', isNewBreed: false }] : []),
+    ];
+
+    if (!rewardSequence.length) {
+      setProgressionReward(null);
+      unlockToastOpacity.setValue(0);
+      unlockToastTranslateY.setValue(24);
+      unlockToastScale.setValue(0.95);
+      return;
+    }
+
+    const playRewardFeedback = (nextReward, visibleDuration) => {
+      const isBreedUnlock = getUnlockRewardType(nextReward) === 'breed';
+      const startTranslateY = isBreedUnlock ? 34 : 24;
+      const startScale = isBreedUnlock ? 0.9 : 0.95;
+      progressionRewardDelayRef.current = null;
+      setProgressionReward(nextReward);
+      unlockToastOpacity.setValue(0);
+      unlockToastTranslateY.setValue(startTranslateY);
+      unlockToastScale.setValue(startScale);
+      RNAnimated.parallel([
+        RNAnimated.timing(unlockToastOpacity, {
+          toValue: 1,
+          duration: isBreedUnlock ? 240 : 210,
+          easing: RNEasing.out(RNEasing.cubic),
+          useNativeDriver: true,
+        }),
+        RNAnimated.timing(unlockToastTranslateY, {
+          toValue: 0,
+          duration: isBreedUnlock ? 300 : 260,
+          easing: RNEasing.out(RNEasing.cubic),
+          useNativeDriver: true,
+        }),
+        RNAnimated.sequence([
+          RNAnimated.timing(unlockToastScale, {
+            toValue: isBreedUnlock ? 1.04 : 1.025,
+            duration: isBreedUnlock ? 210 : 180,
+            easing: RNEasing.out(RNEasing.cubic),
+            useNativeDriver: true,
+          }),
+          RNAnimated.spring(unlockToastScale, {
+            toValue: 1,
+            friction: 8,
+            tension: 120,
+            useNativeDriver: true,
+          }),
+        ]),
+      ]).start();
+
+      progressionRewardTimeoutRef.current = setTimeout(() => {
+        RNAnimated.parallel([
+          RNAnimated.timing(unlockToastOpacity, {
+            toValue: 0,
+            duration: 220,
+            easing: RNEasing.in(RNEasing.cubic),
+            useNativeDriver: true,
+          }),
+          RNAnimated.timing(unlockToastTranslateY, {
+            toValue: isBreedUnlock ? 18 : 14,
+            duration: 220,
+            easing: RNEasing.in(RNEasing.cubic),
+            useNativeDriver: true,
+          }),
+        ]).start(() => {
+          setProgressionReward(null);
+          progressionRewardTimeoutRef.current = null;
+        });
+      }, visibleDuration);
+    };
+
+    let nextDelay = delay;
+    rewardSequence.forEach((nextReward, index) => {
+      const isBreedUnlock = getUnlockRewardType(nextReward) === 'breed';
+      const requestedDuration = typeof duration === 'number'
+        ? duration
+        : (isBreedUnlock ? 2350 : 2300);
+      const visibleDuration = Math.min(2800, Math.max(900, requestedDuration));
+      const timeoutId = setTimeout(() => {
+        progressionRewardSequenceTimeoutsRef.current = progressionRewardSequenceTimeoutsRef.current
+          .filter((storedTimeoutId) => storedTimeoutId !== timeoutId);
+        playRewardFeedback(nextReward, visibleDuration);
+      }, nextDelay);
+
+      progressionRewardSequenceTimeoutsRef.current.push(timeoutId);
+      nextDelay += visibleDuration + 520 + (index === 0 ? 180 : 0);
+    });
+  }, [unlockToastOpacity, unlockToastScale, unlockToastTranslateY]);
+
+  useEffect(() => () => {
+    if (progressionRewardTimeoutRef.current) {
+      clearTimeout(progressionRewardTimeoutRef.current);
+    }
+    if (progressionRewardDelayRef.current) {
+      clearTimeout(progressionRewardDelayRef.current);
+    }
+    progressionRewardSequenceTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
+    progressionRewardSequenceTimeoutsRef.current = [];
+    gameOverSequenceTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
+    gameOverSequenceTimeoutsRef.current = [];
+    quizFeedbackTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
+    quizFeedbackTimeoutsRef.current = [];
+    scorePulseAnim.stopAnimation();
+  }, [scorePulseAnim]);
 
   // Show game over modal when lives reach zero
   useEffect(() => {
@@ -397,13 +1264,40 @@ export default function QuizScreen() {
       scoreOpacity.setValue(0);
       bestStreakOpacity.setValue(0);
       highScoreOpacity.setValue(0);
+      highScoreScale.setValue(0.94);
       buttonsOpacity.setValue(0);
+      modalOpacity.setValue(0);
+      modalTranslateY.setValue(14);
+      setDisplayedFinalScore(0);
       setShowHighScore(false);
+      setGameOverRewardVisible(false);
+      setGameOverActionsReady(false);
       // On game over, check and update high score
       (async () => {
         const user = auth.currentUser;
         let prevHigh = 0;
         if (user) {
+          if (!dailyQuizBonusHandledRef.current) {
+            dailyQuizBonusHandledRef.current = true;
+            try {
+              const dailyReward = await awardDailyQuizCompletion(user.uid);
+              if (dailyReward?.awarded) {
+                const dailyEvents = dailyReward.didLevelUp
+                  ? [{
+                      id: `level-${dailyReward.level}-daily`,
+                      type: 'level',
+                      name: `Level ${dailyReward.level}`,
+                      level: dailyReward.level,
+                    }]
+                  : [];
+                addSessionProgressReward(dailyReward, dailyEvents);
+                showProgressionReward({ ...dailyReward, dailyBonus: true }, 3200);
+              }
+            } catch (dailyBonusError) {
+              console.warn('Failed to award daily quiz XP', dailyBonusError);
+            }
+          }
+
           const userRef = doc(db, 'users', user.uid);
           try {
             const snap = await getDoc(userRef);
@@ -416,18 +1310,6 @@ export default function QuizScreen() {
             setIsNewHighScore(true);
             try {
               await setDoc(userRef, { highScore: score }, { merge: true });
-              // Also update highScore in usernames collection if username exists
-              const username = user.displayName || user.email || null;
-              if (username) {
-                // Use the same normalization as user-store.js
-                const normalizeUsername = (value) => typeof value === 'string' ? value.trim() : '';
-                const toUsernameKey = (value) => normalizeUsername(value).toLowerCase();
-                const usernameKey = toUsernameKey(username);
-                if (usernameKey) {
-                  const usernameRef = doc(db, 'usernames', usernameKey);
-                  await setDoc(usernameRef, { highScore: score }, { merge: true });
-                }
-              }
             } catch (e) {
               // ignore
             }
@@ -438,166 +1320,78 @@ export default function QuizScreen() {
           setHighScore(0);
           setIsNewHighScore(false);
         }
-        // Show modal after 300ms
-        setTimeout(() => {
+        const scheduleGameOverStep = (callback, delay) => {
+          const timeoutId = setTimeout(callback, delay);
+          gameOverSequenceTimeoutsRef.current.push(timeoutId);
+        };
+        scheduleGameOverStep(() => {
           setShowGameOver(true);
-          // Animate modal scale pop effect
-          modalScale.setValue(0.92);
-          RNAnimated.sequence([
-            RNAnimated.timing(modalScale, {
-              toValue: 1.05,
-              duration: 220, // was 110
-              easing: RNEasing.out(RNEasing.ease),
-              useNativeDriver: false,
-            }),
-            RNAnimated.timing(modalScale, {
-              toValue: 1,
-              duration: 220, // was 110
-              easing: RNEasing.out(RNEasing.ease),
-              useNativeDriver: false,
-            })
+          setGameOverActionsReady(false);
+          buttonsOpacity.setValue(0);
+          modalScale.setValue(gameOverReduceMotion ? 1 : 0.98);
+          modalOpacity.setValue(0);
+          modalTranslateY.setValue(gameOverReduceMotion ? 0 : 14);
+          RNAnimated.parallel([
+            RNAnimated.timing(modalOpacity, { toValue: 1, duration: gameOverReduceMotion ? 80 : 260, easing: GAME_OVER_REWARD_EASING, useNativeDriver: true }),
+            RNAnimated.timing(modalTranslateY, { toValue: 0, duration: gameOverReduceMotion ? 80 : 300, easing: GAME_OVER_REWARD_EASING, useNativeDriver: true }),
+            RNAnimated.timing(modalScale, { toValue: 1, duration: gameOverReduceMotion ? 80 : 300, easing: GAME_OVER_REWARD_EASING, useNativeDriver: true }),
           ]).start();
-          // Fade in score after 500ms
-          setTimeout(() => {
-            RNAnimated.parallel([
-              RNAnimated.timing(scoreOpacity, {
-                toValue: 1,
-                duration: 500, // was 400
-                useNativeDriver: false,
-              }),
-              RNAnimated.sequence([
-                RNAnimated.timing(scoreScale, {
-                  toValue: 1.2,
-                  duration: 180, // was 100
-                  useNativeDriver: false,
-                }),
-                RNAnimated.timing(scoreScale, {
-                  toValue: 1,
-                  duration: 180, // was 100
-                  useNativeDriver: false,
-                })
-              ])
-            ]).start(() => {
-              // Fade in best streak after 700ms (was 500ms)
-              setTimeout(() => {
-                RNAnimated.timing(bestStreakOpacity, {
-                  toValue: 1,
-                  duration: 500, // was 400
-                  useNativeDriver: false,
-                }).start(() => {
-                  // Fade in high score after 500ms (was 300ms)
-                  setTimeout(() => {
-                    setShowHighScore(true);
-                  }, 500);
-                });
-              }, 700);
-            });
-          }, 500);
-        }, 300);
+          const scoreCounter = new RNAnimated.Value(0);
+          const listenerId = scoreCounter.addListener(({ value }) => setDisplayedFinalScore(Math.round(value)));
+          gameOverScoreCounterRef.current = scoreCounter;
+          gameOverScoreListenerRef.current = listenerId;
+          scheduleGameOverStep(() => {
+            scoreOpacity.setValue(1);
+            RNAnimated.timing(scoreScale, { toValue: 1, duration: gameOverReduceMotion ? 80 : 280, easing: GAME_OVER_REWARD_EASING, useNativeDriver: true }).start();
+            RNAnimated.timing(scoreCounter, { toValue: score, duration: gameOverReduceMotion ? 100 : 780, easing: GAME_OVER_REWARD_EASING, useNativeDriver: false })
+              .start(({ finished }) => {
+                scoreCounter.removeListener(listenerId);
+                if (gameOverScoreCounterRef.current === scoreCounter) gameOverScoreCounterRef.current = null;
+                if (gameOverScoreListenerRef.current === listenerId) gameOverScoreListenerRef.current = null;
+                if (finished) setDisplayedFinalScore(score);
+              });
+            if (Platform.OS !== 'web') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+          }, gameOverReduceMotion ? 30 : 550);
+          scheduleGameOverStep(() => {
+            bestStreakOpacity.setValue(1);
+            setShowHighScore(true);
+            if (score > prevHigh && Platform.OS !== 'web') Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+          }, gameOverReduceMotion ? 150 : 1360);
+          scheduleGameOverStep(() => setGameOverRewardVisible(true), gameOverReduceMotion ? 220 : 1510);
+        }, gameOverReduceMotion ? 0 : 20);
       })();
     }
-  }, [lives]);
+  }, [addSessionProgressReward, bestStreakOpacity, buttonsOpacity, gameOverReduceMotion, highScoreOpacity, highScoreScale, lives, modalOpacity, modalScale, modalTranslateY, score, scoreOpacity, scoreScale, showProgressionReward]);
 
   // Animate high score fade-in when showHighScore becomes true
   useEffect(() => {
     if (showHighScore) {
-      RNAnimated.timing(highScoreOpacity, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: false,
-
-      }).start(() => {
-        // Fade in buttons after 300ms
-        setTimeout(() => {
-          RNAnimated.timing(buttonsOpacity, {
+      RNAnimated.parallel([
+        RNAnimated.timing(highScoreOpacity, {
+          toValue: 1,
+          duration: gameOverReduceMotion ? 80 : 220,
+          useNativeDriver: true,
+        }),
+        RNAnimated.sequence([
+          RNAnimated.timing(highScoreScale, {
+            toValue: isNewHighScore ? 1.04 : 1,
+            duration: gameOverReduceMotion ? 80 : 180,
+            easing: GAME_OVER_REWARD_EASING,
+            useNativeDriver: true,
+          }),
+          RNAnimated.spring(highScoreScale, {
             toValue: 1,
-            duration: 400,
-            useNativeDriver: false,
-
-          }).start();
-        }, 300);
-      });
+            friction: 7,
+            tension: 120,
+            useNativeDriver: true,
+          }),
+        ]),
+      ]).start();
     } else {
       highScoreOpacity.setValue(0);
-      buttonsOpacity.setValue(0);
+      highScoreScale.setValue(0.94);
     }
-  }, [showHighScore]);
-
-  const loadCollection = useCallback(async () => {
-    try {
-      const stored = await AsyncStorage.getItem('dogCollection');
-      const parsed = stored ? JSON.parse(stored) : [];
-      const normalized = Array.isArray(parsed) ? parsed : [];
-      setCollection(normalized);
-      return normalized;
-    } catch (e) {
-      console.warn('Failed to load collection', e);
-      return [];
-    }
-  }, []);
-
-  const loadBadges = useCallback(async () => {
-    try {
-      const storedBadges = await AsyncStorage.getItem(BREED_BADGES_KEY);
-      if (storedBadges) {
-        const parsedBadges = JSON.parse(storedBadges);
-        const normalized = Array.isArray(parsedBadges) ? parsedBadges : [];
-        setBadges(normalized);
-        return normalized;
-      }
-      setBadges([]);
-      return [];
-    } catch (e) {
-      console.warn('Failed to load breed badges', e);
-      setBadges([]);
-      return [];
-    }
-  }, []);
-
-  const getCurrentUid = useCallback(() => auth.currentUser?.uid ?? null, []);
-
-
-
-
-  // Fetch and log all unlock_coats progress for the user from Firestore
-  const fetchAndStoreUnlockCoats = async (user) => {
-    try {
-      // [DEBUG] fetchAndStoreUnlockCoats called with user: (kept for now)
-      if (user) {
-        const userRef = doc(db, 'users', user.uid);
-        const userSnap = await getDoc(userRef);
-        let userIdNum = userSnap.data()?.user_id;
-
-        if (userIdNum !== undefined && userIdNum !== null) {
-          const unlockCoatsRef = firestoreCollection(db, 'unlock_coats');
-          // Try both number and string queries
-          const queries = [
-            query(unlockCoatsRef, where('user_id', '==', userIdNum)),
-            query(unlockCoatsRef, where('user_id', '==', String(userIdNum)))
-          ];
-          let allUnlocks = [];
-          for (const [i, q] of queries.entries()) {
-            const unlockSnap = await getDocs(q);
-            const unlocks = unlockSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            if (unlocks.length > 0) allUnlocks = allUnlocks.concat(unlocks);
-          }
-          // Deduplicate by id
-          const uniqueUnlocksMap = {};
-          allUnlocks.forEach(unlock => {
-            uniqueUnlocksMap[unlock.id] = unlock;
-          });
-          const uniqueUnlocks = Object.values(uniqueUnlocksMap);
-          setUserUnlocks(uniqueUnlocks);
-        } else {
-          setUserUnlocks([]);
-        }
-      } else {
-        setUserUnlocks([]);
-      }
-    } catch (e) {
-      setUserUnlocks([]);
-    }
-  };
+  }, [gameOverReduceMotion, highScoreOpacity, highScoreScale, isNewHighScore, showHighScore]);
 
   // Listen for auth state changes and set local user state
   useEffect(() => {
@@ -613,19 +1407,18 @@ export default function QuizScreen() {
   useEffect(() => {
     let isCancelled = false;
 
-    // ...removed debug log for useEffect running...
-    if (authState.checked && authState.user) {
-      fetchAndStoreUnlockCoats(authState.user);
-    }
-
     async function loadStorageVariants() {
       setIsLocalQuizLoading(true);
       setLocalQuizNotice(null);
       setMissingLocalImageNotice(null);
 
-      const [coatsSnapshot, breedsSnapshot] = await Promise.all([
-        getDocs(query(firestoreCollection(db, 'coats'), where('image_exists', '==', true))),
+      const [coatsSnapshot, breedsSnapshot, decoysSnapshot] = await Promise.all([
+        getDocs(firestoreCollection(db, 'coats')),
         getDocs(firestoreCollection(db, 'breeds')),
+        getDocs(firestoreCollection(db, 'decoy_images')).catch((error) => {
+          console.warn('Decoy images are unavailable; continuing with regular distractors.', error);
+          return null;
+        }),
       ]);
 
       if (isCancelled) {
@@ -649,7 +1442,6 @@ export default function QuizScreen() {
           const breedId = typeof data.breed_id === 'string' ? data.breed_id.trim() : '';
           const imgFilename = typeof data.img_filename === 'string' ? data.img_filename.trim() : '';
           const imgTwoFilename = typeof data.img_two_filename === 'string' ? data.img_two_filename.trim() : '';
-          const imageTwoExists = !!data.image_two_exists;
           const imageExists = !!data.image_exists;
 
           if (!breedId || !imgFilename || !imageExists) {
@@ -657,7 +1449,9 @@ export default function QuizScreen() {
           }
 
           const breedNameFromDoc = typeof data.breed_name === 'string' ? data.breed_name.trim() : '';
-          const colorName = typeof data.color_name === 'string' ? data.color_name.trim() : '';
+          const colorName = [data.color_name, data.coat_color, data.coat]
+            .find((value) => typeof value === 'string' && value.trim())
+            ?.trim() || '';
           const coatName = typeof data.coat_name === 'string' ? data.coat_name.trim() : '';
           const coatId = typeof data.coat_id === 'number' ? data.coat_id : undefined;
 
@@ -671,13 +1465,33 @@ export default function QuizScreen() {
             coat: coatLabel,
             imgFilename,
             imgTwoFilename,
-            imageTwoExists,
             coat_id: coatId,
           };
         })
         .filter(Boolean);
 
       const missingLocalFilenames = new Set();
+
+      const localDecoys = (decoysSnapshot?.docs || []).map((decoyDoc) => {
+        const data = decoyDoc.data() || {};
+        const imgFilename = typeof data.img_filename === 'string' ? data.img_filename.trim() : '';
+        if (!imgFilename) return null;
+        const asset = getLocalImgAsset(imgFilename);
+        if (!asset) {
+          missingLocalFilenames.add(imgFilename);
+          return null;
+        }
+        return {
+          id: `decoy__${decoyDoc.id}`,
+          breed: '',
+          breedId: null,
+          coat: '',
+          imgFilename,
+          uri: asset,
+          images: [asset],
+          isDecoy: true,
+        };
+      }).filter(Boolean);
 
       const localBackedVariants = coatsWithImageFiles
         .map((variant) => {
@@ -687,13 +1501,9 @@ export default function QuizScreen() {
             return null;
           }
 
-          const secondaryAsset = variant.imageTwoExists && variant.imgTwoFilename
+          const secondaryAsset = variant.imgTwoFilename
             ? getLocalImgAsset(variant.imgTwoFilename)
             : null;
-
-          if (variant.imageTwoExists && variant.imgTwoFilename && !secondaryAsset) {
-            missingLocalFilenames.add(variant.imgTwoFilename);
-          }
 
           const images = [primaryAsset];
           if (secondaryAsset) {
@@ -714,6 +1524,17 @@ export default function QuizScreen() {
 
       const variantsByBreed = indexVariantsByBreed(localBackedVariants);
       setStorageVariantMap(variantsByBreed);
+      setDecoyVariants(localDecoys);
+
+      const unlockableCoatsByBreed = {};
+      Object.entries(variantsByBreed).forEach(([breedName, variants]) => {
+        const breedId = variants[0]?.breedId;
+        if (!breedId) return;
+        unlockableCoatsByBreed[breedId] = [...variants]
+          .sort((left, right) => (left.coat_id ?? Number.MAX_SAFE_INTEGER) - (right.coat_id ?? Number.MAX_SAFE_INTEGER))
+          .map((variant) => variant.id);
+      });
+      setCatalogCoatIdsByBreed(unlockableCoatsByBreed);
 
       const availableBreeds = Object.keys(variantsByBreed);
 
@@ -742,6 +1563,7 @@ export default function QuizScreen() {
       }
 
       setStorageVariantMap({});
+      setCatalogCoatIdsByBreed({});
       const errorCode = typeof error?.code === 'string' ? error.code : null;
       setLocalQuizNotice(
         errorCode
@@ -756,33 +1578,67 @@ export default function QuizScreen() {
     };
   }, []);
 
-  async function unlockDog(dogId) {
-    if (collection.includes(dogId)) {
-      return { isNew: false, updatedCollection: collection };
-    }
-
-    const updated = [...collection, dogId];
-    setCollection(updated);
-
-    try {
-      await AsyncStorage.setItem('dogCollection', JSON.stringify(updated));
-    } catch (e) {
-      console.warn('Failed to save collection', e);
-    }
-
-    try {
-
-    } catch (e) {
-      console.warn('Failed to sync collection to cloud', e);
-    }
-
-    return { isNew: true, updatedCollection: updated };
-  }
-
   // Track last 10 breeds to prevent repeats (already declared earlier)
   // const recentBreedsRef = useRef([]); // Removed duplicate
 
   const targetDog = targetIndex >= 0 ? choices[targetIndex] : null;
+
+  useEffect(() => {
+    if (!targetDog) return;
+
+    if (skipNextCardEntranceRef.current) {
+      skipNextCardEntranceRef.current = false;
+      quizEntranceOpacity.setValue(1);
+      quizEntranceTranslateY.setValue(0);
+      cardEntranceAnims.forEach((anim) => {
+        anim.opacity.setValue(1);
+        anim.translateY.setValue(0);
+      });
+      return;
+    }
+
+    quizEntranceOpacity.setValue(0);
+    quizEntranceTranslateY.setValue(18);
+    cardEntranceAnims.forEach((anim) => {
+      anim.opacity.setValue(0);
+      anim.translateY.setValue(14);
+    });
+
+    RNAnimated.parallel([
+      RNAnimated.timing(quizEntranceOpacity, {
+        toValue: 1,
+        duration: 230,
+        easing: RNEasing.out(RNEasing.cubic),
+        useNativeDriver: true,
+      }),
+      RNAnimated.timing(quizEntranceTranslateY, {
+        toValue: 0,
+        duration: 230,
+        easing: RNEasing.out(RNEasing.cubic),
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    RNAnimated.stagger(
+      26,
+      cardEntranceAnims.map((anim) => (
+        RNAnimated.parallel([
+          RNAnimated.timing(anim.opacity, {
+            toValue: 1,
+            duration: 220,
+            easing: RNEasing.out(RNEasing.cubic),
+            useNativeDriver: true,
+          }),
+          RNAnimated.timing(anim.translateY, {
+            toValue: 0,
+            duration: 220,
+            easing: RNEasing.out(RNEasing.cubic),
+            useNativeDriver: true,
+          }),
+        ])
+      ))
+    ).start();
+  }, [cardEntranceAnims, questionIndex, quizEntranceOpacity, quizEntranceTranslateY, targetDog]);
 
   async function handlePick(dog) {
     if ((selected && selected.id === targetDog.id) || !targetDog || lives === 0 || transitioning) return;
@@ -790,35 +1646,35 @@ export default function QuizScreen() {
     if (wrongGuesses.includes(dog.id)) return;
 
     if (dog.id === targetDog.id) {
-      // Show the +1 reward on every correct answer.
+      // Show a compact XP reward near the score on every correct answer.
       // Unlock-specific card messaging still uses the existing newUnlock logic below.
       {
-        const startLeft = 30 + Math.random() * 40;
-        const driftX = (Math.random() - 0.5) * 120;
-        const driftY = -(35 + Math.random() * 15);
-        const curve = (Math.random() - 0.5) * 40;
+        const xpFeedbackDelay = 130;
+        const driftX = (Math.random() - 0.5) * 18;
+        const driftY = -(26 + Math.random() * 10);
+        const curve = (Math.random() - 0.5) * 6;
         setShowPlusOne(true);
         setPlusOnePulse(false);
         if (Platform.OS === 'web') {
           setPlusOneStyle({
-            opacity: 1,
+            opacity: 0,
             position: 'absolute',
-            left: `${startLeft}%`,
-            top: 420,
+            left: '50%',
+            top: 8,
             transform: `translate(-50%, 0) scale(1)`,
-            color: DOGGYDEX_ORANGE,
+            color: '#2F6B45',
             fontWeight: 900,
-            fontSize: 15,
-            letterSpacing: 1.1,
+            fontSize: 13,
+            letterSpacing: 0,
             pointerEvents: 'none',
-            zIndex: 1000,
-            border: '2px solid #fff',
-            borderRadius: '8px',
-            background: 'rgba(255,159,28,0.32)',
-            padding: '1px 6px',
-            boxShadow: `0 0 32px ${DOGGYDEX_ORANGE}, 0 0 12px #fff`,
-            // Removed transition for instant appearance
-            textShadow: `0 0 28px ${DOGGYDEX_ORANGE}, 0 0 12px ${DOGGYDEX_ORANGE}, 0 0 6px #fff`,
+            zIndex: 2600,
+            border: `1.5px solid ${DoggyDexTheme.colors.gold}`,
+            borderRadius: '999px',
+            background: 'rgba(255,249,232,0.98)',
+            padding: '3px 10px',
+            boxShadow: '0 8px 18px rgba(31,41,55,0.16)',
+            transition: 'opacity 520ms cubic-bezier(0.22, 1, 0.36, 1), top 520ms cubic-bezier(0.22, 1, 0.36, 1), transform 520ms cubic-bezier(0.22, 1, 0.36, 1)',
+            textShadow: 'none',
           });
         } else {
           plusOneMobileOpacity.setValue(0);
@@ -826,49 +1682,85 @@ export default function QuizScreen() {
           plusOneMobileTranslateY.setValue(0);
           plusOneMobileScale.setValue(1);
         }
-        setTimeout(() => setPlusOnePulse(true), 0);
         setTimeout(() => {
+          setScore((s) => s + 1);
+          setPlusOnePulse(true);
+          scorePulseAnim.stopAnimation();
+          scorePulseAnim.setValue(0);
+          RNAnimated.sequence([
+            RNAnimated.timing(scorePulseAnim, {
+              toValue: 1,
+              duration: 105,
+              easing: RNEasing.out(RNEasing.cubic),
+              useNativeDriver: true,
+            }),
+            RNAnimated.timing(scorePulseAnim, {
+              toValue: 0,
+              duration: 105,
+              easing: RNEasing.inOut(RNEasing.cubic),
+              useNativeDriver: true,
+            }),
+          ]).start();
+
           if (Platform.OS === 'web') {
             setPlusOneStyle((prev) => ({
               ...prev,
-              opacity: 0,
-              top: 30,
-              transform: `translate(calc(-50% + ${driftX}px), ${driftY}px) scale(1.35) skewX(${curve}deg)`,
+              opacity: 1,
             }));
+
+            const scheduleXpBadgeFloat = typeof requestAnimationFrame === 'function'
+              ? requestAnimationFrame
+              : (callback) => setTimeout(callback, 16);
+            scheduleXpBadgeFloat(() => {
+              setPlusOneStyle((prev) => ({
+                ...prev,
+                opacity: 0,
+                top: -18,
+                transform: `translate(calc(-50% + ${driftX}px), ${driftY}px) scale(1.08) skewX(${curve}deg)`,
+              }));
+            });
           } else {
             plusOneMobileOpacity.setValue(1);
             RNAnimated.parallel([
               RNAnimated.timing(plusOneMobileOpacity, {
                 toValue: 0,
-                duration: 700,
+                duration: 520,
                 easing: RNEasing.out(RNEasing.cubic),
                 useNativeDriver: true,
               }),
               RNAnimated.timing(plusOneMobileTranslateX, {
                 toValue: driftX,
-                duration: 700,
+                duration: 520,
                 easing: RNEasing.out(RNEasing.cubic),
                 useNativeDriver: true,
               }),
               RNAnimated.timing(plusOneMobileTranslateY, {
                 toValue: driftY,
-                duration: 700,
+                duration: 520,
                 easing: RNEasing.out(RNEasing.cubic),
                 useNativeDriver: true,
               }),
               RNAnimated.timing(plusOneMobileScale, {
-                toValue: 1.35,
-                duration: 700,
+                toValue: 1.08,
+                duration: 520,
                 easing: RNEasing.out(RNEasing.cubic),
                 useNativeDriver: true,
               }),
             ]).start();
           }
-        }, 250);
+        }, xpFeedbackDelay);
         setTimeout(() => {
           setShowPlusOne(false);
-        }, 1000);
-        // Show +1 coat unlocked text immediately
+          if (Platform.OS === 'web') {
+            setPlusOneStyle((prev) => ({
+              ...prev,
+              opacity: 0,
+              top: -18,
+              transform: `translate(calc(-50% + ${driftX}px), ${driftY}px) scale(1.08) skewX(${curve}deg)`,
+            }));
+          }
+        }, xpFeedbackDelay + 620);
+        // Keep the small coat-unlock marker on the correct card.
         setNewUnlock(targetDog.id);
         setNewCoatActuallyUnlocked(true);
       }
@@ -878,13 +1770,6 @@ export default function QuizScreen() {
       setTimer((prev) => prev); // Prevent timer decrement
       let timerPaused = true;
       setSelected(dog);
-      // Delay the score increment so it lands in the 120-180ms window.
-      setTimeout(() => {
-        setScore((s) => s + 1);
-        setScorePulse(true);
-      }, 150);
-      // Let the gold flash/scale breathe briefly, then ease back.
-      setTimeout(() => setScorePulse(false), 750);
       setTransitioning(true);
 
       // Drive question transition from tap timing (not async unlock writes)
@@ -892,143 +1777,108 @@ export default function QuizScreen() {
       const slideOut = () => {
         gridSlideX.value = 0;
         gridOpacity.value = 1;
-        gridSlideX.value = withTiming(-80, { duration: 400, easing: ReanimatedEasing.inOut(ReanimatedEasing.quad) }, () => {
-          // Slide finishes after fade
+        gridSlideX.value = withTiming(-QUESTION_TRANSITION_DISTANCE, {
+          duration: QUESTION_TRANSITION_DURATION,
+          easing: QUESTION_TRANSITION_EASING,
+        }, () => {
+          runOnJS(setPendingNext)(true);
         });
         gridOpacity.value = withTiming(0, {
-          duration: 650,
-          easing: ReanimatedEasing.out(ReanimatedEasing.quad),
+          duration: QUESTION_TRANSITION_DURATION,
+          easing: QUESTION_TRANSITION_EASING,
         });
-
-        // Begin incoming question when outgoing push-left is ~75% complete.
-        setTimeout(() => {
-          setPendingNext(true);
-        }, 300);
       };
-      setTimeout(() => slideOut(), 150);
+      setTimeout(() => {
+        (async () => {
+          await prepareNextQuestion();
+          slideOut();
+        })();
+      }, 420);
 
       (async () => {
-        let willShowNewUnlock = false;
-        const { isNew, updatedCollection } = await unlockDog(targetDog.id);
-        // --- Firestore unlock_coats logic ---
-        let unlockedCoat = false;
         try {
           const user = auth.currentUser;
           if (user) {
-            const userRef = doc(db, 'users', user.uid);
-            const userSnap = await getDoc(userRef);
-            let userIdNum = userSnap.data().user_id;
-            const coatId = targetDog.coat_id;
-            const unlockCoatsRef = firestoreCollection(db, 'unlock_coats');
-            const q = query(unlockCoatsRef, where('user_id', '==', userIdNum), where('coat_id', '==', coatId));
-            const unlockSnap = await getDocs(q);
+            const breedId = targetDog.breedId || targetDog.breed_id || targetDog.breed;
+            const availableCoatIds = catalogCoatIdsByBreed[breedId]
+              || (storageVariantMap[targetDog.breed] || []).map((variant) => variant.id);
+            const reward = await recordCorrectAnswer({
+              uid: user.uid,
+              breedId,
+              breedName: targetDog.breed,
+              availableCoatIds,
+              answeredCoatId: targetDog.id,
+              correctStreak: currentStreak + 1,
+            });
 
-            // Find breed_id for this coat
-            let breedId = null;
-            if (targetDog && (targetDog.breedId || targetDog.breed_id)) {
-              breedId = targetDog.breedId || targetDog.breed_id;
-            } else if (targetDog && targetDog.breed) {
-              breedId = targetDog.breed;
-            }
-
-            // Load breed tiers from dog-breeds-tiers.json (static import)
-            let breedTier = 1;
-            if (breedId && breedTiers[breedId]) {
-              breedTier = breedTiers[breedId];
-            }
-
-            let progressRequired = 1;
-            if (breedTier === 2) progressRequired = 5;
-            else if (breedTier === 3) progressRequired = 10;
-            else if (breedTier === 4) progressRequired = 15;
-            else if (breedTier === 5) progressRequired = 30;
-
-            if (unlockSnap.empty) {
-              // Create new unlock_coats doc
-              await addDoc(unlockCoatsRef, {
-                user_id: userIdNum,
-                coat_id: coatId,
-                unlock_date: null,
-                is_unlocked: false,
-                progress: 1,
-                progress_required: progressRequired,
+            const newlyUnlockedCoats = Array.isArray(reward.newlyUnlockedCoats)
+              ? reward.newlyUnlockedCoats
+              : [];
+            const hasNewCoat = newlyUnlockedCoats.length > 0;
+            const breedVariants = storageVariantMap[targetDog.breed] || [];
+            const rewardImageSource = getQuizImageSource(targetDog);
+            const newlyUnlockedCoatDetails = newlyUnlockedCoats.map((coatId) => {
+              const matchedVariant = breedVariants.find((variant) => String(variant.id) === String(coatId));
+              const coatIdWithoutBreed = String(coatId).replace(new RegExp(`^${breedId}__`), '');
+              const label = matchedVariant?.coat
+                || (String(targetDog.id) === String(coatId) ? targetDog.coat : '')
+                || toTitleCaseFromId(coatIdWithoutBreed);
+              return {
+                coatId,
+                label,
+                imageSource: String(targetDog.id) === String(coatId)
+                  ? rewardImageSource
+                  : getQuizImageSource(matchedVariant),
+              };
+            });
+            const newlyUnlockedCoatLabels = newlyUnlockedCoatDetails.map((coat) => coat.label);
+            const rewardEvents = [
+              ...(reward.isNewBreed ? [{
+                id: `breed-${breedId}-${Date.now()}`,
+                type: 'breed',
+                breedId,
+                name: targetDog.breed,
+                imageSource: rewardImageSource,
+              }] : []),
+              ...newlyUnlockedCoatDetails.map((coat, index) => ({
+                id: `coat-${breedId}-${coat.coatId}-${Date.now()}-${index}`,
+                type: 'coat',
+                breedId,
+                coatId: coat.coatId,
+                name: `${targetDog.breed} - ${formatCoatLabel(coat.label)}`,
+                imageSource: coat.imageSource,
+              })),
+              ...(reward.didLevelUp ? [{
+                id: `level-${reward.level}-${Date.now()}`,
+                type: 'level',
+                name: `Level ${reward.level}`,
+                level: reward.level,
+              }] : []),
+            ];
+            setTimeout(() => {
+              addSessionProgressReward(reward, rewardEvents);
+              setNewUnlock(hasNewCoat ? targetDog.id : null);
+              setNewCoatActuallyUnlocked(hasNewCoat);
+              showProgressionReward({
+                ...reward,
+                newlyUnlockedCoats,
+                breedName: targetDog.breed,
+                breedImageSource: rewardImageSource,
+                newlyUnlockedCoatLabels,
               });
-              if (progressRequired === 1) {
-                // Instantly unlocked
-                const q2 = query(unlockCoatsRef, where('user_id', '==', userIdNum), where('coat_id', '==', coatId));
-                const snap2 = await getDocs(q2);
-                if (!snap2.empty) {
-                  const docRef = snap2.docs[0].ref;
-                  await setDoc(docRef, {
-                    user_id: userIdNum,
-                    coat_id: coatId,
-                    unlock_date: serverTimestamp(),
-                    is_unlocked: true,
-                    progress: 1,
-                    progress_required: progressRequired,
-                  }, { merge: true });
-                  unlockedCoat = true;
-                }
-              } else {
-                unlockedCoat = false;
-              }
-            } else {
-              // Update existing doc
-              const docRef = unlockSnap.docs[0].ref;
-              const data = unlockSnap.docs[0].data();
-              let newProgress = (data.progress || 0) + 1;
-              let isUnlocked = data.is_unlocked || false;
-              let unlockDate = data.unlock_date || null;
-              if (!isUnlocked && newProgress >= progressRequired) {
-                isUnlocked = true;
-                unlockDate = serverTimestamp();
-                unlockedCoat = true;
-              } else {
-                unlockedCoat = false;
-              }
-              await setDoc(docRef, {
-                progress: newProgress,
-                is_unlocked: isUnlocked,
-                unlock_date: isUnlocked ? unlockDate : null,
-                progress_required: progressRequired,
-                user_id: userIdNum,
-                coat_id: coatId,
-              }, { merge: true });
-            }
+            }, QUESTION_TRANSITION_DURATION + 120);
           }
-        } catch (e) {
-          console.warn('Failed to update unlock_coats', e);
-        }
-        willShowNewUnlock = isNew || unlockedCoat;
-        // Update newUnlock and newCoatActuallyUnlocked if async unlock logic disagrees with initial guess
-        if (unlockedCoat) {
-          setNewUnlock(targetDog.id);
-          setNewCoatActuallyUnlocked(true);
-        } else {
+        } catch (progressionError) {
+          console.warn('Failed to update player progression', progressionError);
           setNewUnlock(null);
           setNewCoatActuallyUnlocked(false);
         }
-        const breedCoats = storageVariantMap[targetDog.breed] || [];
-        const isBreedCompleted = breedCoats.length > 0 && breedCoats.every((variant) => updatedCollection.includes(variant.id));
-        if (isBreedCompleted && !badges.includes(targetDog.breed)) {
-          const updatedBadges = [...badges, targetDog.breed];
-          setBadges(updatedBadges);
-          setNewBadge(targetDog.breed);
-          try {
-            await AsyncStorage.setItem(BREED_BADGES_KEY, JSON.stringify(updatedBadges));
-          } catch (e) {
-            console.warn('Failed to save breed badges', e);
-          }
-        }
-
-        // Always refresh unlocks after any unlock_coats update
-        if (authState && authState.checked && authState.user) {
-          fetchAndStoreUnlockCoats(authState.user);
-        }
-
       })();
     } else {
+      setCurrentStreak(0);
       setWrongGuesses((prev) => [...prev, dog.id]);
+      setWrongToast(lives <= 1 ? 'Out of lives!' : 'Not quite — try another photo');
+      setTimeout(() => setWrongToast(null), 720);
 
       setWrongAnimatedCardId(dog.id);
       wrongShakeX.setValue(0);
@@ -1077,37 +1927,51 @@ export default function QuizScreen() {
   // When pendingNext is set (after grid slide out), update question and animate grid in
   useEffect(() => {
     if (pendingNext) {
-      runOnJS(setSelected)(null);
-      runOnJS(setNewUnlock)(null);
-      runOnJS(setNewBadge)(null);
-      runOnJS(setTimer)(30); // Reset timer to 30
-      runOnJS(setTimerPaused)(false); // Resume timer
-      runOnJS(setQuestionIndex)((q) => q + 1);
+      const nextQuestion = preparedNextQuestionRef.current || buildQuestion({ commitRecent: true });
+      preparedNextQuestionRef.current = null;
+      skipNextCardEntranceRef.current = true;
+      setSelected(null);
+      setNewUnlock(null);
+      setTimer(30); // Reset timer to 30
+      setTimerPaused(false); // Resume timer
+      setActiveQuestion(nextQuestion);
+      setQuestionIndex((q) => q + 1);
       // Animate grid in from right
-      gridSlideX.value = 80;
+      gridSlideX.value = QUESTION_TRANSITION_DISTANCE;
       gridOpacity.value = 0;
-      gridSlideX.value = withTiming(0, { duration: 360, easing: ReanimatedEasing.out(ReanimatedEasing.quad) });
-      gridOpacity.value = withDelay(120, withTiming(1, {
-        duration: 700,
-        easing: ReanimatedEasing.out(ReanimatedEasing.quad),
+      gridSlideX.value = withTiming(0, {
+        duration: QUESTION_TRANSITION_DURATION,
+        easing: QUESTION_TRANSITION_EASING,
       }, () => {
         runOnJS(setTransitioning)(false);
         runOnJS(setPendingNext)(false);
-      }));
+      });
+      gridOpacity.value = withTiming(1, {
+        duration: QUESTION_TRANSITION_DURATION,
+        easing: QUESTION_TRANSITION_EASING,
+      });
     }
-  }, [pendingNext]);
+  }, [buildQuestion, pendingNext]);
 
   function next() {
     if (transitioning) return;
     // For manual next, animate grid out
     setTransitioning(true);
-    gridSlideX.value = 0;
-    gridOpacity.value = 1;
-    gridSlideX.value = withTiming(-80, { duration: 350, easing: ReanimatedEasing.inOut(ReanimatedEasing.quad) }, () => {
-      gridOpacity.value = withTiming(0, { duration: 350 }, () => {
+    (async () => {
+      await prepareNextQuestion();
+      gridSlideX.value = 0;
+      gridOpacity.value = 1;
+      gridSlideX.value = withTiming(-QUESTION_TRANSITION_DISTANCE, {
+        duration: QUESTION_TRANSITION_DURATION,
+        easing: QUESTION_TRANSITION_EASING,
+      }, () => {
         runOnJS(setPendingNext)(true);
       });
-    });
+      gridOpacity.value = withTiming(0, {
+        duration: QUESTION_TRANSITION_DURATION,
+        easing: QUESTION_TRANSITION_EASING,
+      });
+    })();
   }
 
   const goHomeWithSpinner = useCallback(() => {
@@ -1120,36 +1984,61 @@ export default function QuizScreen() {
   }, [isLeavingToHome, router]);
 
   async function handlePlayAgain() {
-    if (authState.checked && authState.user) {
-      await fetchAndStoreUnlockCoats(authState.user);
+    gameOverSequenceTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
+    gameOverSequenceTimeoutsRef.current = [];
+    modalOpacity.stopAnimation();
+    modalTranslateY.stopAnimation();
+    modalScale.stopAnimation();
+    scoreOpacity.stopAnimation();
+    bestStreakOpacity.stopAnimation();
+    highScoreOpacity.stopAnimation();
+    buttonsOpacity.stopAnimation();
+    scorePulseAnim.stopAnimation();
+    quizFeedbackTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
+    quizFeedbackTimeoutsRef.current = [];
+    if (progressionRewardTimeoutRef.current) {
+      clearTimeout(progressionRewardTimeoutRef.current);
+      progressionRewardTimeoutRef.current = null;
     }
+    if (progressionRewardDelayRef.current) {
+      clearTimeout(progressionRewardDelayRef.current);
+      progressionRewardDelayRef.current = null;
+    }
+    progressionRewardSequenceTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
+    progressionRewardSequenceTimeoutsRef.current = [];
+    dailyQuizBonusHandledRef.current = false;
+    recentBreedsRef.current = [];
+    preparedNextQuestionRef.current = null;
+    skipNextCardEntranceRef.current = false;
     setShowGameOver(false);
+    setDisplayedFinalScore(0);
+    setSessionXpEarned(0);
+    setSessionXpRange({ startTotalXP: 0, endTotalXP: 0 });
+    setSessionRewardEvents([]);
+    setGameOverRewardVisible(false);
+    setGameOverActionsReady(false);
+    setGameOverSkipSignal(0);
     setScore(0);
     setLives(3);
     setQuestionIndex(0);
     setSelected(null);
     setWrongGuesses([]);
     setNewUnlock(null);
-    setNewBadge(null);
+    setProgressionReward(null);
+    unlockToastOpacity.setValue(0);
+    unlockToastTranslateY.setValue(24);
+    unlockToastScale.setValue(0.95);
     setPendingNext(false);
     setTransitioning(false);
     setTimer(30);
     setTimerPaused(false); // Unpause the timer
-    // Force refresh the question
-    setTimeout(() => setQuestionIndex(1), 0);
+    setActiveQuestion(buildQuestion({ commitRecent: true }));
+    setQuestionIndex((q) => q + 1);
   }
 
   // Show loading indicator until authState.checked is true
   if (!authState.checked) {
-    return (
-      <ThemedView style={quizStyles.container}>
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
-          <ThemedText style={{ fontSize: 22, color: '#888', fontWeight: '600', marginBottom: 12 }}>
-            Loading user info...
-          </ThemedText>
-        </View>
-      </ThemedView>
-    );
+    return <SplashTransition />;
   }
 
   const mobileStatusMessage = isLocalQuizLoading
@@ -1158,39 +2047,22 @@ export default function QuizScreen() {
   const shouldBlurContainerOnTimeout = timer === 0 && !showGameOver;
 
   if (isLocalQuizLoading) {
-    return (
-      <ThemedView style={quizStyles.container}>
-        <View style={quizStyles.loadingOverlay}>
-          <View style={quizStyles.loadingCard}>
-            <ActivityIndicator size="large" color="#FF9F1C" />
-            <ThemedText style={quizStyles.loadingTitle}>Loading quiz...</ThemedText>
-            <ThemedText style={quizStyles.loadingSubtitle}>Preparing local dog photos and breed data.</ThemedText>
-          </View>
-        </View>
-      </ThemedView>
-    );
+    return <SplashTransition />;
   }
 
   if (Platform.OS !== 'web') {
     return (
       <ThemedView style={quizStyles.container}>
-        {showPlusOne ? (
-          <View pointerEvents="none" style={quizStyles.mobilePlusOneOverlay}>
-            <RNAnimated.View
-              style={[
-                quizStyles.mobilePlusOneBubble,
-                {
-                  opacity: plusOneMobileOpacity,
-                  transform: [
-                    { translateX: plusOneMobileTranslateX },
-                    { translateY: plusOneMobileTranslateY },
-                    { scale: plusOneMobileScale },
-                  ],
-                },
-              ]}
-            >
-              <ThemedText style={quizStyles.mobilePlusOneText}>+1</ThemedText>
-            </RNAnimated.View>
+        <UnlockRewardFeedback
+          reward={progressionReward}
+          opacity={unlockToastOpacity}
+          translateY={unlockToastTranslateY}
+          scale={unlockToastScale}
+        />
+        {wrongToast ? (
+          <View pointerEvents="none" style={quizStyles.wrongToast}>
+            <MaterialIcons name="close" size={15} color="#FFFFFF" />
+            <ThemedText style={quizStyles.wrongToastText}>{wrongToast}</ThemedText>
           </View>
         ) : null}
 
@@ -1213,12 +2085,20 @@ export default function QuizScreen() {
             ]}
           >
             <ThemedText type="default" style={quizStyles.timeoutMessageText}>
-              ⏰ Time's Up!
+              Time&apos;s Up!
             </ThemedText>
           </RNAnimated.View>
         ) : null}
 
-        <View style={quizStyles.mobileQuizStack}>
+          <RNAnimated.View
+            style={[
+              quizStyles.mobileQuizStack,
+              {
+                opacity: quizEntranceOpacity,
+                transform: [{ translateY: -32 }, { translateY: quizEntranceTranslateY }],
+              },
+            ]}
+          >
           <View style={quizStyles.mobileTopBackWrap}>
             <Pressable
               onPress={() => setShowExitConfirm(true)}
@@ -1243,43 +2123,67 @@ export default function QuizScreen() {
                 <View style={quizStyles.heartsChip}>
                   {Array.from({ length: 3 }).map((_, i) => {
                     const isActive = lives > i;
-                    const baseStyle = quizStyles.heartIcon(isActive);
-                    const hiddenStyle = !isActive ? { opacity: 0 } : null;
 
                     return (
-                    <ThemedText
-                      key={i}
-                      style={
-                        heartPulse === i && heartPulseColor
-                          ? [baseStyle, hiddenStyle, { color: heartPulseColor, transform: [{ scale: 1.25 }] }]
-                          : [baseStyle, hiddenStyle]
-                      }
-                    >
-                      ♥
-                    </ThemedText>
+                      <RNAnimated.View
+                        key={i}
+                        style={{
+                          transform: [
+                            { translateX: heartPulse === i ? heartShakeX : 0 },
+                            { scale: heartPulse === i ? 1.2 : 1 },
+                          ],
+                        }}
+                      >
+                        <LifePawIcon
+                          active={isActive}
+                          color={heartPulse === i && heartPulseColor ? heartPulseColor : undefined}
+                        />
+                      </RNAnimated.View>
                     );
                   })}
                 </View>
                 <View style={quizStyles.mobileScoreWrap}>
                   <ThemedText style={quizStyles.mobileScoreLabel}>Score</ThemedText>
+                  <RNAnimated.View style={{ position: 'relative', transform: [{ scale: scorePulseAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.2] }) }] }}>
+                    <RNAnimated.View pointerEvents="none" style={[quizStyles.mobileScoreGlow, { opacity: scorePulseAnim }]} />
+                    <ThemedText style={quizStyles.mobileScoreValue}>{score}</ThemedText>
+                  </RNAnimated.View>
+                  {showPlusOne ? (
+                    <RNAnimated.View
+                      pointerEvents="none"
+                      style={[
+                        quizStyles.mobilePlusOneBubble,
+                        {
+                          position: 'absolute',
+                          top: -2,
+                          opacity: plusOneMobileOpacity,
+                          transform: [
+                            { translateX: plusOneMobileTranslateX },
+                            { translateY: plusOneMobileTranslateY },
+                            { scale: plusOneMobileScale },
+                          ],
+                        },
+                      ]}
+                    >
+                      <ThemedText style={quizStyles.mobilePlusOneText}>+10 XP</ThemedText>
+                    </RNAnimated.View>
+                  ) : null}
+                </View>
+                <View
+                  style={[
+                    quizStyles.mobileTimerChip,
+                    timer <= 9 && quizStyles.mobileTimerChipCritical,
+                    timer <= 9 && pulse && { transform: [{ scale: 1.08 }, { rotate: '-2deg' }] },
+                  ]}
+                >
+                  <MaterialIcons name="timer" size={timer <= 9 ? 28 : 23} color={timer <= 9 ? '#FFFFFF' : '#FFA51F'} />
                   <ThemedText
                     style={[
-                      quizStyles.mobileScoreValue,
-                      scorePulse && {
-                        color: '#FFD700',
-                        textShadowColor: '#FFD700',
-                        textShadowOffset: { width: 0, height: 0 },
-                        textShadowRadius: 10,
-                        transform: [{ scale: 1.08 }],
-                      },
+                      quizStyles.mobileTimerValue,
+                      timer <= 9 && quizStyles.mobileTimerCritical,
+                      timer <= 9 && pulse && { transform: [{ scale: 1.16 }] },
                     ]}
                   >
-                    {score}
-                  </ThemedText>
-                </View>
-                <View style={quizStyles.mobileTimerChip}>
-                  <ThemedText style={quizStyles.mobileTimerIcon}>⏰</ThemedText>
-                  <ThemedText style={[quizStyles.mobileTimerValue, timer <= 9 && quizStyles.mobileTimerCritical]}>
                     {timer}
                   </ThemedText>
                 </View>
@@ -1320,7 +2224,13 @@ export default function QuizScreen() {
                         key={c.id || `${c.breed}-${idx}`}
                         style={[
                           quizStyles.cardSlot,
-                          isWrongAnimating ? { transform: [{ translateX: wrongShakeX }] } : null,
+                          {
+                            opacity: cardEntranceAnims[idx]?.opacity,
+                            transform: [
+                              ...(isWrongAnimating ? [{ translateX: wrongShakeX }] : []),
+                              { translateY: cardEntranceAnims[idx]?.translateY || 0 },
+                            ],
+                          },
                         ]}
                       >
                         <Pressable
@@ -1336,7 +2246,7 @@ export default function QuizScreen() {
                         disabled={isDisabled}
                       >
                         <Image
-                          source={typeof c.uri === 'string' ? { uri: c.uri } : c.uri}
+                          source={getQuizImageSource(c)}
                           style={quizStyles.image}
                           contentFit="cover"
                           blurRadius={isWrong ? 7 : 0}
@@ -1349,7 +2259,7 @@ export default function QuizScreen() {
                         />
                         {failedImageIds[c.id] ? (
                           <View style={quizStyles.imageFallback}>
-                            <MaterialIcons name="pets" size={28} color="#6B7280" />
+                            <MaterialIcons name="pets" size={28} color={DoggyDexTheme.colors.textMuted} />
                             <ThemedText style={quizStyles.imageFallbackText}>{c.breed}</ThemedText>
                           </View>
                         ) : null}
@@ -1374,7 +2284,7 @@ export default function QuizScreen() {
               )}
             </View>
           </View>
-        </View>
+          </RNAnimated.View>
 
         {showExitConfirm ? (
           <View style={{
@@ -1390,16 +2300,17 @@ export default function QuizScreen() {
             paddingHorizontal: 20,
           }}>
             <View style={{
-              backgroundColor: 'rgba(255,255,255,0.98)',
+              backgroundColor: 'rgba(255,246,232,0.98)',
               borderRadius: 22,
               paddingVertical: 22,
               paddingHorizontal: 18,
               width: '100%',
               maxWidth: 360,
+              maxHeight: '94%',
               alignItems: 'center',
               borderWidth: 1,
               borderColor: 'rgba(255,255,255,0.92)',
-              shadowColor: '#111827',
+              shadowColor: DoggyDexTheme.colors.text,
               shadowOffset: { width: 0, height: 10 },
               shadowOpacity: 0.24,
               shadowRadius: 20,
@@ -1419,7 +2330,7 @@ export default function QuizScreen() {
               <ThemedText style={{ fontSize: 24, fontWeight: '800', color: '#B91C1C', marginBottom: 8, textAlign: 'center' }}>
                 Abandon Quiz?
               </ThemedText>
-              <ThemedText style={{ fontSize: 15, lineHeight: 22, color: '#374151', marginBottom: 18, textAlign: 'center', opacity: 0.92 }}>
+              <ThemedText style={{ fontSize: 15, lineHeight: 22, color: DoggyDexTheme.colors.textSecondary, marginBottom: 18, textAlign: 'center', opacity: 0.92 }}>
                 Are you sure you want to exit? All progress will be lost.
               </ThemedText>
               <View style={{ width: '100%', flexDirection: 'row', gap: 10 }}>
@@ -1457,121 +2368,195 @@ export default function QuizScreen() {
         ) : null}
 
         {showGameOver ? (
-          <View style={{
+          <View onTouchEnd={completeGameOverReveal} style={{
             position: 'absolute',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(12,16,24,0.56)',
+            backgroundColor: 'transparent',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 2000,
             paddingHorizontal: 20,
           }}>
-            <View style={{
-              backgroundColor: 'rgba(255,255,255,0.98)',
+            <RNAnimated.View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: modalOpacity, backgroundColor: 'rgba(12,16,24,0.44)' }}>
+              <BlurView intensity={18} tint="dark" style={{ flex: 1 }} />
+            </RNAnimated.View>
+            <RNAnimated.View style={{
+              backgroundColor: 'rgba(255,246,232,0.98)',
               borderRadius: 24,
               paddingVertical: 22,
               paddingHorizontal: 18,
               width: '100%',
               maxWidth: 360,
+              maxHeight: '94%',
               alignItems: 'center',
               borderWidth: 1,
               borderColor: 'rgba(255,255,255,0.92)',
-              shadowColor: '#111827',
+              shadowColor: DoggyDexTheme.colors.text,
               shadowOffset: { width: 0, height: 12 },
               shadowOpacity: 0.26,
               shadowRadius: 22,
               elevation: 12,
+              opacity: modalOpacity,
+              transform: [{ translateY: modalTranslateY }, { scale: modalScale }],
             }}>
               <View style={{
-                width: 62,
-                height: 62,
-                borderRadius: 31,
-                backgroundColor: '#FEE2E2',
+                width: 54,
+                height: 54,
+                borderRadius: 27,
+                backgroundColor: '#FFF0E2',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: 10,
+                marginBottom: 8,
               }}>
-                <MaterialIcons name="heart-broken" size={34} color="#B91C1C" />
+                <MaterialIcons name="heart-broken" size={30} color={DoggyDexTheme.colors.error} />
               </View>
-              <ThemedText style={{ fontSize: 27, fontWeight: '800', color: '#B91C1C', marginBottom: 12 }}>
+              <ThemedText style={{ fontSize: 23, fontWeight: '800', color: DoggyDexTheme.colors.text, marginBottom: 2 }}>
                 Out of Lives!
               </ThemedText>
+              <RNAnimated.View style={{ opacity: scoreOpacity, transform: [{ scale: scoreScale }], alignItems: 'center', marginBottom: 12 }}>
+                <ThemedText style={{ fontSize: 52, lineHeight: 58, color: DoggyDexTheme.colors.primary, fontWeight: '900', letterSpacing: 0.8 }}>
+                  {displayedFinalScore}
+                </ThemedText>
+                <ThemedText style={{ fontSize: 13, lineHeight: 17, color: DoggyDexTheme.colors.textSecondary, fontWeight: '800', letterSpacing: 0.8, textTransform: 'uppercase' }}>
+                  Final Score
+                </ThemedText>
+              </RNAnimated.View>
+              {isNewHighScore ? (
+                <RNAnimated.View style={{
+                  opacity: highScoreOpacity,
+                  transform: [{ scale: highScoreScale }],
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 7,
+                  backgroundColor: '#FFF4D6',
+                  borderRadius: 999,
+                  borderWidth: 1,
+                  borderColor: DoggyDexTheme.colors.gold,
+                  paddingVertical: 7,
+                  paddingHorizontal: 12,
+                  marginBottom: 12,
+                }}>
+                  <MaterialIcons name="emoji-events" size={19} color={DoggyDexTheme.colors.gold} />
+                  <ThemedText style={{ color: DoggyDexTheme.colors.text, fontSize: 13, lineHeight: 17, fontWeight: '900' }}>
+                    New High Score!
+                  </ThemedText>
+                </RNAnimated.View>
+              ) : null}
               <View style={{
                 width: '100%',
-                backgroundColor: '#F8FAFC',
-                borderRadius: 14,
+                backgroundColor: DoggyDexTheme.colors.surface,
+                borderRadius: 18,
                 borderWidth: 1,
-                borderColor: '#E2E8F0',
-                paddingVertical: 10,
-                paddingHorizontal: 12,
-                marginBottom: 16,
-                gap: 8,
+                borderColor: DoggyDexTheme.colors.border,
+                paddingVertical: 13,
+                paddingHorizontal: 14,
+                marginBottom: 8,
+                gap: 12,
               }}>
                 <RNAnimated.View style={{ opacity: scoreOpacity }}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <ThemedText style={{ fontSize: 15, color: '#475569', fontWeight: '700' }}>Score</ThemedText>
-                    <ThemedText style={{ fontSize: 24, color: '#F59E0B', fontWeight: '900' }}>{score}</ThemedText>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                      <MaterialIcons name="star" size={19} color={DoggyDexTheme.colors.gold} />
+                      <ThemedText style={{ fontSize: 16, color: DoggyDexTheme.colors.textSecondary, fontWeight: '800' }}>Score</ThemedText>
+                    </View>
+                    <ThemedText style={{ fontSize: 22, color: DoggyDexTheme.colors.primary, fontWeight: '900' }}>{score}</ThemedText>
                   </View>
                 </RNAnimated.View>
                 <RNAnimated.View style={{ opacity: bestStreakOpacity }}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <ThemedText style={{ fontSize: 15, color: '#475569', fontWeight: '700' }}>Best streak</ThemedText>
-                    <ThemedText style={{ fontSize: 20, color: '#111827', fontWeight: '800' }}>{bestStreak}</ThemedText>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                      <MaterialIcons name="whatshot" size={19} color={DoggyDexTheme.colors.primary} />
+                      <ThemedText style={{ fontSize: 15, color: DoggyDexTheme.colors.textSecondary, fontWeight: '800' }}>Best streak</ThemedText>
+                    </View>
+                    <ThemedText style={{ fontSize: 20, color: DoggyDexTheme.colors.text, fontWeight: '800' }}>{bestStreak}</ThemedText>
                   </View>
                 </RNAnimated.View>
                 <RNAnimated.View style={{ opacity: highScoreOpacity }}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <ThemedText style={{ fontSize: 15, color: '#475569', fontWeight: '700' }}>High score</ThemedText>
-                    <ThemedText style={{ fontSize: 20, color: isNewHighScore ? '#F59E0B' : '#111827', fontWeight: '800' }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                      <MaterialIcons name="emoji-events" size={19} color={DoggyDexTheme.colors.gold} />
+                      <ThemedText style={{ fontSize: 15, color: DoggyDexTheme.colors.textSecondary, fontWeight: '800' }}>High score</ThemedText>
+                    </View>
+                    <ThemedText style={{ fontSize: 20, color: isNewHighScore ? DoggyDexTheme.colors.gold : DoggyDexTheme.colors.text, fontWeight: '800' }}>
                       {highScore ?? 0}
                     </ThemedText>
                   </View>
                 </RNAnimated.View>
               </View>
-              <RNAnimated.View style={{ width: '100%', flexDirection: 'row', gap: 10, opacity: buttonsOpacity }} pointerEvents={showHighScore ? 'auto' : 'none'}>
+              <GameOverRewardFlow
+                visible={gameOverRewardVisible}
+                score={score}
+                totalXp={sessionXpEarned}
+                xpStartTotal={sessionXpRange.startTotalXP}
+                xpEndTotal={sessionXpRange.endTotalXP}
+                events={sessionRewardEvents}
+                skipSignal={gameOverSkipSignal}
+                onFinished={finishGameOverRewardFlow}
+              />
+              <RNAnimated.View
+                style={{ width: '100%', flexDirection: 'row', flexWrap: 'wrap', gap: 10, opacity: buttonsOpacity }}
+                pointerEvents={gameOverActionsReady ? 'auto' : 'none'}
+              >
                 <Pressable
                   onPress={handlePlayAgain}
                   style={({ pressed }) => [{
-                    flex: 1,
-                    backgroundColor: '#FF9F1C',
+                    flexGrow: 1,
+                    minWidth: 136,
+                    backgroundColor: DoggyDexTheme.colors.primary,
                     borderRadius: 12,
-                    paddingVertical: 12,
+                    paddingVertical: 13,
                     alignItems: 'center',
                     borderWidth: 1,
-                    borderColor: '#E68A00',
+                    borderColor: DoggyDexTheme.colors.gold,
                   }, pressed && { transform: [{ scale: 0.98 }] }]}
                 >
-                  <ThemedText style={{ color: '#fff', fontWeight: '800', fontSize: 16 }}>Play Again</ThemedText>
+                  <ThemedText style={{ color: '#fff', fontWeight: '900', fontSize: 16 }}>Play Again</ThemedText>
                 </Pressable>
+                {sessionRewardEvents.some((event) => event.type === 'breed' || event.type === 'coat') ? (
+                  <Pressable
+                    onPress={viewDoggyDexRewards}
+                    style={({ pressed }) => [{
+                      flexGrow: 1,
+                      minWidth: 118,
+                      backgroundColor: DoggyDexTheme.colors.surface,
+                      borderRadius: 12,
+                      paddingVertical: 12,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexDirection: 'row',
+                      gap: 6,
+                      borderWidth: 1,
+                      borderColor: DoggyDexTheme.colors.border,
+                    }, pressed && { transform: [{ scale: 0.98 }] }]}
+                  >
+                    <MaterialIcons name="menu-book" size={18} color={DoggyDexTheme.colors.primary} />
+                    <ThemedText style={{ color: DoggyDexTheme.colors.text, fontWeight: '800', fontSize: 15 }}>DoggyDex</ThemedText>
+                  </Pressable>
+                ) : null}
                 <Pressable
                   onPress={goHomeWithSpinner}
                   style={({ pressed }) => [{
-                    flex: 1,
-                    backgroundColor: '#EEF2F7',
+                    flexGrow: 1,
+                    minWidth: 104,
+                    backgroundColor: 'transparent',
                     borderRadius: 12,
                     paddingVertical: 12,
                     alignItems: 'center',
-                    borderWidth: 1,
-                    borderColor: '#D1D9E6',
+                    borderWidth: 0,
                   }, pressed && { transform: [{ scale: 0.98 }] }]}
                 >
-                  <ThemedText style={{ color: '#334155', fontWeight: '800', fontSize: 16 }}>Home</ThemedText>
+                  <ThemedText style={{ color: DoggyDexTheme.colors.textSecondary, fontWeight: '800', fontSize: 16 }}>Home</ThemedText>
                 </Pressable>
               </RNAnimated.View>
-            </View>
+            </RNAnimated.View>
           </View>
         ) : null}
 
         {isLeavingToHome ? (
-          <View pointerEvents="auto" style={quizStyles.loadingOverlayStrong}>
-            <View style={quizStyles.loadingCard}>
-              <ActivityIndicator size="large" color="#FF9F1C" />
-              <ThemedText style={quizStyles.loadingTitle}>Returning home...</ThemedText>
-            </View>
-          </View>
+          <SplashTransition overlay />
         ) : null}
       </ThemedView>
     );
@@ -1579,6 +2564,18 @@ export default function QuizScreen() {
 
   return (
     <ThemedView style={quizStyles.container}>
+      <UnlockRewardFeedback
+        reward={progressionReward}
+        opacity={unlockToastOpacity}
+        translateY={unlockToastTranslateY}
+        scale={unlockToastScale}
+      />
+      {wrongToast ? (
+        <View pointerEvents="none" style={quizStyles.wrongToast}>
+          <MaterialIcons name="close" size={15} color="#FFFFFF" />
+          <ThemedText style={quizStyles.wrongToastText}>{wrongToast}</ThemedText>
+        </View>
+      ) : null}
       {showTimesUp && !showGameOver ? (
         <RNAnimated.View
           pointerEvents="none"
@@ -1598,7 +2595,7 @@ export default function QuizScreen() {
           ]}
         >
           <ThemedText type="default" style={quizStyles.timeoutMessageText}>
-            ⏰ Time's Up!
+            Time&apos;s Up!
           </ThemedText>
         </RNAnimated.View>
       ) : null}
@@ -1619,17 +2616,20 @@ export default function QuizScreen() {
       )}
             {/* Game Over Modal */}
             {showGameOver && (
-              <View style={{
+              <View onTouchEnd={completeGameOverReveal} style={{
                 position: 'absolute',
                 top: 0,
                 left: 0,
                 right: 0,
                 bottom: 0,
-                backgroundColor: 'rgba(0,0,0,0.48)',
+                backgroundColor: 'transparent',
                 alignItems: 'center',
                 justifyContent: 'center',
                 zIndex: 2000,
               }}>
+                <RNAnimated.View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: modalOpacity, backgroundColor: 'rgba(12,16,24,0.42)' }}>
+                  <BlurView intensity={16} tint="dark" style={{ flex: 1 }} />
+                </RNAnimated.View>
                 {/* Top blurred divider line */}
                 <RNAnimated.View style={{
                   opacity: scoreOpacity,
@@ -1641,73 +2641,118 @@ export default function QuizScreen() {
                   ...(typeof window !== 'undefined' ? { filter: 'blur(1.5px)', WebkitFilter: 'blur(1.5px)' } : {})
                 }} />
                 <Animated.View style={{
-                  backgroundColor: 'rgba(255,255,255,0.97)',
+                  backgroundColor: 'rgba(255,246,232,0.97)',
                   borderRadius: 18,
                   padding: 18,
                   maxWidth: 340,
                   width: '96%',
+                  maxHeight: '94vh',
                   alignItems: 'center',
                   boxShadow: '0 6px 16px rgba(0,0,0,0.15)',
                   elevation: 10,
                   position: 'relative',
                   zIndex: 3000,
                   gap: 8,
-                  transform: [{ scale: modalScale }],
+                  opacity: modalOpacity,
+                  transform: [{ translateY: modalTranslateY }, { scale: modalScale }],
                 }}>
-                  <ThemedText style={{ fontSize: 24, fontWeight: '700', color: '#B23B3B', marginBottom: 18, textAlign: 'center', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <ThemedText style={{ fontSize: 22, fontWeight: '800', color: DoggyDexTheme.colors.text, marginBottom: 4, textAlign: 'center', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                     <MaterialIcons
                       name="heart-broken"
-                      size={44}
+                      size={34}
                       color={DOGGYDEX_CORAL_RED}
-                      style={{ marginRight: 8, verticalAlign: 'middle' }}
+                      style={{ marginRight: 6, verticalAlign: 'middle' }}
                     />
-                    <span style={{ display: 'inline-block', marginTop: 10 }}>Out of Lives!</span>
+                    <span style={{ display: 'inline-block', marginTop: 6 }}>Out of Lives!</span>
                   </ThemedText>
-                  {/* Stacked stat format */}
-                  <View style={{ width: '100%', alignItems: 'center', marginBottom: 20 }}>
-                    <RNAnimated.View style={{ opacity: scoreOpacity, width: '100%', marginBottom: 0 }}>
-                      <ThemedText style={{ fontSize: 23, color: '#333', textAlign: 'center', fontWeight: '700', letterSpacing: 0.5, marginBottom: 5 }}>
-                        Score
+                  <RNAnimated.View style={{
+                    opacity: scoreOpacity,
+                    transform: [{ scale: scoreScale }],
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 12,
+                  }}>
+                    <ThemedText style={{ fontWeight: '900', color: DoggyDexTheme.colors.primary, fontSize: '3.35rem', textAlign: 'center', letterSpacing: 1.4, padding: 4, borderRadius: 12, textShadow: '0 1.5px 8px #FFD58088' }}>
+                      <span style={{ textShadow: '0 0 8px rgba(255,165,0,0.3)', fontSize: '3.35rem' }}>{displayedFinalScore}</span>
+                    </ThemedText>
+                    <ThemedText style={{ color: DoggyDexTheme.colors.textSecondary, fontSize: 13, lineHeight: 17, fontWeight: '800', letterSpacing: 0.8, textTransform: 'uppercase' }}>
+                      Final Score
+                    </ThemedText>
+                  </RNAnimated.View>
+                  {isNewHighScore ? (
+                    <RNAnimated.View style={{
+                      opacity: highScoreOpacity,
+                      transform: [{ scale: highScoreScale }],
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      backgroundColor: '#FFF4D6',
+                      borderRadius: 999,
+                      borderWidth: 1,
+                      borderColor: DoggyDexTheme.colors.gold,
+                      paddingVertical: 7,
+                      paddingHorizontal: 13,
+                      marginBottom: 12,
+                    }}>
+                      <MaterialIcons name="emoji-events" size={19} color={DoggyDexTheme.colors.gold} />
+                      <ThemedText style={{ color: DoggyDexTheme.colors.text, fontSize: 13, lineHeight: 17, fontWeight: '900' }}>
+                        New High Score!
                       </ThemedText>
-                      <RNAnimated.View style={{
-                        transform: [{ scale: scoreScale }],
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginBottom: 0,
-                      }}>
-                        <ThemedText style={{ fontWeight: '900', color: '#FF9F1C', fontSize: '3.5rem', textAlign: 'center', letterSpacing: 1.6, padding: 8, borderRadius: 12, textShadow: '0 1.5px 8px #FFD58088' }}>
-                          <span style={{ textShadow: '0 0 8px rgba(255,165,0,0.3)', fontSize: '3.5rem' }}>{score}</span>
+                    </RNAnimated.View>
+                  ) : null}
+                  {/* Stacked stat format */}
+                  <View style={{ width: '100%', backgroundColor: DoggyDexTheme.colors.surface, borderRadius: 18, borderWidth: 1, borderColor: DoggyDexTheme.colors.border, paddingVertical: 14, paddingHorizontal: 14, marginBottom: 8, gap: 12 }}>
+                    <RNAnimated.View style={{ opacity: scoreOpacity, width: '100%', marginBottom: 0 }}>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                          <MaterialIcons name="star" size={20} color={DoggyDexTheme.colors.gold} />
+                          <ThemedText style={{ fontSize: 16, color: DoggyDexTheme.colors.textSecondary, fontWeight: '800' }}>
+                            Score
+                          </ThemedText>
+                        </View>
+                        <ThemedText style={{ fontWeight: '900', color: DoggyDexTheme.colors.primary, fontSize: 23, textAlign: 'center', letterSpacing: 1.1 }}>
+                          {score}
                         </ThemedText>
-                      </RNAnimated.View>
-                      {/* Divider fades in with stat */}
-                      <RNAnimated.View style={{ opacity: scoreOpacity, width: '80%', height: 1, backgroundColor: 'rgba(0,0,0,0.08)', alignSelf: 'center', marginVertical: 8 }} />
+                      </View>
                     </RNAnimated.View>
                     <RNAnimated.View style={{ opacity: bestStreakOpacity, width: '100%', marginBottom: 0 }}>
-                      <ThemedText style={{ fontSize: 22, color: '#333', textAlign: 'center', fontWeight: '600', letterSpacing: 0.5, flexDirection: 'row', alignItems: 'center', display: 'flex', justifyContent: 'center', marginTop: 4 }}>
-                        <MaterialIcons name="whatshot" size={30} color="#FF9F1C" style={{ marginRight: 8, verticalAlign: 'middle' }} />
-                        Best Streak
-                      </ThemedText>
-                      <ThemedText style={{ fontWeight: '600', color: isNewHighScore ? '#FF9F1C' : '#444', fontSize: 26, textAlign: 'center', letterSpacing: 1.2, padding: 6, borderRadius: 10, textShadow: isNewHighScore ? '0 1.5px 8px #FFD58088' : undefined }}>
-                        {bestStreak}
-                      </ThemedText>
-                      {/* Divider fades in with stat */}
-                      <RNAnimated.View style={{ opacity: bestStreakOpacity, width: '80%', height: 1, backgroundColor: 'rgba(0,0,0,0.08)', alignSelf: 'center', marginVertical: 3 }} />
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                          <MaterialIcons name="whatshot" size={20} color={DoggyDexTheme.colors.primary} />
+                          <ThemedText style={{ fontSize: 16, color: DoggyDexTheme.colors.textSecondary, fontWeight: '800' }}>
+                            Best streak
+                          </ThemedText>
+                        </View>
+                        <ThemedText style={{ fontWeight: '800', color: DoggyDexTheme.colors.text, fontSize: 21, textAlign: 'center', letterSpacing: 1.1 }}>
+                          {bestStreak}
+                        </ThemedText>
+                      </View>
                     </RNAnimated.View>
                     <RNAnimated.View style={{ opacity: highScoreOpacity, width: '100%', marginBottom: 0 }}>
-                      <ThemedText style={{ fontSize: 22, color: '#333', textAlign: 'center', fontWeight: '600', letterSpacing: 0.5, flexDirection: 'row', alignItems: 'center', display: 'flex', justifyContent: 'center', marginTop: 4 }}>
-                        <MaterialIcons name="emoji-events" size={30} color="#FFD700" style={{ marginRight: 8, verticalAlign: 'middle' }} />
-                        High Score
-                      </ThemedText>
-                      <ThemedText style={{ fontWeight: '600', color: isNewHighScore ? '#FF9F1C' : '#444', fontSize: 26, textAlign: 'center', letterSpacing: 1.2, padding: 6, borderRadius: 10, textShadow: isNewHighScore ? '0 1.5px 8px #FFD58088' : undefined }}>
-                        {highScore}
-                        {isNewHighScore && (
-                          <span style={{ color: '#FF9F1C', fontWeight: 700, animation: 'flashHighScore 1s steps(2, start) infinite', WebkitAnimation: 'flashHighScore 1s steps(2, start) infinite', fontSize: 16, marginLeft: 8 }}>
-                            New!
-                          </span>
-                        )}
-                      </ThemedText>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                          <MaterialIcons name="emoji-events" size={20} color={DoggyDexTheme.colors.gold} />
+                          <ThemedText style={{ fontSize: 16, color: DoggyDexTheme.colors.textSecondary, fontWeight: '800' }}>
+                            High score
+                          </ThemedText>
+                        </View>
+                        <ThemedText style={{ fontWeight: '800', color: isNewHighScore ? DoggyDexTheme.colors.gold : DoggyDexTheme.colors.text, fontSize: 21, textAlign: 'center', letterSpacing: 1.1 }}>
+                          {highScore}
+                        </ThemedText>
+                      </View>
                     </RNAnimated.View>
                   </View>
+                  <GameOverRewardFlow
+                    visible={gameOverRewardVisible}
+                    score={score}
+                    totalXp={sessionXpEarned}
+                    xpStartTotal={sessionXpRange.startTotalXP}
+                    xpEndTotal={sessionXpRange.endTotalXP}
+                    events={sessionRewardEvents}
+                    skipSignal={gameOverSkipSignal}
+                    onFinished={finishGameOverRewardFlow}
+                  />
                   {/* Flash animation keyframes for web */}
                   {typeof window !== 'undefined' && (
                     <style>{`
@@ -1719,45 +2764,74 @@ export default function QuizScreen() {
                   )}
                   <Animated.View style={{
                     flexDirection: 'row',
-                    gap: 16,
+                    flexWrap: 'wrap',
+                    gap: 10,
                     justifyContent: 'center',
                     width: '100%',
                     opacity: buttonsOpacity,
-                  }}>
+                  }}
+                  pointerEvents={gameOverActionsReady ? 'auto' : 'none'}
+                  >
                     <Pressable
                       onPress={handlePlayAgain}
                       style={({ hovered, pressed }) => ([
                         {
                           backgroundColor: '#FF9F1C',
-                          borderRadius: 8,
-                          paddingVertical: 10,
-                          paddingHorizontal: 22,
-                          minWidth: 80,
+                          borderRadius: 12,
+                          paddingVertical: 13,
+                          paddingHorizontal: 24,
+                          minWidth: 138,
                           alignItems: 'center',
-                          boxShadow: hovered ? '0 0 16px #FFD580' : 'none',
+                          border: `1px solid ${DoggyDexTheme.colors.gold}`,
+                          boxShadow: hovered ? '0 0 16px #FFD580' : '0 8px 18px rgba(255,159,28,0.24)',
                           transform: pressed
                             ? [{ scale: 0.97 }]
                             : hovered
-                              ? [{ scale: 1.06 }]
+                              ? [{ scale: 1.04 }]
                               : undefined,
                           transition: 'background 0.2s, box-shadow 0.2s, transform 0.1s',
                         },
                       ])}
                     >
-                      <ThemedText style={{ color: '#fff', fontWeight: '700', fontSize: 16, letterSpacing: 1 }}>Play Again</ThemedText>
+                      <ThemedText style={{ color: '#fff', fontWeight: '900', fontSize: 16, letterSpacing: 0.5 }}>Play Again</ThemedText>
                     </Pressable>
+                    {sessionRewardEvents.some((event) => event.type === 'breed' || event.type === 'coat') ? (
+                      <Pressable
+                        onPress={viewDoggyDexRewards}
+                        style={({ hovered, pressed }) => ([
+                          {
+                            backgroundColor: hovered ? '#FFF6E8' : DoggyDexTheme.colors.surface,
+                            borderRadius: 12,
+                            paddingVertical: 12,
+                            paddingHorizontal: 18,
+                            minWidth: 122,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexDirection: 'row',
+                            gap: 6,
+                            border: `1px solid ${DoggyDexTheme.colors.border}`,
+                            boxShadow: 'none',
+                            transform: pressed ? [{ scale: 0.97 }] : undefined,
+                            transition: 'background 0.2s, box-shadow 0.2s, transform 0.1s',
+                          },
+                        ])}
+                      >
+                        <MaterialIcons name="menu-book" size={18} color={DoggyDexTheme.colors.primary} />
+                        <ThemedText style={{ color: DoggyDexTheme.colors.text, fontWeight: '800', fontSize: 15, letterSpacing: 0.4 }}>DoggyDex</ThemedText>
+                      </Pressable>
+                    ) : null}
                     <Pressable
                       onPress={goHomeWithSpinner}
                       style={({ hovered }) => ([
                         {
-                          backgroundColor: hovered ? '#d1d5db' : '#E5E7EB',
-                          borderRadius: 8,
-                          paddingVertical: 10,
+                          backgroundColor: hovered ? '#FFF6E8' : DoggyDexTheme.colors.surface,
+                          borderRadius: 12,
+                          paddingVertical: 12,
                           paddingHorizontal: 22,
                           minWidth: 120,
                           alignItems: 'center',
-                          border: '2px solid #d1d5db',
-                          boxShadow: '0 2px 12px #B23B3B22',
+                          border: '1px solid transparent',
+                          boxShadow: 'none',
                           transition: 'background 0.2s, box-shadow 0.2s',
                           position: 'relative',
                           zIndex: 1,
@@ -1768,7 +2842,7 @@ export default function QuizScreen() {
                       <ThemedText
                         style={{ color: '#444', fontWeight: '700', fontSize: 16, letterSpacing: 1, transition: 'color 0.2s' }}
                       >
-                        Main Menu
+                        Home
                       </ThemedText>
                     </Pressable>
                   </Animated.View>
@@ -1778,20 +2852,16 @@ export default function QuizScreen() {
       <View
         style={{
           ...quizStyles.centerGradientOverlay,
-          background: 'linear-gradient(180deg, #fff 0%, #f8fafc 100%)',
-          filter: (showTimesUp || timer === 0) ? 'blur(32px)' : 'blur(2.5px)',
-          WebkitFilter: (showTimesUp || timer === 0) ? 'blur(32px)' : 'blur(2.5px)',
-          opacity: (showTimesUp || timer === 0) ? 0.65 : 1,
+          background: 'transparent',
+          opacity: 0,
           transition: 'filter 0.3s, -webkit-filter 0.3s, background 0.3s, opacity 0.3s',
         }}
       />
       <View
         style={{
           ...quizStyles.grassBackground,
-          background: '#fff',
-          filter: (showTimesUp || timer === 0) ? 'blur(24px)' : 'blur(0px)',
-          WebkitFilter: (showTimesUp || timer === 0) ? 'blur(24px)' : 'blur(0px)',
-          opacity: (showTimesUp || timer === 0) ? 0.7 : 1,
+          background: 'transparent',
+          opacity: 0,
           transition: 'filter 0.3s, -webkit-filter 0.3s, background 0.3s, opacity 0.3s',
         }}
       />
@@ -1806,6 +2876,7 @@ export default function QuizScreen() {
         borderBottomRightRadius: 0,
         position: 'relative',
         overflow: 'visible',
+        transform: [{ translateY: -24 }],
       }]}> 
         {/* Remove global +1 animation */}
         <View style={quizStyles.scoreHeartsRow}>
@@ -1822,34 +2893,35 @@ export default function QuizScreen() {
                   }
                 : {};
               return (
-                <ThemedText
+                <LifePawIcon
                   key={i}
+                  active={lives > i}
+                  color={heartPulse === i && heartPulseColor ? heartPulseColor : undefined}
                   style={
                     heartPulse === i && heartPulseColor
-                      ? [quizStyles.heartIcon(lives > i), { color: heartPulseColor, transform: [{ scale: 1.25 }], ...shakeAnim }]
-                      : quizStyles.heartIcon(lives > i)
+                      ? { transform: [{ scale: 1.25 }], ...shakeAnim }
+                      : shakeAnim
                   }
-                >
-                  ♥
-                </ThemedText>
+                />
               );
             })}
           </View>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', display: 'flex', position: 'relative' }}>
             <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 0 }}>
               <span style={{ fontSize: 21, color: 'black', fontWeight: 600, fontFamily: 'inherit', verticalAlign: 'middle', marginBottom: 0 }}>{'Score'}</span>
-              <span style={{
-                fontSize: 36,
-                color: scorePulse ? DOGGYDEX_ORANGE : 'black',
-                fontWeight: 800,
-                fontFamily: 'inherit',
-                verticalAlign: 'middle',
-                marginTop: 0,
-                background: 'none',
-                backgroundColor: 'transparent',
-                transition: 'color 0.25s cubic-bezier(0.4,1,0.6,1)',
-                textShadow: scorePulse ? `0 0 12px ${DOGGYDEX_ORANGE}, 0 0 4px #fff` : 'none',
-              }}>{score}</span>
+              <RNAnimated.View style={{ position: 'relative', transform: [{ scale: scorePulseAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.2] }) }] }}>
+                <RNAnimated.View pointerEvents="none" style={[quizStyles.webScoreGlow, { opacity: scorePulseAnim }]} />
+                <span style={{
+                  fontSize: 36,
+                  color: 'black',
+                  fontWeight: 800,
+                  fontFamily: 'inherit',
+                  verticalAlign: 'middle',
+                  marginTop: 0,
+                  background: 'none',
+                  backgroundColor: 'transparent',
+                }}>{score}</span>
+              </RNAnimated.View>
               {/* Flying +1 animation */}
               {showPlusOne && (
                 <span
@@ -1875,41 +2947,58 @@ export default function QuizScreen() {
                     ...plusOneStyle,
                   }}
                 >
-                  +1
+                  +10 XP
                 </span>
               )}
             </span>
           </View>
-          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 2 }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              gap: 4,
+              minWidth: 88,
+              padding: timer <= 9 ? '5px 8px' : 0,
+              borderRadius: 12,
+              background: timer <= 9 ? '#2B0710' : 'transparent',
+              border: timer <= 9 ? `2px solid ${DOGGYDEX_CORAL_RED}` : '2px solid transparent',
+              boxShadow: timer <= 9
+                ? '0 0 22px rgba(215,38,61,0.75), inset 0 0 8px rgba(255,255,255,0.22)'
+                : 'none',
+              animation: timer <= 9 ? 'timer-chip-panic 0.32s linear infinite alternate' : undefined,
+            }}
+          >
             <span
               style={{
-                fontSize: timer <= 9 ? 31 : 22,
-                lineHeight: timer <= 9 ? '34px' : '24px',
+                fontSize: timer <= 9 ? 35 : 22,
+                lineHeight: timer <= 9 ? '38px' : '24px',
                 verticalAlign: 'middle',
                 transition: 'font-size 0.2s, line-height 0.2s',
                 marginRight: 2,
                 display: 'inline-block',
               }}
             >
-              ⏰
+              <MaterialIcons name="timer" size={timer <= 9 ? 31 : 25} color={timer <= 9 ? '#FFFFFF' : '#FFA51F'} />
             </span>
             <span
               style={{
-                color: timer <= 9 ? DOGGYDEX_CORAL_RED : DOGGYDEX_ORANGE,
-                fontWeight: timer <= 9 ? 700 : 300,
-                fontSize: timer <= 9 ? 32 : 19,
-                letterSpacing: 1,
+                color: timer <= 9 ? '#FFFFFF' : DOGGYDEX_ORANGE,
+                fontWeight: timer <= 9 ? 950 : 300,
+                fontSize: timer <= 9 ? 40 : 19,
+                letterSpacing: timer <= 9 ? 1.8 : 1,
                 transition: 'transform 0.3s, color 0.2s, font-size 0.2s, font-weight 0.2s',
-                transform: pulse ? (timer <= 9 ? 'scale(1.18) rotate(-2deg)' : 'scale(1.08)') : 'scale(1)',
+                transform: pulse ? (timer <= 9 ? 'scale(1.24) rotate(-3deg)' : 'scale(1.08)') : 'scale(1)',
                 textShadow: timer <= 9
-                  ? `0 0 16px #D7263D, 0 0 6px #fff`
+                  ? `0 0 20px ${DOGGYDEX_CORAL_RED}, 0 0 8px #fff, 0 2px 0 #000`
                   : `0 0 8px ${DOGGYDEX_ORANGE}, 0 0 2px #fff`,
                 fontFamily: 'inherit',
                 verticalAlign: 'middle',
                 display: 'inline-block',
-                WebkitTextStroke: '0.5px black',
-                textStroke: '0.5px black',
-                animation: timer <= 9 ? 'shake-timer 0.18s linear infinite alternate' : undefined,
+                WebkitTextStroke: timer <= 9 ? '1px #000' : '0.5px black',
+                textStroke: timer <= 9 ? '1px #000' : '0.5px black',
+                animation: timer <= 9 ? 'shake-timer 0.14s linear infinite alternate' : undefined,
               }}
             >
               {timer}
@@ -1917,8 +3006,12 @@ export default function QuizScreen() {
             {/* Add shake animation for alarming effect */}
             <style>{`
               @keyframes shake-timer {
-                0% { transform: scale(1.18) rotate(-2deg); }
-                100% { transform: scale(1.18) rotate(2deg); }
+                0% { transform: scale(1.22) rotate(-3deg); }
+                100% { transform: scale(1.22) rotate(3deg); }
+              }
+              @keyframes timer-chip-panic {
+                0% { transform: translateX(-1px); }
+                100% { transform: translateX(1px); }
               }
             `}</style>
           </div>
@@ -1960,13 +3053,13 @@ export default function QuizScreen() {
         <View style={[quizStyles.scoreHeartsContainer, {
           marginTop: 0,
           marginBottom: 0,
-          paddingTop: 0,
           width: 440,
           paddingTop: 0,
           borderTopLeftRadius: 0,
           borderTopRightRadius: 0,
           backgroundColor: quizStyles.scoreHeartsContainer.backgroundColor,
           overflow: 'hidden',
+          transform: [{ translateY: -24 }],
         }]}> 
           {shouldBlurContainerOnTimeout ? (
             <View pointerEvents="none" style={quizStyles.timerBlurOverlay}>
@@ -1974,6 +3067,14 @@ export default function QuizScreen() {
             </View>
           ) : null}
 
+          <RNAnimated.View
+            style={{
+              opacity: quizEntranceOpacity,
+              transform: [{ translateY: quizEntranceTranslateY }],
+              width: '100%',
+              alignItems: 'center',
+            }}
+          >
           <Animated.View style={[quizStyles.grid, dogGridStyle, { opacity: showGameOver ? 1 : (timer === 0 ? 0.45 : 1), transition: 'opacity 0.3s' }]}> 
             {choices.map((c, idx) => {
               // Only show correct styling/label if the selected card is the correct one
@@ -1987,10 +3088,20 @@ export default function QuizScreen() {
               // Show '+1' if this card is the correct one and just unlocked AND is_unlocked is true
               const showPlusOneOnCard = newUnlock === c.id && isCorrect && newCoatActuallyUnlocked;
               return (
-                <Pressable
+                <RNAnimated.View
                   key={c.id}
+                  style={[
+                    quizStyles.cardSlot,
+                    {
+                      opacity: cardEntranceAnims[idx]?.opacity,
+                      transform: [{ translateY: cardEntranceAnims[idx]?.translateY || 0 }],
+                    },
+                  ]}
+                >
+                <Pressable
                   style={({ hovered, pressed }) => [
                     quizStyles.card,
+                    quizStyles.cardFill,
                     hovered && quizStyles.cardHover,
                     pressed && quizStyles.cardPressed,
                     isCorrect && quizStyles.correctReveal,
@@ -2003,7 +3114,7 @@ export default function QuizScreen() {
                   disabled={isDisabled}
                 >
                   <Image
-                    source={typeof c.uri === 'string' ? { uri: c.uri } : c.uri}
+                    source={getQuizImageSource(c)}
                     style={quizStyles.image}
                     contentFit="cover"
                     blurRadius={isWrong ? 7 : 0}
@@ -2059,9 +3170,11 @@ export default function QuizScreen() {
                     </ThemedText>
                   )}
                 </Pressable>
+                </RNAnimated.View>
               );
             })}
           </Animated.View>
+          </RNAnimated.View>
           <View style={{ width: '100%', alignItems: 'center', marginTop: -2, paddingBottom: 14 }}>
             <Pressable
               onPress={() => setShowExitConfirm(true)}
@@ -2096,7 +3209,7 @@ export default function QuizScreen() {
                   zIndex: 1000,
                 }}>
                   <View style={{
-                    backgroundColor: 'rgba(255,255,255,0.97)',
+                    backgroundColor: 'rgba(255,246,232,0.97)',
                     borderRadius: 18,
                     padding: 28,
                     maxWidth: 340,
@@ -2171,12 +3284,7 @@ export default function QuizScreen() {
       ) : null}
 
       {isLeavingToHome ? (
-        <View pointerEvents="auto" style={quizStyles.loadingOverlayStrong}>
-          <View style={quizStyles.loadingCard}>
-            <ActivityIndicator size="large" color="#FF9F1C" />
-            <ThemedText style={quizStyles.loadingTitle}>Returning home...</ThemedText>
-          </View>
-        </View>
+        <SplashTransition overlay />
       ) : null}
 
       {/* Exit Quiz button moved inside dog images container above */}

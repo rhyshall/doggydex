@@ -1,3 +1,4 @@
+import { DoggyDexTheme } from '@/constants/theme';
 import { Platform, View } from 'react-native';
 let BlurView;
 if (Platform.OS !== 'web') {
@@ -11,16 +12,13 @@ export function FrostedGlassCard({ style, children }) {
       <View
         style={[
           {
-            backgroundColor: 'rgba(255,255,255,0.70)',
-            borderRadius: 26,
+            backgroundColor: 'rgba(255,246,232,0.96)',
+            borderRadius: DoggyDexTheme.radii.large,
             padding: 32,
-            boxShadow: '0 10px 32px 0 #0004',
-            shadowColor: '#000',
-            shadowOpacity: 0.25,
-            shadowRadius: 10,
-            elevation: 8,
-            backdropFilter: 'blur(18px)',
-            WebkitBackdropFilter: 'blur(18px)',
+            boxShadow: '0 8px 24px rgba(47,37,31,0.20)',
+            ...DoggyDexTheme.shadow,
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
             width: 440,
             maxWidth: '95%',
             position: 'relative',
@@ -37,9 +35,9 @@ export function FrostedGlassCard({ style, children }) {
             left: 0,
             width: '100%',
             height: '100%',
-            background: 'linear-gradient(to bottom, rgba(255,255,255,0.18) 0%, rgba(200,200,200,0.10) 60%, rgba(180,180,180,0.18) 100%)',
+            background: 'linear-gradient(to bottom, rgba(255,253,247,0.22), rgba(255,246,232,0.05))',
             zIndex: 1,
-            borderRadius: 26,
+            borderRadius: DoggyDexTheme.radii.large,
           }}
         />
         <div style={{ position: 'relative', zIndex: 2 }}>{children}</div>
@@ -52,10 +50,10 @@ export function FrostedGlassCard({ style, children }) {
         tint="light"
         style={[
           {
-            backgroundColor: 'rgba(255,255,255,0.45)',
-            borderRadius: 20,
+            backgroundColor: 'rgba(255,246,232,0.94)',
+            borderRadius: DoggyDexTheme.radii.large,
             padding: 32,
-            boxShadow: '0 10px 32px 0 #0002',
+            ...DoggyDexTheme.shadow,
             width: 440,
             maxWidth: '95%',
             position: 'relative',
@@ -72,7 +70,7 @@ export function FrostedGlassCard({ style, children }) {
             left: 0,
             width: '100%',
             height: '100%',
-            borderRadius: 20,
+            borderRadius: DoggyDexTheme.radii.large,
             zIndex: 1,
             backgroundColor: 'transparent',
           }}

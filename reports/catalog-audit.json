@@ -1,0 +1,18 @@
+{
+  "generatedAt": "2026-07-12T22:34:45.693Z",
+  "summary": {
+    "localBreeds": 132,
+    "firestoreBreeds": 132,
+    "localCoats": 524,
+    "firestoreCoats": 524
+  },
+  "localBreedsMissingInFirestore": [],
+  "firestoreBreedsMissingLocally": [],
+  "localCoatsMissingInFirestore": [],
+  "firestoreCoatsMissingLocally": [],
+  "fieldMismatches": [],
+  "duplicateLocalBreedIds": [],
+  "duplicateLocalCoatDocIds": [],
+  "duplicateLocalCoatIds": [],
+  "invalidLocalCoatCounts": []
+}

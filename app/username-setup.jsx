@@ -1,4 +1,5 @@
 import { DoggyDexHeader } from '@/components/doggydex-header';
+import { SplashTransition } from '@/components/splash-transition';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { auth } from '@/lib/firebase-services';
@@ -11,12 +12,13 @@ import {
     USERNAME_TAKEN_ERROR_CODE,
 } from '@/lib/user-store';
 import { commonStyles } from '@/styles/common';
+import { DoggyDexTheme } from '@/constants/theme';
 import { useRouter } from 'expo-router';
 import { onAuthStateChanged, updateProfile } from 'firebase/auth';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
-const PAW_FOCUS_COLOR = '#FF8C66';
+const PAW_FOCUS_COLOR = DoggyDexTheme.colors.primary;
 const USERNAME_MIN_LENGTH = 3;
 const USERNAME_MAX_LENGTH = 20;
 const APP_FONT_FAMILY = Platform.select({
@@ -31,7 +33,11 @@ function normalizeUsername(value) {
 }
 
 function sanitizeUsernameInput(value) {
-  return value.replace(/\s+/g, '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, USERNAME_MAX_LENGTH);
+  return String(value || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, USERNAME_MAX_LENGTH);
+}
+
+function sanitizeUsernameDraft(value) {
+  return String(value || '').replace(/[^a-zA-Z0-9_ ]/g, '').slice(0, USERNAME_MAX_LENGTH);
 }
 
 function getUsernameSaveErrorMessage(saveError) {
@@ -74,11 +80,19 @@ export default function UsernameSetupScreen() {
   const [errorMessage, setErrorMessage] = useState(null);
   const [usernameAvailability, setUsernameAvailability] = useState('idle');
   const [hasReachedMinLengthOnce, setHasReachedMinLengthOnce] = useState(false);
+  const authCheckIdRef = useRef(0);
 
   useEffect(() => {
     let isActive = true;
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      const authCheckId = authCheckIdRef.current + 1;
+      authCheckIdRef.current = authCheckId;
+      const isCurrentAuthCheck = () =>
+        isActive
+        && authCheckIdRef.current === authCheckId
+        && auth.currentUser?.uid === firebaseUser?.uid;
+
       if (!isActive) {
         return;
       }
@@ -94,8 +108,16 @@ export default function UsernameSetupScreen() {
         console.warn('Failed to sync user profile', profileError);
       }
 
+      if (!isCurrentAuthCheck()) {
+        return;
+      }
+
       try {
         const storedUsername = await getUserProfileUsername(firebaseUser.uid);
+
+        if (!isCurrentAuthCheck()) {
+          return;
+        }
 
         if (hasUsername(storedUsername)) {
           router.replace('/');
@@ -103,31 +125,45 @@ export default function UsernameSetupScreen() {
         }
       } catch (usernameCheckError) {
         console.warn('Failed to check username requirement', usernameCheckError);
+        if (isCurrentAuthCheck()) {
+          router.replace('/');
+        }
+        return;
       }
 
-      setCheckedAuth(true);
+      if (isCurrentAuthCheck()) {
+        setCheckedAuth(true);
+      }
     });
 
     return () => {
       isActive = false;
+      authCheckIdRef.current += 1;
       unsubscribe();
     };
   }, [router]);
 
   function handleUsernameChange(value) {
-    const sanitizedUsername = sanitizeUsernameInput(value);
+    const rawValue = String(value || '');
+    const draftValue = /^\s+$/.test(rawValue) && username
+      ? `${username}${rawValue}`
+      : rawValue;
+    const sanitizedUsername = sanitizeUsernameDraft(draftValue);
 
-    setErrorMessage(null);
+    setErrorMessage(/\s/.test(sanitizedUsername) ? 'Username cannot contain spaces.' : null);
     setUsername(sanitizedUsername);
 
-    if (!hasReachedMinLengthOnce && sanitizedUsername.length >= USERNAME_MIN_LENGTH) {
+    if (!hasReachedMinLengthOnce && sanitizeUsernameInput(sanitizedUsername).length >= USERNAME_MIN_LENGTH) {
       setHasReachedMinLengthOnce(true);
     }
   }
 
-  const normalizedUsername = normalizeUsername(username);
+  const normalizedUsername = normalizeUsername(sanitizeUsernameInput(username));
+  const usernameHasSpaces = /\s/.test(username);
   const isValidUsername =
-    hasUsername(normalizedUsername) && normalizedUsername.length >= USERNAME_MIN_LENGTH;
+    !usernameHasSpaces
+    && hasUsername(normalizedUsername)
+    && normalizedUsername.length >= USERNAME_MIN_LENGTH;
 
   useEffect(() => {
     if (!checkedAuth) {
@@ -183,7 +219,7 @@ export default function UsernameSetupScreen() {
       return;
     }
 
-    const normalizedUsername = normalizeUsername(username);
+    const normalizedUsername = normalizeUsername(sanitizeUsernameInput(username));
 
     if (!hasUsername(normalizedUsername)) {
       setErrorMessage('Enter a username to continue');
@@ -218,13 +254,7 @@ export default function UsernameSetupScreen() {
   }
 
   if (!checkedAuth) {
-    return (
-      <ThemedView style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <ThemedText style={styles.loadingText}>Checking sign-in...</ThemedText>
-        </View>
-      </ThemedView>
-    );
+    return <SplashTransition />;
   }
 
   const canContinue = !isSaving && isValidUsername && usernameAvailability === 'available';
@@ -233,10 +263,10 @@ export default function UsernameSetupScreen() {
     <ThemedView style={styles.container}>
       <View pointerEvents="none" style={styles.screenOverlay} />
       <View style={styles.gateContainer}>
-        <DoggyDexHeader style={{ marginBottom: 0 }} />
+        <DoggyDexHeader style={styles.authLogo} />
 
         <ThemedText style={styles.gateText}>Create your username</ThemedText>
-        <ThemedText style={styles.subtitleText}>This is how other players will see you.</ThemedText>
+        <ThemedText style={styles.subtitleText}>This is how other players will see you</ThemedText>
 
         <TextInput
           value={username}
@@ -247,7 +277,11 @@ export default function UsernameSetupScreen() {
           autoCorrect={false}
           editable={!isSaving}
           onFocus={() => setFocusedField('username')}
-          onBlur={() => setFocusedField((prev) => (prev === 'username' ? null : prev))}
+          onBlur={() => {
+            setUsername((current) => sanitizeUsernameInput(current));
+            setErrorMessage(null);
+            setFocusedField((prev) => (prev === 'username' ? null : prev));
+          }}
           style={[styles.input, focusedField === 'username' && styles.inputFocused]}
         />
 
@@ -299,6 +333,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     paddingHorizontal: 14,
     paddingTop: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   loadingContainer: {
     flex: 1,
@@ -312,17 +348,22 @@ const styles = StyleSheet.create({
   },
   screenOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.35)',
+    backgroundColor: 'transparent',
   },
   gateContainer: {
-    flex: 1,
+    flexGrow: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    transform: [{ translateY: -60 }],
     width: '100%',
     maxWidth: 460,
     alignSelf: 'center',
+    borderRadius: DoggyDexTheme.radii.large,
+    backgroundColor: 'rgba(255,246,232,0.96)',
+    paddingVertical: 34,
+    paddingHorizontal: 28,
+    ...DoggyDexTheme.shadow,
   },
+  authLogo: { marginBottom: 18, transform: [{ scale: 1.18 }] },
   titleText: {
     lineHeight: 30,
     flexShrink: 1,
@@ -355,7 +396,7 @@ const styles = StyleSheet.create({
     marginTop: 28,
     marginBottom: 8,
     textAlign: 'center',
-    color: '#F28A1E',
+    color: DoggyDexTheme.colors.primary,
     textShadowColor: 'rgba(47,34,20,0.32)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
@@ -368,7 +409,7 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 340,
     marginBottom: 16,
-    color: '#F8F2E8',
+    color: DoggyDexTheme.colors.textSecondary,
     fontSize: 16,
     lineHeight: 22,
     fontWeight: '600',
@@ -382,10 +423,10 @@ const styles = StyleSheet.create({
     fontFamily: APP_FONT_FAMILY,
     width: '100%',
     maxWidth: 340,
-    borderRadius: 10,
+    borderRadius: DoggyDexTheme.radii.small,
     borderWidth: 1,
-    borderColor: '#687076',
-    backgroundColor: '#fff',
+    borderColor: DoggyDexTheme.colors.border,
+    backgroundColor: DoggyDexTheme.colors.surface,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 16,
@@ -414,8 +455,8 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 340,
     marginTop: 8,
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 15,
+    lineHeight: 20,
     fontWeight: '700',
     textAlign: 'left',
   },
@@ -438,16 +479,15 @@ const styles = StyleSheet.create({
   actionButton: {
     width: '100%',
     alignItems: 'center',
-    borderRadius: 12,
+    borderRadius: DoggyDexTheme.radii.medium,
     paddingVertical: 13,
     paddingHorizontal: 14,
   },
   primaryButton: {
-    backgroundColor: '#FF9F1C',
+    backgroundColor: DoggyDexTheme.colors.primary,
     borderWidth: 1,
-    borderColor: '#E68A00',
-    boxShadow: '0 2px 6px 0 #1E3A8A33',
-    elevation: 2,
+    borderColor: DoggyDexTheme.colors.gold,
+    ...DoggyDexTheme.shadow,
   },
   primaryButtonDisabled: {
     opacity: 0.5,

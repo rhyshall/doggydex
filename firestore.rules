@@ -1,17 +1,3 @@
-    match /unlock_coats/{docId} {
-      allow read: if isSignedIn()
-                  && resource.data.user_id == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.id;
-
-      allow create: if isSignedIn()
-                    && request.resource.data.user_id == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.id;
-
-      allow update: if isSignedIn()
-                    && resource.data.user_id == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.id
-                    && request.resource.data.user_id == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.id;
-
-      allow delete: if isSignedIn()
-                    && resource.data.user_id == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.id;
-    }
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -23,7 +9,29 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == uid;
     }
 
+    function isValidUsernameIndexPayload(usernameKey) {
+      return request.resource.data.keys().hasOnly([
+        'uid',
+        'username',
+        'username_key',
+        'createdAt',
+        'updatedAt'
+      ])
+      && request.resource.data.uid is string
+      && request.resource.data.uid == request.auth.uid
+      && request.resource.data.username is string
+      && request.resource.data.username.size() > 0
+      && request.resource.data.username_key is string
+      && request.resource.data.username_key == usernameKey
+      && request.resource.data.createdAt is timestamp
+      && request.resource.data.updatedAt is timestamp;
+    }
+
     match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /users/{userId}/breedProgress/{breedId} {
       allow read, write: if isOwner(userId);
     }
 
@@ -31,10 +39,11 @@ service cloud.firestore {
       allow get: if isSignedIn();
       allow list: if false;
       allow create: if isSignedIn()
-                    && request.resource.data.uid == request.auth.uid;
+                    && isValidUsernameIndexPayload(usernameKey);
       allow update: if isSignedIn()
                     && resource.data.uid == request.auth.uid
-                    && request.resource.data.uid == request.auth.uid;
+                    && isValidUsernameIndexPayload(usernameKey)
+                    && request.resource.data.createdAt == resource.data.createdAt;
       allow delete: if isSignedIn() && resource.data.uid == request.auth.uid;
     }
 
@@ -62,6 +71,18 @@ service cloud.firestore {
       allow delete: if isSignedIn() && resource.data.user_id == request.auth.uid;
     }
 
+    match /unlock_coats/{docId} {
+      allow read: if isSignedIn()
+                  && resource.data.user_id == request.auth.uid;
+      allow create: if isSignedIn()
+                    && request.resource.data.user_id == request.auth.uid;
+      allow update: if isSignedIn()
+                    && resource.data.user_id == request.auth.uid
+                    && request.resource.data.user_id == request.auth.uid;
+      allow delete: if isSignedIn()
+                    && resource.data.user_id == request.auth.uid;
+    }
+
     match /breeds/{breedId} {
       allow read: if true;
       allow write: if false;
@@ -69,6 +90,11 @@ service cloud.firestore {
 
     match /coats/{coatId} {
       allow read: if true;
+      allow write: if false;
+    }
+
+    match /decoy_images/{decoyId} {
+      allow read: if isSignedIn();
       allow write: if false;
     }
 

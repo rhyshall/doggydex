@@ -5,29 +5,59 @@
 
 import { Platform } from 'react-native';
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+const tintColorLight = '#FF6A00';
+const tintColorDark = '#FFA51F';
 
-export const DOGGYDEX_ORANGE = '#FF9F1C'; // Doggydex orange font color
-export const DOGGYDEX_CORAL_RED = '#FF8C66'; // Doggydex coral red logo color
+export const DOGGYDEX_ORANGE = '#FF6A00';
+export const DOGGYDEX_GOLD = '#FFA51F';
+export const DOGGYDEX_CORAL_RED = '#E84B4B';
+
+export const DoggyDexTheme = {
+  colors: {
+    primary: '#FF6A00',
+    gold: '#FFA51F',
+    card: '#FFF6E8',
+    surface: '#FFFDF7',
+    text: '#2F251F',
+    textSecondary: '#6B5747',
+    textMuted: '#7A7470',
+    track: '#2F2D27',
+    success: '#35B86B',
+    error: '#E84B4B',
+    border: '#E7CDA8',
+    overlay: 'rgba(28, 20, 14, 0.26)',
+  },
+  radii: {
+    large: 28,
+    medium: 20,
+    small: 12,
+  },
+  shadow: {
+    shadowColor: '#2F251F',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 7,
+  },
+} as const;
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
+    text: DoggyDexTheme.colors.text,
+    background: DoggyDexTheme.colors.surface,
     tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
+    icon: DoggyDexTheme.colors.textSecondary,
+    tabIconDefault: DoggyDexTheme.colors.textMuted,
     tabIconSelected: tintColorLight,
     doggydexOrange: DOGGYDEX_ORANGE,
     doggydexCoralRed: DOGGYDEX_CORAL_RED,
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
+    text: DoggyDexTheme.colors.text,
+    background: DoggyDexTheme.colors.surface,
     tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
+    icon: DoggyDexTheme.colors.textSecondary,
+    tabIconDefault: DoggyDexTheme.colors.textMuted,
     tabIconSelected: tintColorDark,
     doggydexOrange: DOGGYDEX_ORANGE,
     doggydexCoralRed: DOGGYDEX_CORAL_RED,

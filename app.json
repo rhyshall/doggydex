@@ -6,7 +6,10 @@
     "description": "Guess breeds, unlock coats, build your DoggyDex",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "com.googleusercontent.apps.754250921036-8itvk3f4dg83vcoi2o3t1j4dld07ma08",
+    "scheme": [
+      "dogquiz",
+      "com.googleusercontent.apps.754250921036-8itvk3f4dg83vcoi2o3t1j4dld07ma08"
+    ],
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true
@@ -30,12 +33,11 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "image": "./img/doggydex_splash.png",
+          "resizeMode": "cover",
+          "backgroundColor": "#160800",
           "dark": {
-            "backgroundColor": "#000000"
+            "backgroundColor": "#160800"
           }
         }
       ]

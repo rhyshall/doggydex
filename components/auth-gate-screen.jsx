@@ -3,11 +3,14 @@ import { FrostedGlassCard } from '@/components/frosted-glass-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { auth } from '@/lib/firebase-services';
+import { getUserProfileUsername, hasUsername, upsertUserProfile } from '@/lib/user-store';
+import { SplashTransition } from '@/components/splash-transition';
+import { DoggyDexTheme } from '@/constants/theme';
 import { commonStyles } from '@/styles/common';
 import * as AuthSession from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
 import Constants from 'expo-constants';
-import { Link, useRouter } from 'expo-router';
+import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import {
     createUserWithEmailAndPassword,
@@ -17,8 +20,8 @@ import {
     signInWithEmailAndPassword,
     signInWithPopup,
 } from 'firebase/auth';
-import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import GoogleIcon from './google-icon';
 
 const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_WEB_CLIENT_ID || process.env.WEB_CLIENT_ID;
@@ -30,12 +33,12 @@ const GOOGLE_ANDROID_REVERSE_CLIENT_ID = GOOGLE_ANDROID_CLIENT_ID
   ? `com.googleusercontent.apps.${GOOGLE_ANDROID_CLIENT_ID.replace('.apps.googleusercontent.com', '')}`
   : null;
 const GOOGLE_ANDROID_REDIRECT_URI = AuthSession.makeRedirectUri({
-  native: GOOGLE_ANDROID_REVERSE_CLIENT_ID ? `${GOOGLE_ANDROID_REVERSE_CLIENT_ID}:/login` : undefined,
+  native: GOOGLE_ANDROID_REVERSE_CLIENT_ID ? `${GOOGLE_ANDROID_REVERSE_CLIENT_ID}:/oauthredirect` : undefined,
 });
 const PAW_SHIELD_ICON = require('../img/paw-shield.jpg');
-const PAW_FOCUS_COLOR = '#FF8C66';
-const AUTH_INPUT_TEXT_COLOR = '#1F2937';
-const AUTH_INPUT_PLACEHOLDER_COLOR = '#6B7280';
+const PAW_FOCUS_COLOR = DoggyDexTheme.colors.primary;
+const AUTH_INPUT_TEXT_COLOR = DoggyDexTheme.colors.text;
+const AUTH_INPUT_PLACEHOLDER_COLOR = DoggyDexTheme.colors.textMuted;
 const AUTH_GATE_DEBUG_BUFFER_KEY = '__AUTH_GATE_DEBUG_LOGS__';
 const APP_FONT_FAMILY = Platform.select({
   web: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
@@ -67,15 +70,19 @@ WebBrowser.maybeCompleteAuthSession();
 
 export default function AuthGateScreen({ mode }) {
   const router = useRouter();
+  const localSearchParams = useLocalSearchParams();
   const isSignInMode = mode === 'signin';
 
   const [checkedAuth, setCheckedAuth] = useState(false);
   const [isRoutingAuthenticatedUser, setIsRoutingAuthenticatedUser] = useState(false);
   const [isAuthPending, setIsAuthPending] = useState(false);
+  const [isProcessingOAuthReturn, setIsProcessingOAuthReturn] = useState(false);
   const [signInError, setSignInError] = useState(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [focusedField, setFocusedField] = useState(null);
+  const routingUserUidRef = useRef(null);
+  const routeAttemptIdRef = useRef(0);
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     webClientId: GOOGLE_WEB_CLIENT_ID,
@@ -86,9 +93,67 @@ export default function AuthGateScreen({ mode }) {
     selectAccount: true,
   });
 
-  const routeSignedInUser = useCallback(() => {
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      return;
+    }
+
+    const hasOAuthCallbackParams = [
+      localSearchParams?.code,
+      localSearchParams?.state,
+      localSearchParams?.id_token,
+      localSearchParams?.access_token,
+      localSearchParams?.error,
+      localSearchParams?.error_description,
+    ].some((value) => typeof value === 'string' && value.length > 0);
+
+    if (!hasOAuthCallbackParams) {
+      return;
+    }
+
+    setIsProcessingOAuthReturn(true);
+
+    const timeoutId = setTimeout(() => {
+      setIsProcessingOAuthReturn(false);
+    }, 6000);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [localSearchParams]);
+
+  const routeSignedInUser = useCallback(async (firebaseUser = auth.currentUser) => {
+    if (!firebaseUser) {
+      setIsRoutingAuthenticatedUser(false);
+      return;
+    }
+
+    if (routingUserUidRef.current === firebaseUser.uid) {
+      return;
+    }
+
+    routingUserUidRef.current = firebaseUser.uid;
+    const routeAttemptId = routeAttemptIdRef.current + 1;
+    routeAttemptIdRef.current = routeAttemptId;
     setIsRoutingAuthenticatedUser(true);
-    router.replace('/');
+    const isCurrentRouteAttempt = () =>
+      routeAttemptIdRef.current === routeAttemptId
+      && auth.currentUser?.uid === firebaseUser.uid;
+
+    try {
+      await upsertUserProfile(firebaseUser);
+      if (!isCurrentRouteAttempt()) return;
+
+      const storedUsername = await getUserProfileUsername(firebaseUser.uid);
+      if (!isCurrentRouteAttempt()) return;
+
+      router.replace(hasUsername(storedUsername) ? '/' : '/username-setup');
+    } catch (error) {
+      console.warn('Failed to resolve the signed-in user route', error);
+      if (isCurrentRouteAttempt()) {
+        router.replace('/');
+      }
+    }
   }, [router]);
 
   useEffect(() => {
@@ -100,21 +165,24 @@ export default function AuthGateScreen({ mode }) {
       }
 
       if (user) {
-        setIsRoutingAuthenticatedUser(true);
-        router.replace('/');
+        setIsProcessingOAuthReturn(false);
+        routeSignedInUser(user);
 
         return;
       }
 
+      routingUserUidRef.current = null;
+      routeAttemptIdRef.current += 1;
       setIsRoutingAuthenticatedUser(false);
       setCheckedAuth(true);
     });
 
     return () => {
       isActive = false;
+      routeAttemptIdRef.current += 1;
       unsubscribe();
     };
-  }, [router]);
+  }, [routeSignedInUser]);
 
   useEffect(() => {
     let isCancelled = false;
@@ -123,6 +191,8 @@ export default function AuthGateScreen({ mode }) {
       if (Platform.OS === 'web' || !response) {
         return;
       }
+
+      setIsProcessingOAuthReturn(false);
 
       appendAuthGateDebugLog('googleAuthResponse', {
         type: response.type,
@@ -315,17 +385,8 @@ export default function AuthGateScreen({ mode }) {
     await handleEmailCreateAccount();
   }
 
-  if (!checkedAuth || isRoutingAuthenticatedUser || isAuthPending) {
-    return (
-      <ThemedView style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#FFFFFF" style={styles.loadingSpinner} />
-          <ThemedText style={styles.loadingText}>
-            {isRoutingAuthenticatedUser || isAuthPending ? 'Signing you in...' : 'Checking sign-in...'}
-          </ThemedText>
-        </View>
-      </ThemedView>
-    );
+  if (!checkedAuth || isRoutingAuthenticatedUser || isAuthPending || isProcessingOAuthReturn) {
+    return <SplashTransition />;
   }
 
   function handleEmailChange(value) {
@@ -335,17 +396,16 @@ export default function AuthGateScreen({ mode }) {
   return (
     <ThemedView style={{ flex: 1, backgroundColor: 'transparent', justifyContent: 'center', alignItems: 'center' }}>
       <FrostedGlassCard style={[
-        styles.chooserGlassCard,
-        { borderWidth: 0, marginTop: -100 }
+        styles.authCard,
       ]}>
 
         <View style={{ width: '100%' }}>
-          <DoggyDexHeader style={{ marginBottom: 18 }} />
+          <DoggyDexHeader style={styles.authLogo} />
         </View>
         <View style={require('@/styles/homeStyles').homeStyles.chooserSubtitleWrap}>
           <ThemedText style={[
             require('@/styles/homeStyles').homeStyles.chooserSubtitle,
-            { color: '#222426' }
+            { color: DoggyDexTheme.colors.textSecondary }
           ]}>
             Guess breeds, unlock coats,{"\n"}build your collection!
           </ThemedText>
@@ -441,6 +501,17 @@ export default function AuthGateScreen({ mode }) {
 }
 
 const styles = StyleSheet.create({
+  authCard: {
+    width: 440,
+    maxWidth: '94%',
+    borderRadius: DoggyDexTheme.radii.large,
+    paddingHorizontal: 28,
+    paddingVertical: 32,
+  },
+  authLogo: {
+    marginBottom: 28,
+    transform: [{ scale: 1.18 }],
+  },
   container: {
     flex: 1,
     backgroundColor: 'transparent',
@@ -474,7 +545,7 @@ const styles = StyleSheet.create({
   titleText: {
     lineHeight: 30,
     flexShrink: 1,
-    color: '#FF9F1C',
+    color: DoggyDexTheme.colors.primary,
   },
   titleWrap: {
     flexDirection: 'row',
@@ -502,13 +573,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 14,
     paddingVertical: 6,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.45)',
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    color: '#2F3742',
-    boxShadow: '0 2px 6px 0 #ffffff22',
-    elevation: 1,
+    borderRadius: DoggyDexTheme.radii.medium,
+    color: DoggyDexTheme.colors.textSecondary,
   },
   authControls: {
     marginTop: 14,
@@ -520,28 +586,27 @@ const styles = StyleSheet.create({
   authActionButton: {
     width: '100%',
     alignItems: 'center',
-    borderRadius: 12,
+    borderRadius: DoggyDexTheme.radii.medium,
     paddingVertical: 13,
     paddingHorizontal: 14,
   },
   authPrimaryButton: {
-    backgroundColor: '#FF9F1C',
+    backgroundColor: DoggyDexTheme.colors.primary,
     borderWidth: 1,
-    borderColor: '#E68A00',
-    boxShadow: '0 2px 6px 0 #1E3A8A33',
-    elevation: 2,
+    borderColor: DoggyDexTheme.colors.gold,
+    ...DoggyDexTheme.shadow,
   },
   authPrimaryHover: {
-    backgroundColor: '#E58E19',
-    borderColor: '#E68A00',
+    backgroundColor: '#E85F00',
+    borderColor: DoggyDexTheme.colors.gold,
   },
   googleButton: {
-    backgroundColor: '#fff',
+    backgroundColor: DoggyDexTheme.colors.surface,
     borderWidth: 1,
-    borderColor: '#DADCE0',
+    borderColor: DoggyDexTheme.colors.border,
   },
   googleButtonHover: {
-    backgroundColor: '#E8EAED',
+    backgroundColor: DoggyDexTheme.colors.card,
     borderColor: PAW_FOCUS_COLOR,
   },
   googleButtonContent: {
@@ -556,7 +621,7 @@ const styles = StyleSheet.create({
   },
   googleButtonLabel: {
     fontWeight: '600',
-    color: '#202124',
+    color: DoggyDexTheme.colors.text,
     textAlign: 'center',
   },
   orRow: {
@@ -568,14 +633,14 @@ const styles = StyleSheet.create({
   orLine: {
     flex: 1,
     height: 2,
-    backgroundColor: '#B6BDC4',
+    backgroundColor: DoggyDexTheme.colors.border,
   },
   orText: {
     fontSize: 13,
     lineHeight: 18,
     fontWeight: '700',
     letterSpacing: 0.3,
-    color: '#687076',
+    color: DoggyDexTheme.colors.textMuted,
   },
   input: {
     fontFamily: APP_FONT_FAMILY,
@@ -583,10 +648,10 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 340,
     marginTop: 10,
-    borderRadius: 10,
+    borderRadius: DoggyDexTheme.radii.small,
     borderWidth: 1,
-    borderColor: '#687076',
-    backgroundColor: '#fff',
+    borderColor: DoggyDexTheme.colors.border,
+    backgroundColor: DoggyDexTheme.colors.surface,
     paddingHorizontal: 12,
     paddingVertical: 16,
     fontSize: 14,

@@ -1,3 +1,5 @@
+import { DoggyDexTheme } from '@/constants/theme';
+import { BlurView } from 'expo-blur';
 import { ImageBackground, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -17,6 +19,9 @@ export function AppBackground({ children, style }) {
         resizeMode="cover"
       >
         <View style={[StyleSheet.absoluteFillObject, styles.overlay]} pointerEvents="box-none">
+          {Platform.OS !== 'web' ? (
+            <BlurView pointerEvents="none" intensity={10} tint="light" style={StyleSheet.absoluteFillObject} />
+          ) : null}
           <View style={[StyleSheet.absoluteFillObject, styles.darkOverlay]} pointerEvents="none" />
           <View style={StyleSheet.absoluteFillObject}>{children}</View>
         </View>
@@ -28,7 +33,7 @@ export function AppBackground({ children, style }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: 'black', // fallback background
+    backgroundColor: DoggyDexTheme.colors.text,
   },
   background: {
     flex: 1,
@@ -41,8 +46,8 @@ const styles = StyleSheet.create({
     flex: 1,
     ...(Platform.OS === 'web'
       ? {
-          backdropFilter: 'blur(6px) brightness(0.90)',
-          WebkitBackdropFilter: 'blur(6px) brightness(0.90)',
+          backdropFilter: 'blur(5px)',
+          WebkitBackdropFilter: 'blur(5px)',
         }
       : {}),
   },
@@ -52,7 +57,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: DoggyDexTheme.colors.overlay,
     pointerEvents: 'none',
   },
   darkOverlaySemiTransparent: {
