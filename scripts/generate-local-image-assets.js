@@ -34,6 +34,12 @@ function buildLocalImageAssetsSource(filenames) {
     '  return LOCAL_IMG_ASSETS[trimmed] || null;',
     '}',
     '',
+    'export function getLocalDecoyAssets() {',
+    '  return Object.entries(LOCAL_IMG_ASSETS)',
+    "    .filter(([filename]) => /^decoy\\d+\\.(?:gif|jpe?g|png|webp)$/i.test(filename))",
+    '    .map(([filename, asset]) => ({ filename, asset }));',
+    '}',
+    '',
   ];
 
   return lines.join('\n');

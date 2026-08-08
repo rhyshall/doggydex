@@ -13,6 +13,11 @@ const BREED_ID_ALIASES = Object.freeze({
   english_bulldog: ['bulldog'],
 });
 
+const COAT_BREED_ID_ALIASES = Object.freeze({
+  american_cocker_spaniel: 'cocker_spaniel',
+  rough_collie: 'collie',
+});
+
 initializeApp({ credential: cert(serviceAccount) });
 const db = getFirestore();
 
@@ -49,6 +54,27 @@ function findLocalBreed(localById, breedId) {
   return null;
 }
 
+function formatRange(minimum, maximum, unit) {
+  if (!Number.isFinite(minimum) || !Number.isFinite(maximum)) return undefined;
+  return `${minimum}-${maximum} ${unit}`;
+}
+
+function getRemoteBreedDefaults(data) {
+  return {
+    size: data.size_category,
+    weightRange: formatRange(data.weight_min_lbs, data.weight_max_lbs, 'lbs'),
+    heightRange: formatRange(data.height_min_inches, data.height_max_inches, 'inches'),
+    energyLevel: data.energy_level,
+    trainability: data.trainability,
+    funFact: data.fun_fact,
+    historicalPurpose: data.historical_purpose,
+    originCountry: data.origin_country,
+    popularityRank: data.popularity_rank,
+    categoryTags: data.category_tags,
+    thumbnail: data.thumbnail,
+  };
+}
+
 async function sync() {
   const localCatalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
   const localBreeds = Array.isArray(localCatalog?.breeds) ? localCatalog.breeds : [];
@@ -69,17 +95,23 @@ async function sync() {
   for (const doc of coatSnapshot.docs) {
     const data = doc.data() || {};
     const storedBreedId = toId(data.breed_id);
+    const aliasedBreedId = COAT_BREED_ID_ALIASES[storedBreedId];
     const inferredBreedId = [...remoteBreedIds]
       .filter((breedId) => doc.id.startsWith(`${breedId}__`))
       .sort((left, right) => right.length - left.length)[0];
-    const catalogBreedId = remoteBreedIds.has(storedBreedId) ? storedBreedId : inferredBreedId;
+    const catalogBreedId = remoteBreedIds.has(storedBreedId)
+      ? storedBreedId
+      : (remoteBreedIds.has(aliasedBreedId) ? aliasedBreedId : inferredBreedId);
     if (!catalogBreedId) continue;
     if (!coatsByBreed.has(catalogBreedId)) coatsByBreed.set(catalogBreedId, []);
     coatsByBreed.get(catalogBreedId).push({ docId: doc.id, data });
   }
   const orphanRemoteCoats = coatSnapshot.docs
     .map((doc) => ({ docId: doc.id, breedId: toId(doc.data()?.breed_id) }))
-    .filter(({ breedId }) => !breedId || !remoteBreedIds.has(breedId));
+    .filter(({ breedId }) => !breedId || (
+      !remoteBreedIds.has(breedId)
+      && !remoteBreedIds.has(COAT_BREED_ID_ALIASES[breedId])
+    ));
 
   remoteBreeds.sort((left, right) => {
     const leftLocalId = localById.has(left.breedId)
@@ -95,6 +127,7 @@ async function sync() {
 
   const outputBreeds = remoteBreeds.map(({ breedId, data }) => {
     const local = findLocalBreed(localById, breedId) || {};
+    const remoteDefaults = getRemoteBreedDefaults(data);
     const breedName = String(data.breed_name || data.breed || local.breed_name || local.breed || breedId).trim();
     const remoteCoats = [...(coatsByBreed.get(breedId) || [])]
       .sort((left, right) => (Number(left.data.coat_id) || Number.MAX_SAFE_INTEGER)
@@ -115,6 +148,7 @@ async function sync() {
     });
 
     const output = {
+      ...Object.fromEntries(Object.entries(remoteDefaults).filter(([, value]) => value !== undefined)),
       ...local,
       breed_id: breedId,
       breed_name: breedName,

@@ -4,7 +4,7 @@ import { SplashTransition } from '@/components/splash-transition';
 import { LifePawIcon } from '@/components/game-icon';
 import { DOGGYDEX_CORAL_RED, DoggyDexTheme } from '@/constants/theme';
 import { auth, db } from '@/lib/firebase-services';
-import { getLocalImgAsset } from '@/lib/local-image-assets';
+import { getLocalDecoyAssets, getLocalImgAsset } from '@/lib/local-image-assets';
 import { awardDailyQuizCompletion, getLevelProgress, recordCorrectAnswer } from '@/lib/progression-store';
 // import { loadUserProgress, saveUserProgress } from '@/lib/progress-store';
 import { indexVariantsByBreed } from '@/lib/storage-coat-variants';
@@ -15,13 +15,24 @@ import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 
-
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, collection as firestoreCollection, getDoc, getDocs, setDoc } from 'firebase/firestore';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, FlatList, Platform, Pressable, Animated as RNAnimated, Easing as RNEasing, View } from 'react-native';
 import Animated, { Easing as ReanimatedEasing, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import breedTiers from '../data/dog-breeds-tiers.json';
+
+const LOCAL_DECOY_VARIANTS = getLocalDecoyAssets().map(({ filename, asset }) => ({
+  id: `decoy__${filename}`,
+  breed: '',
+  breedId: null,
+  coat: '',
+  imgFilename: filename,
+  uri: asset,
+  images: [asset],
+  isDecoy: true,
+}));
+const DECOY_BREED_KEY = '__quiz_decoys__';
 
 function shuffle(arr) {
   const a = arr.slice();
@@ -716,7 +727,7 @@ export default function QuizScreen() {
     }, []);
     // Ensure storageVariantMap is defined before any use
     const [storageVariantMap, setStorageVariantMap] = useState({});
-    const [decoyVariants, setDecoyVariants] = useState([]);
+    const decoyVariants = LOCAL_DECOY_VARIANTS;
     const [catalogCoatIdsByBreed, setCatalogCoatIdsByBreed] = useState({});
     // Inject shake keyframes for web (only once)
     useEffect(() => {
@@ -784,6 +795,7 @@ export default function QuizScreen() {
   const wrongBorderOpacity = useRef(new RNAnimated.Value(0)).current;
   const quizEntranceOpacity = useRef(new RNAnimated.Value(0)).current;
   const quizEntranceTranslateY = useRef(new RNAnimated.Value(18)).current;
+  const hasShownInitialQuestionRef = useRef(false);
   const cardEntranceAnims = useRef(
     Array.from({ length: MIN_BREEDS_PER_QUESTION }, () => ({
       opacity: new RNAnimated.Value(0),
@@ -848,43 +860,50 @@ export default function QuizScreen() {
         ? availableBreeds
         : breedKeys;
 
-      // Shuffle and pick breeds for this question
-      const pickedBreeds = shuffle(pickFrom).slice(0, MIN_BREEDS_PER_QUESTION);
-      // Pick target
-      const targetIdx = Math.floor(Math.random() * pickedBreeds.length);
-      const targetBreed = pickedBreeds[targetIdx];
+      // Pick a real breed as the target. Decoys behave as the coat variants of
+      // one pseudo-breed, so that pseudo-breed has the same distractor odds as
+      // any individual real breed and can never become the correct answer.
+      const targetBreed = shuffle(pickFrom)[0];
+      const targetVariant = pickRandomCoatForBreed(targetBreed);
+      if (!targetVariant) {
+        return { choices: [], targetIndex: -1 };
+      }
 
-      // Generate the target and normal distractors first. Decoy-only images are
-      // merged into the distractor pool below and can never become the target.
-      const normalChoices = pickedBreeds.map((breed, i) => {
+      const targetChoice = {
+        ...targetVariant,
+        breed: targetBreed,
+        id: targetVariant.id || `${targetBreed}_target`,
+        coat_id: targetVariant.coat_id,
+      };
+      const distractorBreedPool = breedKeys.filter((breed) => breed !== targetBreed);
+      if (decoyVariants.length) {
+        distractorBreedPool.push(DECOY_BREED_KEY);
+      }
+
+      const pickedDistractorBreeds = shuffle(distractorBreedPool)
+        .slice(0, MIN_BREEDS_PER_QUESTION - 1);
+      const distractors = pickedDistractorBreeds.map((breed, index) => {
+        if (breed === DECOY_BREED_KEY) {
+          return decoyVariants[Math.floor(Math.random() * decoyVariants.length)];
+        }
+
         const variant = pickRandomCoatForBreed(breed);
         if (!variant) return null;
         return {
           ...variant,
           breed,
-          id: variant.id || `${breed}_${i}`,
-          coat_id: variant.coat_id, 
+          id: variant.id || `${breed}_distractor_${index}`,
+          coat_id: variant.coat_id,
         };
       }).filter(Boolean);
 
-      // If any choice is missing, skip this question
-      if (normalChoices.length < MIN_BREEDS_PER_QUESTION) {
+      if (distractors.length < MIN_BREEDS_PER_QUESTION - 1) {
         return { choices: [], targetIndex: -1 };
       }
 
-      const targetChoice = normalChoices[targetIdx];
-      const distractorPool = [
-        ...normalChoices.filter((_, index) => index !== targetIdx),
-        ...decoyVariants,
-      ];
-      const selectedDistractors = shuffle(distractorPool).slice(0, MIN_BREEDS_PER_QUESTION - 1);
-      let distractorIndex = 0;
-      const choices = Array.from({ length: MIN_BREEDS_PER_QUESTION }, (_, index) => {
-        if (index === targetIdx) return targetChoice;
-        const distractor = selectedDistractors[distractorIndex];
-        distractorIndex += 1;
-        return distractor;
-      });
+      const targetIdx = Math.floor(Math.random() * MIN_BREEDS_PER_QUESTION);
+      const choices = [...distractors];
+      choices.splice(targetIdx, 0, targetChoice);
 
       // Update recent breeds
       if (commitRecent && targetBreed) {
@@ -1412,13 +1431,9 @@ export default function QuizScreen() {
       setLocalQuizNotice(null);
       setMissingLocalImageNotice(null);
 
-      const [coatsSnapshot, breedsSnapshot, decoysSnapshot] = await Promise.all([
+      const [coatsSnapshot, breedsSnapshot] = await Promise.all([
         getDocs(firestoreCollection(db, 'coats')),
         getDocs(firestoreCollection(db, 'breeds')),
-        getDocs(firestoreCollection(db, 'decoy_images')).catch((error) => {
-          console.warn('Decoy images are unavailable; continuing with regular distractors.', error);
-          return null;
-        }),
       ]);
 
       if (isCancelled) {
@@ -1472,27 +1487,6 @@ export default function QuizScreen() {
 
       const missingLocalFilenames = new Set();
 
-      const localDecoys = (decoysSnapshot?.docs || []).map((decoyDoc) => {
-        const data = decoyDoc.data() || {};
-        const imgFilename = typeof data.img_filename === 'string' ? data.img_filename.trim() : '';
-        if (!imgFilename) return null;
-        const asset = getLocalImgAsset(imgFilename);
-        if (!asset) {
-          missingLocalFilenames.add(imgFilename);
-          return null;
-        }
-        return {
-          id: `decoy__${decoyDoc.id}`,
-          breed: '',
-          breedId: null,
-          coat: '',
-          imgFilename,
-          uri: asset,
-          images: [asset],
-          isDecoy: true,
-        };
-      }).filter(Boolean);
-
       const localBackedVariants = coatsWithImageFiles
         .map((variant) => {
           const primaryAsset = getLocalImgAsset(variant.imgFilename);
@@ -1524,7 +1518,6 @@ export default function QuizScreen() {
 
       const variantsByBreed = indexVariantsByBreed(localBackedVariants);
       setStorageVariantMap(variantsByBreed);
-      setDecoyVariants(localDecoys);
 
       const unlockableCoatsByBreed = {};
       Object.entries(variantsByBreed).forEach(([breedName, variants]) => {
@@ -1583,8 +1576,22 @@ export default function QuizScreen() {
 
   const targetDog = targetIndex >= 0 ? choices[targetIndex] : null;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!targetDog) return;
+
+    // The loading splash already provides the route entrance. Reveal the first
+    // complete question immediately so there is no second fade through an
+    // empty or partially populated grid as the splash unmounts.
+    if (!hasShownInitialQuestionRef.current) {
+      hasShownInitialQuestionRef.current = true;
+      quizEntranceOpacity.setValue(1);
+      quizEntranceTranslateY.setValue(0);
+      cardEntranceAnims.forEach((anim) => {
+        anim.opacity.setValue(1);
+        anim.translateY.setValue(0);
+      });
+      return;
+    }
 
     if (skipNextCardEntranceRef.current) {
       skipNextCardEntranceRef.current = false;
@@ -2046,7 +2053,14 @@ export default function QuizScreen() {
     : localQuizSyncNotice || localQuizNotice || missingLocalImageNotice || '';
   const shouldBlurContainerOnTimeout = timer === 0 && !showGameOver;
 
-  if (isLocalQuizLoading) {
+  const isInitialQuestionReady = Boolean(
+    targetDog && choices.length === MIN_BREEDS_PER_QUESTION
+  );
+
+  // Loading the coat catalog and building the first question happen in
+  // separate state updates. Keep the splash mounted across that handoff so an
+  // empty quiz frame cannot flash before the first complete question exists.
+  if (isLocalQuizLoading || (!isInitialQuestionReady && !localQuizNotice)) {
     return <SplashTransition />;
   }
 

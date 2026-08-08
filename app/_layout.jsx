@@ -53,7 +53,7 @@ export default function RootLayout() {
           <Stack.Screen name="login" options={{ headerShown: false, animation: 'fade' }} />
           <Stack.Screen name="signup" options={{ headerShown: false, animation: 'fade' }} />
           <Stack.Screen name="oauthredirect" options={{ headerShown: false, animation: 'none' }} />
-          <Stack.Screen name="quiz" options={{ headerShown: false, animation: 'fade' }} />
+          <Stack.Screen name="quiz" options={{ headerShown: false, animation: 'none' }} />
           <Stack.Screen name="username-setup" options={{ headerShown: false }} />
           <Stack.Screen
             name="modal"

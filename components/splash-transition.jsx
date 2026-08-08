@@ -45,7 +45,7 @@ export function SplashTransition({ overlay = false }) {
         style={StyleSheet.absoluteFillObject}
         contentFit="cover"
         contentPosition="center"
-        transition={150}
+        transition={0}
       />
       <View pointerEvents="none" style={styles.softBrandWash} />
       <View pointerEvents="none" style={styles.loadingDots}>
